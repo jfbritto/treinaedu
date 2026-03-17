@@ -31,4 +31,21 @@ class StoreTrainingRequest extends FormRequest
             'questions.*.correct' => 'required_with:questions|integer|min:0',
         ];
     }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $questions = $this->input('questions', []);
+            foreach ($questions as $qi => $question) {
+                $optionCount = count($question['options'] ?? []);
+                $correct = (int) ($question['correct'] ?? -1);
+                if ($optionCount > 0 && ($correct < 0 || $correct >= $optionCount)) {
+                    $validator->errors()->add(
+                        "questions.{$qi}.correct",
+                        "A opção correta da questão " . ($qi + 1) . " é inválida."
+                    );
+                }
+            }
+        });
+    }
 }

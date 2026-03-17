@@ -28,9 +28,9 @@ class TrainingAssignmentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'training_id' => 'required|exists:trainings,id',
+            'training_id' => 'required|exists:trainings,id,company_id,' . auth()->user()->company_id,
             'group_ids' => 'required|array|min:1',
-            'group_ids.*' => 'exists:groups,id',
+            'group_ids.*' => 'exists:groups,id,company_id,' . auth()->user()->company_id,
             'due_date' => 'nullable|date|after:today',
         ]);
 

@@ -30,7 +30,7 @@ class GroupController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
             'users' => 'nullable|array',
-            'users.*' => 'exists:users,id',
+            'users.*' => 'exists:users,id,company_id,' . auth()->user()->company_id,
         ]);
 
         $group = Group::create([
@@ -71,7 +71,7 @@ class GroupController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
             'users' => 'nullable|array',
-            'users.*' => 'exists:users,id',
+            'users.*' => 'exists:users,id,company_id,' . auth()->user()->company_id,
         ]);
 
         $group->update([
