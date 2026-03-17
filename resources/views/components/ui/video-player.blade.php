@@ -11,7 +11,7 @@
     }
 @endphp
 
-<div x-data="videoPlayer({{ $trainingId }}, '{{ $provider }}', '{{ $videoId }}')" class="space-y-4">
+<div x-data="videoPlayer(@js($trainingId), @js($provider), @js($videoId))" class="space-y-4">
 
     @if($provider === 'youtube')
         <div class="relative aspect-video rounded-xl overflow-hidden bg-black">
@@ -106,10 +106,15 @@
                 const self = this;
                 window.addEventListener('message', (event) => {
                     if (event.origin !== 'https://player.vimeo.com') return;
-                    const data = JSON.parse(event.data);
-                    if (data.event === 'playProgress' || data.event === 'timeupdate') {
+                    let data;
+                    try {
+                        data = JSON.parse(event.data);
+                    } catch (e) {
+                        return;
+                    }
+                    if ((data.event === 'playProgress' || data.event === 'timeupdate') && data.data?.percent !== undefined) {
                         const pct = Math.floor(data.data.percent * 100);
-                        if (pct > self.progress) {
+                        if (pct > self.progress && (pct % 5 === 0 || pct >= 90)) {
                             self.progress = pct;
                             self.sendProgress(pct);
                         }

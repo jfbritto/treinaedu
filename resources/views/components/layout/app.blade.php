@@ -8,10 +8,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    @php
+        $safePrimary = preg_match('/^#[0-9A-Fa-f]{3,6}$/', $primaryColor ?? '') ? $primaryColor : '#3B82F6';
+        $safeSecondary = preg_match('/^#[0-9A-Fa-f]{3,6}$/', $secondaryColor ?? '') ? $secondaryColor : '#1E40AF';
+    @endphp
     <style>
         :root {
-            --primary: {{ $primaryColor ?? '#3B82F6' }};
-            --secondary: {{ $secondaryColor ?? '#1E40AF' }};
+            --primary: {{ $safePrimary }};
+            --secondary: {{ $safeSecondary }};
         }
         .bg-primary { background-color: var(--primary); }
         .text-primary { color: var(--primary); }
