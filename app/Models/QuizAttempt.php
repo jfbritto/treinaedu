@@ -19,6 +19,7 @@ class QuizAttempt extends Model
         return [
             'passed' => 'boolean',
             'completed_at' => 'datetime',
+            'score' => 'integer',
         ];
     }
 

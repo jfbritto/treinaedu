@@ -63,4 +63,24 @@ class CompanyTest extends TestCase
 
         $this->assertTrue($company->hasReachedUserLimit());
     }
+
+    public function test_enterprise_plan_never_reaches_user_limit(): void
+    {
+        $plan = Plan::create(['name' => 'Enterprise', 'price' => 499.90, 'max_users' => null, 'max_trainings' => null]);
+        $company = Company::create(['name' => 'Big Corp', 'slug' => 'big-corp']);
+        Subscription::create([
+            'company_id' => $company->id,
+            'plan_id' => $plan->id,
+            'status' => 'active',
+        ]);
+
+        // Criar vários usuários
+        for ($i = 1; $i <= 10; $i++) {
+            User::create(['name' => "E{$i}", 'email' => "e{$i}@test.com", 'password' => 'password', 'company_id' => $company->id, 'role' => 'employee']);
+        }
+
+        $company->load('subscription.plan');
+
+        $this->assertFalse($company->hasReachedUserLimit());
+    }
 }

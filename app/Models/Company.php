@@ -60,11 +60,13 @@ class Company extends Model
 
     public function hasReachedUserLimit(): bool
     {
-        if (!$this->subscription || !$this->subscription->plan->max_users) {
+        $plan = $this->subscription?->plan;
+
+        if (!$plan || !$plan->max_users) {
             return false;
         }
 
         return $this->users()->whereIn('role', ['instructor', 'employee'])->count()
-            >= $this->subscription->plan->max_users;
+            >= $plan->max_users;
     }
 }

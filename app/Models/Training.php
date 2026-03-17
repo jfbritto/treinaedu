@@ -78,6 +78,10 @@ class Training extends Model
             return 'youtube';
         }
 
-        return 'vimeo';
+        if (str_contains($url, 'vimeo.com')) {
+            return 'vimeo';
+        }
+
+        throw new \InvalidArgumentException("Provider de vídeo não suportado para a URL: {$url}");
     }
 }
