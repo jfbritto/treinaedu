@@ -38,6 +38,11 @@ class CertificateController extends Controller
             abort(403);
         }
 
-        return response()->download(storage_path("app/{$certificate->pdf_path}"));
+        $path = storage_path("app/{$certificate->pdf_path}");
+        if (!file_exists($path)) {
+            abort(404, 'Arquivo não encontrado.');
+        }
+
+        return response()->download($path);
     }
 }

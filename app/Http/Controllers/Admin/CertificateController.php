@@ -10,6 +10,7 @@ class CertificateController extends Controller
     public function index()
     {
         $certificates = Certificate::with(['user', 'training'])
+            ->where('company_id', auth()->user()->company_id)
             ->latest()
             ->paginate(15);
 

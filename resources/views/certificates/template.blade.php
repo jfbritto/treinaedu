@@ -127,7 +127,7 @@
 
         <div class="footer">
             <span class="certificate-code">Código: {{ $certificateCode }}</span>
-            <span class="verify-url">Verifique este certificado em: /certificate/verify</span>
+            <span class="verify-url">Verifique este certificado em: {{ url('/certificate/verify') }}</span>
         </div>
     </div>
 </body>

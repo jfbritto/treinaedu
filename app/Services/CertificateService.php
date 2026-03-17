@@ -6,6 +6,7 @@ use App\Models\Certificate;
 use App\Models\Training;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class CertificateService
@@ -63,20 +64,24 @@ class CertificateService
         $filename = "{$code}.pdf";
         $path = "{$directory}/{$filename}";
 
-        if (!file_exists(storage_path("app/{$directory}"))) {
-            mkdir(storage_path("app/{$directory}"), 0755, true);
+        Storage::disk('app')->put($path, $pdf->output());
+
+        try {
+            return Certificate::create([
+                'company_id' => $company->id,
+                'user_id' => $user->id,
+                'training_id' => $training->id,
+                'certificate_code' => $code,
+                'pdf_path' => $path,
+                'generated_at' => now(),
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Handle duplicate key (race condition) — return existing
+            return Certificate::withoutGlobalScopes()
+                ->where('user_id', $user->id)
+                ->where('training_id', $training->id)
+                ->firstOrFail();
         }
-
-        $pdf->save(storage_path("app/{$path}"));
-
-        return Certificate::create([
-            'company_id' => $company->id,
-            'user_id' => $user->id,
-            'training_id' => $training->id,
-            'certificate_code' => $code,
-            'pdf_path' => $path,
-            'generated_at' => now(),
-        ]);
     }
 
     private function generateUniqueCode(): string
