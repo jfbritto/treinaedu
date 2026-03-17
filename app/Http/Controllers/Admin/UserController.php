@@ -60,6 +60,10 @@ class UserController extends Controller
     {
         $this->authorizeCompany($user);
 
+        if ($user->is(auth()->user())) {
+            abort(403, 'Você não pode editar seu próprio perfil por aqui.');
+        }
+
         $data = $request->only('name', 'email', 'role', 'active');
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
@@ -77,13 +81,18 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $this->authorizeCompany($user);
+
+        if ($user->is(auth()->user())) {
+            abort(403, 'Você não pode remover sua própria conta.');
+        }
+
         $user->delete();
         return redirect()->route('users.index')->with('success', 'Usuário removido.');
     }
 
     private function authorizeCompany(User $user): void
     {
-        if ($user->company_id !== auth()->user()->company_id) {
+        if ((int) $user->company_id !== (int) auth()->user()->company_id) {
             abort(403);
         }
     }

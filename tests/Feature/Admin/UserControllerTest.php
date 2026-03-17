@@ -79,4 +79,34 @@ class UserControllerTest extends TestCase
         $response = $this->actingAs($admin)->get("/users/{$otherUser->id}/edit");
         $response->assertStatus(403);
     }
+
+    public function test_admin_cannot_update_user_from_other_company(): void
+    {
+        $admin = $this->createAdminWithSubscription();
+
+        $otherCompany = Company::create(['name' => 'Other', 'slug' => 'other2']);
+        $otherUser = User::create([
+            'name' => 'Other User', 'email' => 'other2@test.com',
+            'password' => 'password', 'company_id' => $otherCompany->id, 'role' => 'employee', 'active' => true,
+        ]);
+
+        $response = $this->actingAs($admin)->put("/users/{$otherUser->id}", [
+            'name' => 'Hacked', 'email' => 'other2@test.com', 'role' => 'employee', 'active' => '1',
+        ]);
+        $response->assertStatus(403);
+    }
+
+    public function test_admin_cannot_delete_user_from_other_company(): void
+    {
+        $admin = $this->createAdminWithSubscription();
+
+        $otherCompany = Company::create(['name' => 'Other', 'slug' => 'other3']);
+        $otherUser = User::create([
+            'name' => 'Other User', 'email' => 'other3@test.com',
+            'password' => 'password', 'company_id' => $otherCompany->id, 'role' => 'employee', 'active' => true,
+        ]);
+
+        $response = $this->actingAs($admin)->delete("/users/{$otherUser->id}");
+        $response->assertStatus(403);
+    }
 }
