@@ -10,7 +10,9 @@ class RoleMiddleware
 {
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        if (!$request->user() || !in_array($request->user()->role, $roles)) {
+        $user = $request->user();
+
+        if (!$user || !$user->active || !in_array($user->role, $roles)) {
             abort(403, 'Acesso negado.');
         }
 
