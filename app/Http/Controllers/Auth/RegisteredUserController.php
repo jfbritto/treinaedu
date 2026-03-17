@@ -11,6 +11,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
@@ -32,39 +33,53 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $slug = Str::slug($request->company_name);
-        $originalSlug = $slug;
-        $counter = 1;
-        while (Company::where('slug', $slug)->exists()) {
-            $slug = $originalSlug . '-' . $counter++;
-        }
-
-        $company = Company::create([
-            'name' => $request->company_name,
-            'slug' => $slug,
-        ]);
-
         $basicPlan = Plan::where('name', 'Basic')->first();
 
-        Subscription::create([
-            'company_id' => $company->id,
-            'plan_id' => $basicPlan->id,
-            'status' => 'trial',
-            'trial_ends_at' => now()->addDays(7),
-        ]);
+        if (!$basicPlan) {
+            return back()->withErrors(['company_name' => 'Sistema indisponível temporariamente. Tente novamente em instantes.']);
+        }
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'company_id' => $company->id,
-            'role' => 'admin',
-        ]);
+        $user = DB::transaction(function () use ($request, $basicPlan) {
+            $slug = $this->generateUniqueSlug($request->company_name);
+
+            $company = Company::create([
+                'name' => $request->company_name,
+                'slug' => $slug,
+            ]);
+
+            Subscription::create([
+                'company_id' => $company->id,
+                'plan_id' => $basicPlan->id,
+                'status' => 'trial',
+                'trial_ends_at' => now()->addDays(7),
+            ]);
+
+            return User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'company_id' => $company->id,
+                'role' => 'admin',
+            ]);
+        });
 
         event(new Registered($user));
 
         Auth::login($user);
 
         return redirect(route('dashboard'));
+    }
+
+    private function generateUniqueSlug(string $name): string
+    {
+        $slug = Str::slug($name);
+        $originalSlug = $slug;
+        $counter = 1;
+
+        while (Company::where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $counter++;
+        }
+
+        return $slug;
     }
 }

@@ -39,12 +39,6 @@ Route::post('/asaas/webhook', [AsaasWebhookController::class, 'handle'])
     ->name('asaas.webhook')
     ->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
 
-// Auth (Breeze) — override register routes
-Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
-    Route::post('register', [RegisteredUserController::class, 'store']);
-});
-
 require __DIR__.'/auth.php';
 
 // Authenticated routes

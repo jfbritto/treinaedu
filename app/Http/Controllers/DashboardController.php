@@ -29,14 +29,18 @@ class DashboardController extends Controller
     {
         $companyId = auth()->user()->company_id;
 
-        $metrics = Cache::remember("dashboard_metrics_{$companyId}", 300, function () {
+        $metrics = Cache::remember("dashboard_metrics_{$companyId}", 300, function () use ($companyId) {
             return [
-                'total_employees' => User::where('company_id', auth()->user()->company_id)
+                'total_employees' => User::where('company_id', $companyId)
                     ->where('role', 'employee')->count(),
-                'trainings_created' => Training::count(),
-                'trainings_completed' => TrainingView::whereNotNull('completed_at')->count(),
-                'trainings_pending' => TrainingView::whereNull('completed_at')->count(),
-                'certificates_issued' => Certificate::count(),
+                'trainings_created' => Training::withoutGlobalScope('company')
+                    ->where('company_id', $companyId)->count(),
+                'trainings_completed' => TrainingView::withoutGlobalScope('company')
+                    ->where('company_id', $companyId)->whereNotNull('completed_at')->count(),
+                'trainings_pending' => TrainingView::withoutGlobalScope('company')
+                    ->where('company_id', $companyId)->whereNull('completed_at')->count(),
+                'certificates_issued' => Certificate::withoutGlobalScope('company')
+                    ->where('company_id', $companyId)->count(),
             ];
         });
 
