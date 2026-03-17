@@ -26,7 +26,8 @@ use Illuminate\Support\Facades\Route;
 
 // Public
 Route::get('/', function () {
-    return view('welcome');
+    $plans = \App\Models\Plan::where('active', true)->get();
+    return view('welcome', compact('plans'));
 })->name('home');
 
 Route::get('/certificate/verify', [CertificateVerificationController::class, 'show'])
