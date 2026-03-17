@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('pdf_path');
             $table->timestamp('generated_at');
             $table->timestamps();
-            $table->index('certificate_code');
         });
     }
 
