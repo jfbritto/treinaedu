@@ -8,22 +8,23 @@ class VideoProgressService
 {
     public function updateProgress(int $trainingId, int $userId, int $companyId, int $percent): TrainingView
     {
-        $view = TrainingView::updateOrCreate(
+        $cappedPercent = min($percent, 100);
+
+        \DB::table('training_views')->updateOrInsert(
             ['training_id' => $trainingId, 'user_id' => $userId],
-            ['company_id' => $companyId]
+            [
+                'company_id' => $companyId,
+                'started_at' => \DB::raw('COALESCE(started_at, NOW())'),
+                'progress_percent' => \DB::raw("GREATEST(COALESCE(progress_percent, 0), {$cappedPercent})"),
+                'updated_at' => now(),
+                'created_at' => \DB::raw('COALESCE(created_at, NOW())'),
+            ]
         );
 
-        if (!$view->started_at) {
-            $view->started_at = now();
-        }
-
-        if ($percent > $view->progress_percent) {
-            $view->progress_percent = min($percent, 100);
-        }
-
-        $view->save();
-
-        return $view;
+        return TrainingView::withoutGlobalScope('company')
+            ->where('training_id', $trainingId)
+            ->where('user_id', $userId)
+            ->first();
     }
 
     public function markCompleted(int $trainingId, int $userId): ?TrainingView
@@ -32,7 +33,7 @@ class VideoProgressService
             ->where('user_id', $userId)
             ->first();
 
-        if (!$view || $view->progress_percent < 90) {
+        if (!$view || $view->progress_percent < 90 || $view->completed_at) {
             return null;
         }
 
