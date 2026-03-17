@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mysql:
     image: mysql:8.0
@@ -15,15 +13,25 @@ services:
       - mysql_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 20s
+      interval: 5s
+      timeout: 5s
       retries: 10
+      start_period: 30s
+    networks:
+      - treinahub
 
-  mailhog:
-    image: mailhog/mailhog
-    container_name: treinahub_mailhog
+  mailpit:
+    image: axllent/mailpit
+    container_name: treinahub_mailpit
     ports:
       - "1027:1025"
       - "8027:8025"
+    networks:
+      - treinahub
 
 volumes:
   mysql_data:
+
+networks:
+  treinahub:
+    driver: bridge
