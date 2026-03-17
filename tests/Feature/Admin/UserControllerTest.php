@@ -1,0 +1,82 @@
+<?php
+
+namespace Tests\Feature\Admin;
+
+use App\Models\Company;
+use App\Models\Plan;
+use App\Models\Subscription;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class UserControllerTest extends TestCase
+{
+    use RefreshDatabase;
+
+    private function createAdminWithSubscription(int $maxUsers = 50): User
+    {
+        $plan = Plan::create(['name' => 'Basic', 'price' => 99.90, 'max_users' => $maxUsers, 'max_trainings' => 20]);
+        $company = Company::create(['name' => 'Test', 'slug' => 'test']);
+        Subscription::create([
+            'company_id' => $company->id, 'plan_id' => $plan->id,
+            'status' => 'active',
+        ]);
+        return User::create([
+            'name' => 'Admin', 'email' => 'admin@test.com',
+            'password' => 'password', 'company_id' => $company->id, 'role' => 'admin', 'active' => true,
+        ]);
+    }
+
+    public function test_admin_can_list_users(): void
+    {
+        $admin = $this->createAdminWithSubscription();
+        $response = $this->actingAs($admin)->get('/users');
+        $response->assertStatus(200);
+    }
+
+    public function test_admin_can_create_user(): void
+    {
+        $admin = $this->createAdminWithSubscription();
+        $response = $this->actingAs($admin)->post('/users', [
+            'name' => 'New Employee',
+            'email' => 'employee@test.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            'role' => 'employee',
+        ]);
+        $response->assertRedirect('/users');
+        $this->assertDatabaseHas('users', ['email' => 'employee@test.com']);
+    }
+
+    public function test_admin_cannot_create_user_beyond_plan_limit(): void
+    {
+        $admin = $this->createAdminWithSubscription(maxUsers: 1);
+        // Create an employee to fill the limit
+        User::create([
+            'name' => 'E1', 'email' => 'e1@test.com',
+            'password' => 'password', 'company_id' => $admin->company_id, 'role' => 'employee',
+        ]);
+
+        $response = $this->actingAs($admin)->post('/users', [
+            'name' => 'E2', 'email' => 'e2@test.com',
+            'password' => 'password123', 'password_confirmation' => 'password123',
+            'role' => 'employee',
+        ]);
+
+        $response->assertSessionHas('error');
+    }
+
+    public function test_admin_cannot_manage_users_from_other_company(): void
+    {
+        $admin = $this->createAdminWithSubscription();
+
+        $otherCompany = Company::create(['name' => 'Other', 'slug' => 'other']);
+        $otherUser = User::create([
+            'name' => 'Other User', 'email' => 'other@test.com',
+            'password' => 'password', 'company_id' => $otherCompany->id, 'role' => 'employee',
+        ]);
+
+        $response = $this->actingAs($admin)->get("/users/{$otherUser->id}/edit");
+        $response->assertStatus(403);
+    }
+}
