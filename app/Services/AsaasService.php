@@ -54,7 +54,7 @@ class AsaasService
                 'billingType' => $billingType,
                 'value' => $plan->price,
                 'cycle' => 'MONTHLY',
-                'description' => "TreinaHub - Plano {$plan->name}",
+                'description' => "TreinaEdu - Plano {$plan->name}",
                 'externalReference' => $company->id,
             ]);
 

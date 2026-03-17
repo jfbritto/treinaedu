@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "treinaedu/treinahub",
+    "name": "treinaedu/treinaedu",
     "type": "project",
-    "description": "TreinaHub - Plataforma SaaS de gestao de treinamentos corporativos",
+    "description": "TreinaEdu - Plataforma SaaS de gestao de treinamentos corporativos",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {

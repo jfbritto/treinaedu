@@ -6,7 +6,7 @@ class PaymentOverdueNotification extends Notification {
     public function via($notifiable): array { return ['mail']; }
     public function toMail($notifiable): MailMessage {
         return (new MailMessage)
-            ->subject('Pagamento atrasado - TreinaHub')
+            ->subject('Pagamento atrasado - TreinaEdu')
             ->greeting("Olá, {$notifiable->name}!")
             ->line('Seu pagamento está atrasado.')
             ->line('Você tem 7 dias de carência antes do bloqueio do acesso.')

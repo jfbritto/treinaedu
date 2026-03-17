@@ -9,7 +9,7 @@
 <body class="bg-gray-50 min-h-screen flex items-center justify-center">
     <div class="w-full max-w-md">
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-blue-600">TreinaHub</h1>
+            <h1 class="text-3xl font-bold text-blue-600">TreinaEdu</h1>
             <p class="text-gray-500 text-sm mt-1">Plataforma de Treinamentos Corporativos</p>
         </div>
         <div class="bg-white rounded-xl shadow-md p-8">

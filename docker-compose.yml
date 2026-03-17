@@ -1,12 +1,12 @@
 services:
   mysql:
     image: mysql:8.0
-    container_name: treinahub_mysql
+    container_name: treinaedu_mysql
     ports:
       - "3310:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: treinahub
+      MYSQL_DATABASE: treinaedu
       MYSQL_USER: treinaedu
       MYSQL_PASSWORD: secret
     volumes:
@@ -18,20 +18,20 @@ services:
       retries: 10
       start_period: 30s
     networks:
-      - treinahub
+      - treinaedu
 
   mailpit:
     image: axllent/mailpit
-    container_name: treinahub_mailpit
+    container_name: treinaedu_mailpit
     ports:
       - "1027:1025"
       - "8027:8025"
     networks:
-      - treinahub
+      - treinaedu
 
 volumes:
   mysql_data:
 
 networks:
-  treinahub:
+  treinaedu:
     driver: bridge

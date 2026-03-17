@@ -32,7 +32,7 @@
                 @if($companyLogo ?? null)
                     <img src="{{ Storage::url($companyLogo) }}" alt="Logo" class="h-10 object-contain">
                 @else
-                    <span class="text-xl font-bold text-primary">TreinaHub</span>
+                    <span class="text-xl font-bold text-primary">TreinaEdu</span>
                 @endif
                 @if($currentCompany ?? null)
                     <p class="text-xs text-gray-400 mt-1 truncate">{{ $currentCompany->name }}</p>

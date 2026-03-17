@@ -7,7 +7,7 @@ class PaymentConfirmedNotification extends Notification {
     public function via($notifiable): array { return ['mail']; }
     public function toMail($notifiable): MailMessage {
         return (new MailMessage)
-            ->subject('Pagamento confirmado - TreinaHub')
+            ->subject('Pagamento confirmado - TreinaEdu')
             ->greeting("Olá, {$notifiable->name}!")
             ->line('Seu pagamento de R$ ' . number_format($this->amount, 2, ',', '.') . ' foi confirmado.')
             ->line('Sua assinatura está ativa.')
