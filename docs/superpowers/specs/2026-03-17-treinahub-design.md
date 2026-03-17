@@ -71,7 +71,9 @@ trait BelongsToCompany
 
 **Aplicado em:** Group, Training, TrainingAssignment, TrainingView, Quiz, QuizAttempt, Certificate, Subscription, Payment.
 
-**Nao aplicado em:** User (filtrado manualmente), Company, Plan, QuizQuestion, QuizOption.
+**Nao aplicado em:** User (filtrado manualmente), Company, Plan.
+
+**Nota:** QuizQuestion e QuizOption nao possuem `company_id` proprio. Devem SEMPRE ser acessados via relacionamento do Quiz pai (que e scoped). Controllers nunca devem fazer `QuizQuestion::find($id)` diretamente. Policies devem garantir que edicao/exclusao de perguntas passa pelo Quiz, validando ownership.
 
 ### Roles
 
@@ -161,6 +163,7 @@ resources/
 | id | bigint PK | |
 | name | varchar(255) | Nome da empresa |
 | slug | varchar(255) unique | Identificador unico |
+| asaas_customer_id | varchar(255) nullable | ID do cliente no Asaas |
 | logo_path | varchar(255) nullable | Caminho do logo |
 | primary_color | varchar(7) default `#3B82F6` | Cor primaria (hex) |
 | secondary_color | varchar(7) default `#1E40AF` | Cor secundaria (hex) |
@@ -193,11 +196,12 @@ resources/
 
 ### group_user (pivot)
 
-| Coluna | Tipo |
-|---|---|
-| id | bigint PK |
-| group_id | bigint FK |
-| user_id | bigint FK |
+| Coluna | Tipo | Notas |
+|---|---|---|
+| id | bigint PK | |
+| group_id | bigint FK | |
+| user_id | bigint FK | |
+| created_at / updated_at | timestamps | Para auditoria de quando usuario entrou no grupo |
 
 ### trainings
 
@@ -215,6 +219,7 @@ resources/
 | has_quiz | boolean default false | |
 | active | boolean default true | |
 | created_at / updated_at | timestamps | |
+| deleted_at | timestamp nullable | Soft delete (certificados dependem do training) |
 
 ### training_assignments
 
@@ -477,7 +482,80 @@ Subscription
 
 ---
 
-## 8. Rotas
+## 8. Regras de Negocio Adicionais
+
+### Quiz
+
+- Employee pode refazer o quiz ilimitadamente ate passar.
+- Apenas a tentativa mais recente e considerada.
+- Sem cooldown entre tentativas.
+
+### Trial e Plano
+
+- Durante o trial, a subscription e criada com `plan_id` do plano Basic (plano padrao).
+- O plano Basic define os limites durante o trial.
+- Ao escolher um plano pago, o `plan_id` e atualizado.
+
+### Carencia de Pagamento
+
+- Quando pagamento atrasa: status muda para `past_due`.
+- Periodo de carencia: 7 dias apos vencimento.
+- Durante carencia: sistema exibe banner de aviso, mas permite acesso normal.
+- Apos 7 dias: status muda para `expired`, acesso bloqueado pelo middleware.
+
+### Permissoes Instructor vs Admin
+
+- Instructor pode criar e editar apenas seus proprios treinamentos (`created_by`).
+- Somente Admin pode atribuir treinamentos a grupos (`training_assignments`).
+- Instructor NAO tem acesso a atribuicao de treinamentos.
+- TrainingPolicy valida ownership via `created_by` para instructors.
+
+### Slug da Empresa
+
+- O `slug` e gerado automaticamente a partir do nome da empresa no cadastro.
+- Usado internamente como identificador legivel (ex: URLs de verificacao de certificado).
+- Nao e usado para roteamento de tenant (acesso e via login unico).
+
+### Rotas do Dashboard
+
+- `GET /dashboard` e um unico `DashboardController` que detecta o role do usuario logado e renderiza a view correspondente (`admin/dashboard`, `instructor/dashboard`, `employee/dashboard`).
+- Super admin e redirecionado para `/super/dashboard`.
+
+### Exportacao de Relatorios
+
+- Exportacao limitada a 1000 registros por vez para evitar timeout em shared hosting.
+- Para empresas com mais registros, usar filtros para reduzir o dataset.
+
+---
+
+## 9. Email
+
+### Configuracao
+
+- Driver: SMTP da Hostgator (ou servico externo como Mailtrap/Mailgun se disponivel).
+- Envio sincrono (sem filas). Configurado via `.env` (`MAIL_MAILER=smtp`).
+- Template de emails via Blade (Laravel Notifications).
+
+### Emails enviados
+
+- **Boas-vindas:** Ao cadastrar empresa, email para o admin com instrucoes.
+- **Reset de senha:** Fluxo padrao do Breeze (forgot-password, reset-password).
+- **Trial expirando:** 2 dias antes do fim do trial, email de aviso.
+- **Pagamento confirmado:** Apos webhook de pagamento confirmado.
+- **Pagamento atrasado:** Apos webhook de pagamento atrasado.
+
+### Rotas de Auth (complemento Breeze)
+
+```
+GET  /forgot-password           Formulario esqueci minha senha
+POST /forgot-password           Enviar email de reset
+GET  /reset-password/{token}    Formulario de nova senha
+POST /reset-password            Processar nova senha
+```
+
+---
+
+## 10. Rotas Completas
 
 ```
 # Publicas
@@ -491,6 +569,10 @@ POST /asaas/webhook             Webhook do Asaas
 GET  /login
 POST /login
 POST /logout
+GET  /forgot-password
+POST /forgot-password
+GET  /reset-password/{token}
+POST /reset-password
 
 # Admin (auth + role:admin + subscription)
 GET  /dashboard
@@ -527,7 +609,7 @@ CRUD /super/plans
 
 ---
 
-## 9. UI e Frontend
+## 11. UI e Frontend
 
 ### Layout
 
@@ -572,7 +654,7 @@ Landscape. Logo da empresa, titulo, nome funcionario, treinamento, carga horaria
 
 ---
 
-## 10. Seguranca
+## 12. Seguranca
 
 - CSRF em todos os formularios (padrao Laravel)
 - Bcrypt para senhas (Breeze padrao)
@@ -580,13 +662,13 @@ Landscape. Logo da empresa, titulo, nome funcionario, treinamento, carga horaria
 - Form Requests para validacao de input
 - Sanitizacao de URLs de video (validar YouTube/Vimeo)
 - Upload de logo: validar tipo (jpg/png/svg), max 2MB
-- Webhook Asaas: validacao de token, excluido do CSRF, idempotente
+- Webhook Asaas: token de autenticacao armazenado em `ASAAS_WEBHOOK_TOKEN` no `.env`, validado via header `asaas-access-token` em cada request. Rota excluida do CSRF middleware. Retorna 200 mesmo para tokens invalidos (evita retries do Asaas). Processamento idempotente
 - Rate limiting: login (5/min), progresso video (30/min), webhook
 - Policies para autorizacao de acoes especificas
 
 ---
 
-## 11. Performance (Shared Hosting)
+## 13. Performance (Shared Hosting)
 
 - Tudo sincrono, sem filas/Redis/workers
 - Cache de metricas do dashboard por 5 min via `Cache::remember()` com key por company_id
@@ -596,11 +678,11 @@ Landscape. Logo da empresa, titulo, nome funcionario, treinamento, carga horaria
 - Chart.js via CDN
 - Indexes nos campos mais consultados
 - `select()` especifico em queries de relatorio
-- Soft deletes apenas em companies e users
+- Soft deletes em companies, users e trainings
 
 ---
 
-## 12. Pacotes Laravel
+## 14. Pacotes Laravel
 
 | Pacote | Uso |
 |---|---|
