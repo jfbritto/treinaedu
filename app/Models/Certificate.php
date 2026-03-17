@@ -19,6 +19,11 @@ class Certificate extends Model
         return ['generated_at' => 'datetime'];
     }
 
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
