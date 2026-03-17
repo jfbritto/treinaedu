@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: treinahub_mysql
+    ports:
+      - "3310:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: treinahub
+      MYSQL_USER: treinaedu
+      MYSQL_PASSWORD: secret
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: treinahub_mailhog
+    ports:
+      - "1027:1025"
+      - "8027:8025"
+
+volumes:
+  mysql_data:
