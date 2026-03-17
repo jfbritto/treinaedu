@@ -77,4 +77,18 @@ class QuizControllerTest extends TestCase
             'user_id' => $employee->id, 'quiz_id' => $quiz->id, 'passed' => false,
         ]);
     }
+
+    public function test_employee_from_other_company_cannot_access_quiz(): void
+    {
+        [$employee, $training, $quiz, $q1, $correct, $wrong] = $this->setupQuizScenario();
+
+        // Create a second company with a different employee
+        $plan2 = Plan::create(['name' => 'Basic2', 'price' => 99.90, 'max_users' => 50, 'max_trainings' => 20]);
+        $company2 = Company::create(['name' => 'Other', 'slug' => 'other']);
+        Subscription::create(['company_id' => $company2->id, 'plan_id' => $plan2->id, 'status' => 'active']);
+        $otherEmployee = User::create(['name' => 'Other', 'email' => 'other@t.com', 'password' => 'pw', 'company_id' => $company2->id, 'role' => 'employee', 'active' => true]);
+
+        $response = $this->actingAs($otherEmployee)->get(route('employee.quiz.show', $training));
+        $response->assertStatus(404);
+    }
 }
