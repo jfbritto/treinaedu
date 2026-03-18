@@ -20,7 +20,7 @@
                             <span class="w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
                             <div>
                                 <p class="text-sm font-medium text-blue-800">Suba o vídeo</p>
-                                <p class="text-xs text-blue-600 mt-0.5">Publique o vídeo no <strong>YouTube</strong> ou <strong>Vimeo</strong>. Pode ser como <em>não listado</em> — o colaborador só acessa pela plataforma.</p>
+                                <p class="text-xs text-blue-600 mt-0.5">Publique o vídeo no <a href="https://youtube.com/upload" target="_blank" rel="noopener" class="underline font-medium">YouTube</a> ou <a href="https://vimeo.com/upload" target="_blank" rel="noopener" class="underline font-medium">Vimeo</a>. Use a visibilidade <em>Não listado</em> — só acessa quem tiver o link.</p>
                             </div>
                         </div>
                         <div class="flex gap-2.5">
