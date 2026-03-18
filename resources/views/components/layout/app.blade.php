@@ -30,10 +30,25 @@
             --primary: {{ $safePrimary }};
             --secondary: {{ $safeSecondary }};
         }
-        .bg-primary { background-color: var(--primary); }
+        .bg-primary   { background-color: var(--primary); }
         .text-primary { color: var(--primary); }
         .border-primary { border-color: var(--primary); }
+        .bg-secondary { background-color: var(--secondary); }
+        .text-secondary { color: var(--secondary); }
         .hover\:bg-primary-dark:hover { background-color: var(--secondary); }
+        /* Opacity variants via color-mix (CSS variables don't support Tailwind's /N syntax) */
+        .bg-primary\/5  { background-color: color-mix(in srgb, var(--primary)  5%, transparent); }
+        .bg-primary\/10 { background-color: color-mix(in srgb, var(--primary) 10%, transparent); }
+        .bg-primary\/20 { background-color: color-mix(in srgb, var(--primary) 20%, transparent); }
+        .bg-primary\/30 { background-color: color-mix(in srgb, var(--primary) 30%, transparent); }
+        .bg-primary\/60 { background-color: color-mix(in srgb, var(--primary) 60%, transparent); }
+        .text-primary\/60 { color: color-mix(in srgb, var(--primary) 60%, transparent); }
+        .text-white\/60  { color: rgba(255,255,255,0.6); }
+        .text-white\/70  { color: rgba(255,255,255,0.7); }
+        .hover\:bg-primary\/5:hover  { background-color: color-mix(in srgb, var(--primary)  5%, transparent); }
+        .hover\:bg-primary\/20:hover { background-color: color-mix(in srgb, var(--primary) 20%, transparent); }
+        .group:hover .group-hover\:bg-primary\/20 { background-color: color-mix(in srgb, var(--primary) 20%, transparent); }
+        .group:hover .group-hover\:text-primary { color: var(--primary); }
         [x-cloak] { display: none !important; }
     </style>
 </head>
