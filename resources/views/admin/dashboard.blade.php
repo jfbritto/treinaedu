@@ -303,7 +303,7 @@
             </div>
         </a>
 
-        <a href="{{ route('training-assignments.create') }}" class="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition group flex items-center gap-4">
+        <a href="{{ route('trainings.index') }}" class="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition group flex items-center gap-4">
             <div class="w-11 h-11 rounded-xl bg-yellow-50 group-hover:bg-yellow-100 flex items-center justify-center flex-shrink-0 transition">
                 <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
