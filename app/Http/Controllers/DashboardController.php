@@ -28,22 +28,47 @@ class DashboardController extends Controller
     private function adminDashboard()
     {
         $companyId = auth()->user()->company_id;
+        $planUserLimit = auth()->user()->company->subscription?->plan?->max_users;
 
         $metrics = Cache::remember("dashboard_metrics_{$companyId}", 300, function () use ($companyId) {
+            $completed = TrainingView::withoutGlobalScope('company')
+                ->where('company_id', $companyId)->whereNotNull('completed_at')->count();
+            $pending = TrainingView::withoutGlobalScope('company')
+                ->where('company_id', $companyId)->whereNull('completed_at')->count();
+            $total = $completed + $pending;
+
             return [
-                'total_employees' => User::where('company_id', $companyId)
-                    ->where('role', 'employee')->count(),
-                'trainings_created' => Training::withoutGlobalScope('company')
-                    ->where('company_id', $companyId)->count(),
-                'trainings_completed' => TrainingView::withoutGlobalScope('company')
-                    ->where('company_id', $companyId)->whereNotNull('completed_at')->count(),
-                'trainings_pending' => TrainingView::withoutGlobalScope('company')
-                    ->where('company_id', $companyId)->whereNull('completed_at')->count(),
-                'certificates_issued' => Certificate::withoutGlobalScope('company')
-                    ->where('company_id', $companyId)->count(),
+                'total_employees'     => User::where('company_id', $companyId)->where('role', 'employee')->count(),
+                'trainings_created'   => Training::withoutGlobalScope('company')->where('company_id', $companyId)->count(),
+                'trainings_completed' => $completed,
+                'trainings_pending'   => $pending,
+                'certificates_issued' => Certificate::withoutGlobalScope('company')->where('company_id', $companyId)->count(),
+                'completion_rate'     => $total > 0 ? round(($completed / $total) * 100, 1) : 0.0,
+                'top_trainings'       => Training::withoutGlobalScope('company')
+                    ->where('company_id', $companyId)
+                    ->withCount([
+                        'views',
+                        'views as completed_count' => fn($q) => $q->whereNotNull('completed_at'),
+                    ])
+                    ->orderByDesc('completed_count')
+                    ->limit(5)
+                    ->get(),
+                'recent_employees'    => User::where('company_id', $companyId)
+                    ->where('role', 'employee')
+                    ->orderByDesc('created_at')
+                    ->limit(5)
+                    ->get(),
+                'recent_completions'  => TrainingView::withoutGlobalScope('company')
+                    ->where('company_id', $companyId)
+                    ->whereNotNull('completed_at')
+                    ->with(['user', 'training'])
+                    ->orderByDesc('completed_at')
+                    ->limit(5)
+                    ->get(),
             ];
         });
 
+        $metrics['plan_user_limit'] = $planUserLimit;
         return view('admin.dashboard', compact('metrics'));
     }
 
