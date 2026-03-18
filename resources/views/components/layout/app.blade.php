@@ -158,16 +158,6 @@
                     'employee'   => 'Colaborador',
                     default      => ucfirst($authUser->role),
                 };
-                $authRoleBg = match($authUser->role) {
-                    'admin'      => 'bg-purple-100 text-purple-700',
-                    'instructor' => 'bg-blue-100 text-blue-700',
-                    default      => 'bg-green-100 text-green-700',
-                };
-                $authAvatarBg = match($authUser->role) {
-                    'admin'      => 'bg-purple-600',
-                    'instructor' => 'bg-blue-600',
-                    default      => 'bg-green-600',
-                };
             @endphp
             <header class="bg-white border-b border-gray-100 px-4 py-2.5 flex items-center justify-between gap-3 flex-shrink-0">
                 <div class="flex items-center gap-3 min-w-0">
@@ -184,14 +174,16 @@
                 <div class="flex items-center gap-3 flex-shrink-0">
                     <a href="{{ route('profile.edit') }}" class="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition group">
                         {{-- Avatar --}}
-                        <div class="w-8 h-8 rounded-full {{ $authAvatarBg }} flex items-center justify-center flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                             style="background-color: var(--primary)">
                             <span class="text-xs font-bold text-white">{{ $authInitials }}</span>
                         </div>
                         {{-- Name + role + company --}}
                         <div class="text-left min-w-0">
                             <div class="flex items-center gap-1.5">
                                 <p class="text-sm font-semibold text-gray-800 group-hover:text-primary transition leading-tight truncate max-w-28">{{ $authUser->name }}</p>
-                                <span class="text-xs font-medium px-1.5 py-0.5 rounded-full {{ $authRoleBg }} flex-shrink-0">{{ $authRoleLabel }}</span>
+                                <span class="text-xs font-medium px-1.5 py-0.5 rounded-full flex-shrink-0"
+                                      style="background-color: color-mix(in srgb, var(--primary) 15%, transparent); color: var(--secondary)">{{ $authRoleLabel }}</span>
                             </div>
                             @if($currentCompany ?? null)
                                 <p class="text-xs text-gray-400 leading-tight truncate max-w-40">{{ $currentCompany->name }}</p>
