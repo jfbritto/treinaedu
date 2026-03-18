@@ -15,7 +15,7 @@
                 <td class="px-6 py-4 text-sm text-gray-500">{{ $training->duration_minutes }} min</td>
                 <td class="px-6 py-4 text-sm flex gap-3">
                     <a href="{{ route('instructor.trainings.edit', $training) }}" class="text-blue-600 hover:underline">Editar</a>
-                    <form method="POST" action="{{ route('instructor.trainings.destroy', $training) }}" onsubmit="return confirm('Remover este treinamento?')">
+                    <form method="POST" action="{{ route('instructor.trainings.destroy', $training) }}" data-confirm="Remover este treinamento?">
                         @csrf @method('DELETE')
                         <button type="submit" class="text-red-500 hover:underline">Excluir</button>
                     </form>

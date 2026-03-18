@@ -27,7 +27,7 @@
                 </td>
                 <td class="px-6 py-4 text-sm flex gap-3">
                     <a href="{{ route('users.edit', $user) }}" class="text-blue-600 hover:underline">Editar</a>
-                    <form method="POST" action="{{ route('users.destroy', $user) }}" onsubmit="return confirm('Remover este usuário?')">
+                    <form method="POST" action="{{ route('users.destroy', $user) }}" data-confirm="Remover este usuário?">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="text-red-500 hover:underline">Remover</button>

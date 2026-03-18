@@ -12,7 +12,7 @@
                 <td class="px-6 py-4 text-sm text-gray-500">{{ $group->users_count }}</td>
                 <td class="px-6 py-4 text-sm flex gap-3">
                     <a href="{{ route('groups.edit', $group) }}" class="text-blue-600 hover:underline">Editar</a>
-                    <form method="POST" action="{{ route('groups.destroy', $group) }}" onsubmit="return confirm('Remover este grupo?')">
+                    <form method="POST" action="{{ route('groups.destroy', $group) }}" data-confirm="Remover este grupo?">
                         @csrf @method('DELETE')
                         <button type="submit" class="text-red-500 hover:underline">Remover</button>
                     </form>

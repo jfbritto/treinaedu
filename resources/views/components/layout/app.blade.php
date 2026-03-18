@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @php
         $safePrimary = preg_match('/^#[0-9A-Fa-f]{3,6}$/', $primaryColor ?? '') ? $primaryColor : '#3B82F6';
         $safeSecondary = preg_match('/^#[0-9A-Fa-f]{3,6}$/', $secondaryColor ?? '') ? $secondaryColor : '#1E40AF';
@@ -115,5 +116,25 @@
         </div>
     </div>
     @stack('scripts')
+    <script>
+        document.querySelectorAll('form[data-confirm]').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const message = this.dataset.confirm;
+                Swal.fire({
+                    title: message,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sim, remover',
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonColor: '#EF4444',
+                    cancelButtonColor: '#6B7280',
+                    reverseButtons: true,
+                }).then(result => {
+                    if (result.isConfirmed) this.submit();
+                });
+            });
+        });
+    </script>
 </body>
 </html>

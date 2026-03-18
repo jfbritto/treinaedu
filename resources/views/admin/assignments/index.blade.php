@@ -11,7 +11,7 @@
                 <td class="px-6 py-4 text-sm text-gray-500">{{ $assignment->group->name }}</td>
                 <td class="px-6 py-4 text-sm text-gray-500">{{ $assignment->due_date ? $assignment->due_date->format('d/m/Y') : '-' }}</td>
                 <td class="px-6 py-4 text-sm">
-                    <form method="POST" action="{{ route('training-assignments.destroy', $assignment) }}" onsubmit="return confirm('Remover esta atribuição?')">
+                    <form method="POST" action="{{ route('training-assignments.destroy', $assignment) }}" data-confirm="Remover esta atribuição?">
                         @csrf @method('DELETE')
                         <button type="submit" class="text-red-500 hover:underline">Remover</button>
                     </form>
