@@ -62,7 +62,10 @@
                         </div>
                     @endif
                     @if($currentCompany ?? null)
-                        <p class="text-xs text-gray-400 mt-0.5 truncate">{{ $currentCompany->name }}</p>
+                        <div class="flex items-center gap-1.5 mt-1.5">
+                            <div class="w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0"></div>
+                            <p class="text-xs font-medium text-gray-300 truncate">{{ $currentCompany->name }}</p>
+                        </div>
                     @endif
                 </div>
                 {{-- Close button (mobile only) --}}
@@ -134,7 +137,27 @@
         <div class="flex-1 flex flex-col overflow-hidden min-w-0">
 
             {{-- Topbar --}}
-            <header class="bg-white shadow-sm px-4 py-3 flex items-center justify-between gap-3 flex-shrink-0">
+            @php
+                $authUser   = auth()->user();
+                $authInitials = collect(explode(' ', $authUser->name))->filter()->map(fn($w) => strtoupper($w[0]))->take(2)->implode('');
+                $authRoleLabel = match($authUser->role) {
+                    'admin'      => 'Administrador',
+                    'instructor' => 'Instrutor',
+                    'employee'   => 'Colaborador',
+                    default      => ucfirst($authUser->role),
+                };
+                $authRoleBg = match($authUser->role) {
+                    'admin'      => 'bg-purple-100 text-purple-700',
+                    'instructor' => 'bg-blue-100 text-blue-700',
+                    default      => 'bg-green-100 text-green-700',
+                };
+                $authAvatarBg = match($authUser->role) {
+                    'admin'      => 'bg-purple-600',
+                    'instructor' => 'bg-blue-600',
+                    default      => 'bg-green-600',
+                };
+            @endphp
+            <header class="bg-white border-b border-gray-100 px-4 py-2.5 flex items-center justify-between gap-3 flex-shrink-0">
                 <div class="flex items-center gap-3 min-w-0">
                     {{-- Hamburger (mobile only) --}}
                     <button @click="sidebarOpen = true" class="lg:hidden flex-shrink-0 p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition">
@@ -144,11 +167,36 @@
                     </button>
                     <h1 class="text-base font-semibold text-gray-800 truncate">{{ $title ?? config('app.name') }}</h1>
                 </div>
+
+                {{-- User info --}}
                 <div class="flex items-center gap-3 flex-shrink-0">
-                    <a href="{{ route('profile.edit') }}" class="text-sm text-gray-600 hover:text-blue-600 transition hidden sm:block truncate max-w-32">{{ auth()->user()->name }}</a>
+                    <a href="{{ route('profile.edit') }}" class="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition group">
+                        {{-- Avatar --}}
+                        <div class="w-8 h-8 rounded-full {{ $authAvatarBg }} flex items-center justify-center flex-shrink-0">
+                            <span class="text-xs font-bold text-white">{{ $authInitials }}</span>
+                        </div>
+                        {{-- Name + role + company --}}
+                        <div class="text-left min-w-0">
+                            <div class="flex items-center gap-1.5">
+                                <p class="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition leading-tight truncate max-w-28">{{ $authUser->name }}</p>
+                                <span class="text-xs font-medium px-1.5 py-0.5 rounded-full {{ $authRoleBg }} flex-shrink-0">{{ $authRoleLabel }}</span>
+                            </div>
+                            @if($currentCompany ?? null)
+                                <p class="text-xs text-gray-400 leading-tight truncate max-w-40">{{ $currentCompany->name }}</p>
+                            @endif
+                        </div>
+                    </a>
+
+                    <div class="w-px h-8 bg-gray-100 hidden sm:block"></div>
+
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="text-sm text-gray-500 hover:text-red-600 transition">Sair</button>
+                        <button type="submit" class="flex items-center gap-1.5 text-sm text-gray-400 hover:text-red-600 transition px-2 py-1.5 rounded-lg hover:bg-red-50">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                            </svg>
+                            <span class="hidden md:inline">Sair</span>
+                        </button>
                     </form>
                 </div>
             </header>
