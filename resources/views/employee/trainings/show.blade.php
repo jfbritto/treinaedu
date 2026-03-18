@@ -113,9 +113,9 @@
                         </div>
                         {{-- Marcador de 90% — só aparece enquanto não atingido --}}
                         <div x-show="progress < 90"
-                             class="absolute top-0 bottom-0 flex flex-col items-center" style="left: 90%">
-                            <div class="w-0.5 h-4 bg-orange-400"></div>
-                            <span class="text-xs text-orange-500 font-semibold mt-1 -translate-x-1/2 whitespace-nowrap">90%</span>
+                             class="absolute top-0" style="left: 90%; transform: translateX(-50%)">
+                            <div class="w-0.5 h-4 bg-orange-400 mx-auto"></div>
+                            <span class="block text-center text-xs text-orange-500 font-semibold mt-0.5 whitespace-nowrap">90%</span>
                         </div>
                     </div>
 
