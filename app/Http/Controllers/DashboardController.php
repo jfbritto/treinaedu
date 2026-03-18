@@ -52,22 +52,41 @@ class DashboardController extends Controller
                     ])
                     ->orderByDesc('completed_count')
                     ->limit(5)
-                    ->get(),
+                    ->get()
+                    ->map(fn($t) => [
+                        'title'           => $t->title,
+                        'completed_count' => $t->completed_count,
+                        'completion_rate' => $t->completionRate(),
+                    ])
+                    ->all(),
                 'recent_employees'    => User::where('company_id', $companyId)
                     ->where('role', 'employee')
                     ->orderByDesc('created_at')
                     ->limit(5)
-                    ->get(),
+                    ->get()
+                    ->map(fn($u) => [
+                        'name'       => $u->name,
+                        'email'      => $u->email,
+                        'created_at' => $u->created_at,
+                    ])
+                    ->all(),
                 'recent_completions'  => TrainingView::withoutGlobalScope('company')
                     ->where('company_id', $companyId)
                     ->whereNotNull('completed_at')
                     ->with(['user', 'training'])
                     ->orderByDesc('completed_at')
                     ->limit(5)
-                    ->get(),
+                    ->get()
+                    ->map(fn($v) => [
+                        'user_name'      => $v->user?->name,
+                        'training_title' => $v->training?->title,
+                        'completed_at'   => $v->completed_at,
+                    ])
+                    ->all(),
             ];
         });
 
+        // plan_user_limit is intentionally set outside the cache: auth() context must not be serialized.
         $metrics['plan_user_limit'] = $planUserLimit;
         return view('admin.dashboard', compact('metrics'));
     }

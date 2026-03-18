@@ -74,7 +74,7 @@ class DashboardControllerTest extends TestCase
         TrainingView::create(['company_id' => $admin->company_id, 'training_id' => $training->id, 'user_id' => $emp1->id, 'completed_at' => now()]);
         TrainingView::create(['company_id' => $admin->company_id, 'training_id' => $training->id, 'user_id' => $emp2->id, 'completed_at' => null]);
 
-        \Illuminate\Support\Facades\Cache::flush();
+        \Illuminate\Support\Facades\Cache::forget("dashboard_metrics_{$admin->company_id}");
         $response = $this->actingAs($admin)->get('/dashboard');
         $metrics = $response->viewData('metrics');
         $this->assertSame(66.7, $metrics['completion_rate']);
