@@ -19,7 +19,15 @@
                         Treinamento ativo
                     </label>
                 </div>
-                <p class="text-xs text-gray-400">Para editar o vídeo ou o quiz, remova e recrie o treinamento.</p>
+                {{-- Vídeo atual --}}
+                <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <p class="text-xs font-medium text-gray-500 mb-1">Vídeo atual</p>
+                    <a href="{{ $training->video_url }}" target="_blank" rel="noopener"
+                        class="text-sm text-blue-600 hover:underline break-all">
+                        {{ $training->video_url }}
+                    </a>
+                    <p class="text-xs text-gray-400 mt-2">Para trocar o vídeo ou editar o quiz, remova e recrie o treinamento.</p>
+                </div>
                 <div class="flex gap-3 pt-2">
                     <x-forms.button type="submit">Salvar</x-forms.button>
                     <a href="{{ route('trainings.index') }}" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">Cancelar</a>

@@ -5,6 +5,43 @@
             <h2 class="text-xl font-semibold text-gray-800">Novo Treinamento</h2>
         </div>
 
+        {{-- Como funciona --}}
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-4">
+            <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <p class="text-sm font-semibold text-blue-900 mb-3">Como funciona o vídeo na plataforma</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="flex gap-2.5">
+                            <span class="w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
+                            <div>
+                                <p class="text-sm font-medium text-blue-800">Suba o vídeo</p>
+                                <p class="text-xs text-blue-600 mt-0.5">Publique o vídeo no <strong>YouTube</strong> ou <strong>Vimeo</strong>. Pode ser como <em>não listado</em> — o colaborador só acessa pela plataforma.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2.5">
+                            <span class="w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
+                            <div>
+                                <p class="text-sm font-medium text-blue-800">Copie o link</p>
+                                <p class="text-xs text-blue-600 mt-0.5">Copie a URL do vídeo diretamente da barra de endereço ou do botão "Compartilhar" da plataforma de vídeo.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2.5">
+                            <span class="w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
+                            <div>
+                                <p class="text-sm font-medium text-blue-800">Cole aqui e pronto</p>
+                                <p class="text-xs text-blue-600 mt-0.5">Cole no campo abaixo. A plataforma incorpora o player automaticamente para os colaboradores assistirem.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="bg-white rounded-xl shadow-sm p-6">
             <form method="POST" action="{{ route('trainings.store') }}" class="space-y-6" x-data="trainingForm()">
                 @csrf
@@ -14,7 +51,20 @@
                     <label class="block text-sm font-medium text-gray-700">Descrição</label>
                     <textarea name="description" rows="3" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">{{ old('description') }}</textarea>
                 </div>
-                <x-forms.input name="video_url" label="URL do Vídeo (YouTube ou Vimeo)" type="url" required />
+
+                <div class="space-y-1">
+                    <label class="block text-sm font-medium text-gray-700">URL do Vídeo <span class="text-red-500">*</span></label>
+                    <input type="url" name="video_url" value="{{ old('video_url') }}" required
+                        placeholder="https://www.youtube.com/watch?v=... ou https://vimeo.com/..."
+                        class="w-full rounded-lg border @error('video_url') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <p class="text-xs text-gray-400 mt-1">
+                        Aceito: <code class="bg-gray-100 px-1 rounded">youtube.com/watch?v=…</code>,
+                        <code class="bg-gray-100 px-1 rounded">youtu.be/…</code>,
+                        <code class="bg-gray-100 px-1 rounded">vimeo.com/…</code>
+                    </p>
+                    @error('video_url')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
+
                 <x-forms.input name="duration_minutes" label="Duração (minutos)" type="number" required />
 
                 {{-- Quiz section --}}
