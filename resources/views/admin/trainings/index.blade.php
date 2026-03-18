@@ -8,7 +8,7 @@
         @forelse($trainings as $training)
             <tr>
                 <td class="px-6 py-4 text-sm font-medium text-gray-900">
-                    <a href="{{ route('trainings.show', $training) }}" class="hover:text-blue-600">{{ $training->title }}</a>
+                    <a href="{{ route('trainings.edit', $training) }}" class="hover:text-blue-600">{{ $training->title }}</a>
                 </td>
                 <td class="px-6 py-4 text-sm text-gray-500">{{ $training->duration_minutes }} min</td>
                 <td class="px-6 py-4 text-sm">
