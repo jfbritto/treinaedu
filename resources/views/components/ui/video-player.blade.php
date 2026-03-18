@@ -73,9 +73,17 @@
                     events: {
                         onStateChange(event) {
                             if (event.data === YT.PlayerState.PLAYING) {
-                                self.interval = setInterval(() => self.checkYTProgress(), 5000);
+                                self.checkYTProgress(); // imediato ao play/seek
+                                clearInterval(self.interval);
+                                self.interval = setInterval(() => self.checkYTProgress(), 3000);
                             } else {
                                 clearInterval(self.interval);
+                                // captura seek com pause, e fim do vídeo
+                                if (event.data === YT.PlayerState.PAUSED ||
+                                    event.data === YT.PlayerState.ENDED  ||
+                                    event.data === YT.PlayerState.BUFFERING) {
+                                    self.checkYTProgress();
+                                }
                             }
                         }
                     }
@@ -101,17 +109,20 @@
                     if (event.origin !== 'https://player.vimeo.com') return;
                     let data;
                     try { data = JSON.parse(event.data); } catch (e) { return; }
-                    if ((data.event === 'playProgress' || data.event === 'timeupdate') && data.data?.percent !== undefined) {
+                    // playProgress (playing) ou seek (arrastar barra)
+                    if ((data.event === 'playProgress' || data.event === 'timeupdate' || data.event === 'seek') && data.data?.percent !== undefined) {
                         const pct = Math.floor(data.data.percent * 100);
                         if (pct > self.progress && (pct % 5 === 0 || pct >= 90)) {
                             self.updateProgress(pct);
                         }
                     }
                 });
-                iframe.contentWindow.postMessage(
-                    JSON.stringify({ method: 'addEventListener', value: 'playProgress' }),
-                    'https://player.vimeo.com'
-                );
+                ['playProgress', 'seek'].forEach(evt => {
+                    iframe.contentWindow.postMessage(
+                        JSON.stringify({ method: 'addEventListener', value: evt }),
+                        'https://player.vimeo.com'
+                    );
+                });
             },
 
             updateProgress(pct) {
