@@ -62,13 +62,19 @@
                 <p class="text-gray-600 text-sm mb-2">concluiu com sucesso o treinamento</p>
                 <p class="cert-font text-2xl font-bold text-gray-800 mb-4">{{ $certificate->training->title }}</p>
                 <p class="text-gray-500 text-sm">
-                    com carga horária de <strong>{{ (int) round($certificate->training->duration_minutes / 60) }}h</strong>,
+                    @php
+                        $mins = $certificate->training->duration_minutes;
+                        $durLabel = $mins >= 60
+                            ? floor($mins/60).'h'.($mins%60 > 0 ? ' '.($mins%60).'min' : '')
+                            : $mins.' min';
+                    @endphp
+                    com carga horária de <strong>{{ $durLabel }}</strong>,
                     na empresa <strong>{{ $certificate->company->name }}</strong>.
                 </p>
 
                 {{-- Data --}}
                 <div class="mt-8 text-gray-500 text-sm">
-                    Data de conclusão: <strong>{{ $certificate->generated_at->format('d \d\e F \d\e Y') }}</strong>
+                    Data de conclusão: <strong>{{ $certificate->generated_at->locale('pt_BR')->translatedFormat('d \d\e F \d\e Y') }}</strong>
                 </div>
 
                 {{-- Rodapé com código --}}
@@ -154,7 +160,7 @@
                 </div>
                 <div>
                     <dt class="text-gray-400 text-xs uppercase tracking-wide mb-0.5">Carga horária</dt>
-                    <dd class="font-medium text-gray-800">{{ (int) round($certificate->training->duration_minutes / 60) }}h</dd>
+                    <dd class="font-medium text-gray-800">{{ $durLabel }}</dd>
                 </div>
                 <div>
                     <dt class="text-gray-400 text-xs uppercase tracking-wide mb-0.5">Data de emissão</dt>
