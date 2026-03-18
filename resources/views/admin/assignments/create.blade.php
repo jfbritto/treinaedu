@@ -31,7 +31,7 @@
                     <div class="space-y-1">
                         <label class="block text-sm font-medium text-gray-700">Treinamento <span class="text-red-500">*</span></label>
                         <select name="training_id" required
-                            class="w-full rounded-lg border @error('training_id') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="w-full rounded-lg border @error('training_id') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                             <option value="">Selecione um treinamento...</option>
                             @foreach($trainings as $training)
                                 <option value="{{ $training->id }}" {{ old('training_id') == $training->id ? 'selected' : '' }}>
@@ -48,7 +48,7 @@
                         <p class="text-xs text-gray-400">Todos os colaboradores desses grupos receberão o treinamento.</p>
                         @if($groups->isEmpty())
                             <p class="text-sm text-gray-400 border border-dashed border-gray-200 rounded-lg p-4 text-center">
-                                Nenhum grupo cadastrado. <a href="{{ route('groups.create') }}" class="text-blue-600 hover:underline">Criar grupo →</a>
+                                Nenhum grupo cadastrado. <a href="{{ route('groups.create') }}" class="text-primary hover:underline">Criar grupo →</a>
                             </p>
                         @else
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 border border-gray-200 rounded-xl p-4 bg-gray-50">
@@ -56,7 +56,7 @@
                                     <label class="flex items-center gap-2.5 text-sm text-gray-700 cursor-pointer hover:text-gray-900 transition">
                                         <input type="checkbox" name="group_ids[]" value="{{ $group->id }}"
                                             {{ in_array($group->id, old('group_ids', [])) ? 'checked' : '' }}
-                                            class="rounded border-gray-300 text-blue-600">
+                                            class="rounded border-gray-300 text-primary">
                                         <span class="flex-1">{{ $group->name }}</span>
                                         <span class="text-xs text-gray-400">{{ $group->users_count ?? 0 }} membros</span>
                                     </label>
@@ -71,7 +71,7 @@
                         <div class="space-y-1">
                             <label class="block text-sm font-medium text-gray-700">Data limite</label>
                             <input type="date" name="due_date" value="{{ old('due_date') }}"
-                                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                             <p class="text-xs text-gray-400">Deixe em branco se não houver prazo.</p>
                             @error('due_date')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                         </div>
@@ -90,7 +90,7 @@
 
                     <div class="flex gap-3 pt-2">
                         <button type="submit"
-                            class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition">
+                            class="inline-flex items-center gap-2 bg-primary hover:bg-secondary text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
@@ -107,7 +107,7 @@
         <div>
             <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
                 <div class="flex items-center gap-2 mb-3">
-                    <div class="w-6 h-6 rounded-md bg-blue-600 flex items-center justify-center flex-shrink-0">
+                    <div class="w-6 h-6 rounded-md bg-primary flex items-center justify-center flex-shrink-0">
                         <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
@@ -116,15 +116,15 @@
                 </div>
                 <div class="space-y-3">
                     <div class="flex gap-2.5">
-                        <span class="w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
+                        <span class="w-5 h-5 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
                         <p class="text-xs text-blue-700">O treinamento aparece automaticamente para todos os membros dos grupos selecionados.</p>
                     </div>
                     <div class="flex gap-2.5">
-                        <span class="w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
+                        <span class="w-5 h-5 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
                         <p class="text-xs text-blue-700">Se marcar como <strong>obrigatório</strong>, o colaborador vê um destaque vermelho e sabe que é exigência.</p>
                     </div>
                     <div class="flex gap-2.5">
-                        <span class="w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
+                        <span class="w-5 h-5 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
                         <p class="text-xs text-blue-700">A <strong>data limite</strong> é exibida ao colaborador com aviso de urgência quando o prazo se aproxima.</p>
                     </div>
                 </div>

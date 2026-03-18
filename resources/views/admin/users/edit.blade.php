@@ -9,7 +9,7 @@
             default      => ucfirst($user->role),
         };
         $roleColor = $user->role === 'instructor' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700';
-        $avatarBg  = $user->role === 'instructor' ? 'bg-purple-600' : 'bg-blue-600';
+        $avatarBg  = $user->role === 'instructor' ? 'bg-purple-600' : 'bg-primary';
     @endphp
 
     <div class="mb-5">
@@ -53,7 +53,7 @@
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <div class="flex items-center gap-3 mb-5">
                     <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                         </svg>
                     </div>
@@ -71,7 +71,7 @@
                         <label for="name" class="block text-sm font-medium text-gray-700">Nome completo <span class="text-red-500">*</span></label>
                         <input type="text" id="name" name="name"
                             value="{{ old('name', $user->name) }}" required autofocus
-                            class="w-full rounded-lg border @error('name') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="w-full rounded-lg border @error('name') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                         @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
@@ -79,14 +79,14 @@
                         <label for="email" class="block text-sm font-medium text-gray-700">E-mail <span class="text-red-500">*</span></label>
                         <input type="email" id="email" name="email"
                             value="{{ old('email', $user->email) }}" required
-                            class="w-full rounded-lg border @error('email') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="w-full rounded-lg border @error('email') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                         @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="space-y-1">
                         <label for="role" class="block text-sm font-medium text-gray-700">Perfil <span class="text-red-500">*</span></label>
                         <select id="role" name="role" required
-                            class="w-full rounded-lg border @error('role') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="w-full rounded-lg border @error('role') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                             <option value="">Selecione...</option>
                             <option value="instructor" {{ old('role', $user->role) === 'instructor' ? 'selected' : '' }}>Instrutor</option>
                             <option value="employee"   {{ old('role', $user->role) === 'employee'   ? 'selected' : '' }}>Colaborador</option>
@@ -98,7 +98,7 @@
                         <label class="flex items-center gap-2.5 cursor-pointer">
                             <input type="checkbox" name="active" value="1"
                                 {{ old('active', $user->active) ? 'checked' : '' }}
-                                class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary">
                             <span class="text-sm font-medium text-gray-700">Usuário ativo</span>
                         </label>
                         <p class="text-xs text-gray-400 mt-1 ml-6">Usuários inativos não conseguem entrar na plataforma.</p>
@@ -111,10 +111,10 @@
                             @php $userGroupIds = $user->groups->pluck('id')->toArray(); @endphp
                             <div class="grid grid-cols-2 gap-2">
                                 @foreach($groups as $group)
-                                    <label class="flex items-center gap-2 p-2.5 rounded-lg border border-gray-100 hover:border-blue-200 hover:bg-blue-50 cursor-pointer transition">
+                                    <label class="flex items-center gap-2 p-2.5 rounded-lg border border-gray-100 hover:border-primary/30 hover:bg-primary/5 cursor-pointer transition">
                                         <input type="checkbox" name="groups[]" value="{{ $group->id }}"
                                             {{ in_array($group->id, old('groups', $userGroupIds)) ? 'checked' : '' }}
-                                            class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                            class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary">
                                         <span class="text-sm text-gray-700">{{ $group->name }}</span>
                                     </label>
                                 @endforeach
@@ -124,7 +124,7 @@
 
                     <div class="flex gap-3 pt-2">
                         <button type="submit"
-                            class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-semibold transition">
+                            class="inline-flex items-center gap-2 bg-primary hover:bg-secondary text-white px-5 py-2 rounded-lg text-sm font-semibold transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
@@ -166,7 +166,7 @@
                         <label for="password" class="block text-sm font-medium text-gray-700">Nova senha</label>
                         <input type="password" id="password" name="password"
                             autocomplete="new-password"
-                            class="w-full rounded-lg border @error('password') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="w-full rounded-lg border @error('password') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                         <p class="text-xs text-gray-400">Mínimo 8 caracteres.</p>
                         @error('password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
@@ -175,7 +175,7 @@
                         <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirmar nova senha</label>
                         <input type="password" id="password_confirmation" name="password_confirmation"
                             autocomplete="new-password"
-                            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
 
                     <div class="pt-1">

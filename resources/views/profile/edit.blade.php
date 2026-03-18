@@ -68,7 +68,7 @@
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <div class="flex items-center gap-3 mb-5">
                     <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                         </svg>
                     </div>
@@ -97,7 +97,7 @@
                         </label>
                         <input type="text" id="name" name="name"
                             value="{{ old('name', $user->name) }}" required autofocus
-                            class="w-full rounded-lg border @error('name') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="w-full rounded-lg border @error('name') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                         @error('name')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
@@ -109,7 +109,7 @@
                         </label>
                         <input type="email" id="email" name="email"
                             value="{{ old('email', $user->email) }}" required
-                            class="w-full rounded-lg border @error('email') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="w-full rounded-lg border @error('email') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                         <p class="text-xs text-gray-400">Usado para entrar na plataforma.</p>
                         @error('email')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -128,8 +128,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 <div>
-                    <p class="text-sm font-medium text-blue-800 mb-0.5">Dica de segurança</p>
-                    <p class="text-xs text-blue-600">Nunca compartilhe sua senha com ninguém. Nenhum funcionário autorizado vai pedir sua senha.</p>
+                    <p class="text-sm font-medium text-secondary mb-0.5">Dica de segurança</p>
+                    <p class="text-xs text-primary">Nunca compartilhe sua senha com ninguém. Nenhum funcionário autorizado vai pedir sua senha.</p>
                 </div>
             </div>
         </div>
@@ -166,7 +166,7 @@
                         <label for="current_password" class="block text-sm font-medium text-gray-700">Senha atual</label>
                         <input type="password" id="current_password" name="current_password"
                             autocomplete="current-password"
-                            class="w-full rounded-lg border @if($errors->updatePassword->has('current_password')) border-red-400 @else border-gray-300 @endif px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="w-full rounded-lg border @if($errors->updatePassword->has('current_password')) border-red-400 @else border-gray-300 @endif px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                         <p class="text-xs text-gray-400">A senha que você usa hoje para entrar.</p>
                         @if($errors->updatePassword->has('current_password'))
                             <p class="text-red-500 text-xs mt-1">{{ $errors->updatePassword->first('current_password') }}</p>
@@ -177,7 +177,7 @@
                         <label for="password" class="block text-sm font-medium text-gray-700">Nova senha</label>
                         <input type="password" id="password" name="password"
                             autocomplete="new-password"
-                            class="w-full rounded-lg border @if($errors->updatePassword->has('password')) border-red-400 @else border-gray-300 @endif px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="w-full rounded-lg border @if($errors->updatePassword->has('password')) border-red-400 @else border-gray-300 @endif px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                         <p class="text-xs text-gray-400">Mínimo 8 caracteres. Misture letras e números.</p>
                         @if($errors->updatePassword->has('password'))
                             <p class="text-red-500 text-xs mt-1">{{ $errors->updatePassword->first('password') }}</p>
@@ -188,7 +188,7 @@
                         <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirmar nova senha</label>
                         <input type="password" id="password_confirmation" name="password_confirmation"
                             autocomplete="new-password"
-                            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                         <p class="text-xs text-gray-400">Digite a nova senha mais uma vez para confirmar.</p>
                     </div>
 
@@ -204,9 +204,9 @@
                     <h3 class="text-sm font-semibold text-gray-700 mb-3">Acesso rápido</h3>
                     <div class="space-y-2">
                         <a href="{{ route('employee.trainings.index') }}"
-                            class="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition">
+                            class="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:border-primary/30 hover:bg-primary/5 transition">
                             <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                                 </svg>
                             </div>

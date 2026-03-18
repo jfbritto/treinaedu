@@ -10,7 +10,7 @@
         <div class="flex-1">
             <div class="flex items-baseline justify-between mb-2">
                 <span class="text-sm text-gray-500">Progresso geral</span>
-                <span class="text-sm font-bold text-blue-600">{{ $pct }}% concluído</span>
+                <span class="text-sm font-bold text-primary">{{ $pct }}% concluído</span>
             </div>
             <div class="w-full bg-gray-100 rounded-full h-2.5">
                 <div class="bg-blue-500 h-2.5 rounded-full transition-all" style="width: {{ $pct }}%"></div>
@@ -66,7 +66,7 @@
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-start justify-between gap-2">
-                                        <h4 class="font-semibold text-gray-800 leading-snug group-hover:text-blue-600 transition-colors">
+                                        <h4 class="font-semibold text-gray-800 leading-snug group-hover:text-primary transition-colors">
                                             {{ $training->title }}
                                         </h4>
                                         @if($started)
@@ -130,7 +130,7 @@
 
                         {{-- CTA --}}
                         <div class="px-5 pb-4">
-                            <span class="inline-flex items-center gap-1 text-xs font-medium text-blue-600 group-hover:underline">
+                            <span class="inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:underline">
                                 {{ $started ? 'Continuar treinamento' : 'Iniciar treinamento' }}
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </span>
@@ -155,7 +155,7 @@
 
                         <div class="p-5 flex-1 flex flex-col">
                             <div class="flex items-start justify-between gap-2 mb-3">
-                                <h4 class="font-semibold text-gray-800 leading-snug group-hover:text-blue-600 transition-colors">
+                                <h4 class="font-semibold text-gray-800 leading-snug group-hover:text-primary transition-colors">
                                     {{ $training->title }}
                                 </h4>
                                 <span class="flex-shrink-0 text-xs bg-green-50 text-green-700 border border-green-200 rounded-full px-2 py-0.5">Concluído</span>

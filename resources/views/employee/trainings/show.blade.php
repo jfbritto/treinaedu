@@ -191,7 +191,7 @@
                     @if($training->has_quiz && !$quizPassed)
                         {{-- Quiz pendente --}}
                         <a href="{{ route('employee.quiz.show', $training) }}"
-                           class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-3.5 rounded-xl transition">
+                           class="flex items-center justify-center gap-2 bg-primary hover:bg-secondary text-white font-semibold px-5 py-3.5 rounded-xl transition">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                             </svg>
@@ -202,13 +202,13 @@
                     @if($quizPassed)
                         <div class="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
                             <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-sm font-semibold text-blue-800">Quiz aprovado!</p>
-                                <p class="text-xs text-blue-600">Você atingiu a pontuação mínima.</p>
+                                <p class="text-sm font-semibold text-secondary">Quiz aprovado!</p>
+                                <p class="text-xs text-primary">Você atingiu a pontuação mínima.</p>
                             </div>
                         </div>
                     @endif
@@ -238,7 +238,7 @@
                                 <p class="text-xs text-gray-400">{{ $existingCertificate->generated_at->format('d/m/Y') }}</p>
                             </div>
                             <a href="{{ route('employee.certificates.download', $existingCertificate) }}"
-                               class="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 transition">
+                               class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-secondary transition">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                                 </svg>

@@ -83,7 +83,7 @@
                     <div class="w-2 h-2 rounded-full bg-yellow-400"></div>
                     <h3 class="text-sm font-semibold text-gray-700">Treinamentos Pendentes</h3>
                 </div>
-                <a href="{{ route('employee.trainings.index') }}" class="text-xs text-blue-600 hover:underline">Ver todos →</a>
+                <a href="{{ route('employee.trainings.index') }}" class="text-xs text-primary hover:underline">Ver todos →</a>
             </div>
 
             @if($pending->isEmpty())
@@ -118,7 +118,7 @@
                             {{-- Info --}}
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2 flex-wrap">
-                                    <p class="text-sm font-medium text-gray-800 group-hover:text-blue-600 transition truncate">
+                                    <p class="text-sm font-medium text-gray-800 group-hover:text-primary transition truncate">
                                         {{ $training->title }}
                                     </p>
                                     @if($training->is_mandatory)
@@ -145,7 +145,7 @@
                                 @endif
                             </div>
                             {{-- CTA --}}
-                            <span class="text-xs font-medium text-blue-600 flex-shrink-0 opacity-0 group-hover:opacity-100 transition">
+                            <span class="text-xs font-medium text-primary flex-shrink-0 opacity-0 group-hover:opacity-100 transition">
                                 {{ $started ? 'Continuar' : 'Iniciar' }} →
                             </span>
                         </a>
@@ -164,7 +164,7 @@
                         <div class="w-2 h-2 rounded-full bg-blue-400"></div>
                         <h3 class="text-sm font-semibold text-gray-700">Certificados</h3>
                     </div>
-                    <a href="{{ route('employee.certificates.index') }}" class="text-xs text-blue-600 hover:underline">Ver todos →</a>
+                    <a href="{{ route('employee.certificates.index') }}" class="text-xs text-primary hover:underline">Ver todos →</a>
                 </div>
 
                 @if($certificates->isEmpty())
@@ -186,7 +186,7 @@
                                 </div>
                                 <div class="flex items-center gap-2 flex-shrink-0">
                                     <a href="{{ route('employee.certificates.download', $cert) }}"
-                                        class="text-xs text-blue-600 hover:underline">Baixar</a>
+                                        class="text-xs text-primary hover:underline">Baixar</a>
                                     <span class="text-gray-200">·</span>
                                     <a href="{{ route('certificate.show', $cert->certificate_code) }}"
                                         target="_blank" rel="noopener"

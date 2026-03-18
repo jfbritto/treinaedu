@@ -25,7 +25,7 @@
                         @endif
                     </div>
                     <a href="{{ route('trainings.edit', $training) }}"
-                       class="flex-shrink-0 text-xs font-medium text-blue-600 hover:text-blue-800 transition">Editar →</a>
+                       class="flex-shrink-0 text-xs font-medium text-primary hover:text-secondary transition">Editar →</a>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     <div class="bg-gray-50 rounded-lg p-3 text-center">
@@ -130,7 +130,7 @@
                                 @foreach($availableGroups as $group)
                                     <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer hover:text-gray-900 transition">
                                         <input type="checkbox" name="group_ids[]" value="{{ $group->id }}"
-                                               class="rounded border-gray-300 text-blue-600">
+                                               class="rounded border-gray-300 text-primary">
                                         {{ $group->name }}
                                     </label>
                                 @endforeach
@@ -143,7 +143,7 @@
                             <div class="space-y-1">
                                 <label class="block text-xs font-medium text-gray-600">Data limite (opcional)</label>
                                 <input type="date" name="due_date" value="{{ old('due_date') }}"
-                                       class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                       class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                                 @error('due_date')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                             </div>
                             {{-- Obrigatório --}}
@@ -162,7 +162,7 @@
 
                         <div>
                             <button type="submit"
-                                    class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+                                    class="inline-flex items-center gap-2 bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                                 </svg>
@@ -183,7 +183,7 @@
         <div class="space-y-4">
             <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
                 <div class="flex items-center gap-2 mb-3">
-                    <div class="w-6 h-6 rounded-md bg-blue-600 flex items-center justify-center flex-shrink-0">
+                    <div class="w-6 h-6 rounded-md bg-primary flex items-center justify-center flex-shrink-0">
                         <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
@@ -201,7 +201,7 @@
                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Ações</p>
                 <div class="space-y-2">
                     <a href="{{ route('trainings.edit', $training) }}"
-                       class="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition">
+                       class="flex items-center gap-2 text-sm text-primary hover:text-secondary transition">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                         Editar conteúdo
                     </a>

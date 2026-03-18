@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name') }}</title>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary:   'var(--primary)',
+                        secondary: 'var(--secondary)',
+                    }
+                }
+            }
+        }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -179,7 +191,7 @@
                         {{-- Name + role + company --}}
                         <div class="text-left min-w-0">
                             <div class="flex items-center gap-1.5">
-                                <p class="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition leading-tight truncate max-w-28">{{ $authUser->name }}</p>
+                                <p class="text-sm font-semibold text-gray-800 group-hover:text-primary transition leading-tight truncate max-w-28">{{ $authUser->name }}</p>
                                 <span class="text-xs font-medium px-1.5 py-0.5 rounded-full {{ $authRoleBg }} flex-shrink-0">{{ $authRoleLabel }}</span>
                             </div>
                             @if($currentCompany ?? null)

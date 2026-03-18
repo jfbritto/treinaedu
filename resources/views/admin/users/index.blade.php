@@ -10,7 +10,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <p class="text-sm text-gray-500">Gerencie colaboradores e instrutores da empresa</p>
         <a href="{{ route('users.create') }}"
-           class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+           class="inline-flex items-center gap-2 bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
             </svg>
@@ -22,7 +22,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div class="bg-white rounded-xl shadow-sm p-4 flex items-center gap-4">
             <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
                 </svg>
             </div>
@@ -63,7 +63,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
                 </svg>
                 <p class="text-gray-400 text-sm font-medium">Nenhum usuário cadastrado.</p>
-                <a href="{{ route('users.create') }}" class="inline-block mt-3 text-sm text-blue-600 hover:underline">Criar primeiro usuário →</a>
+                <a href="{{ route('users.create') }}" class="inline-block mt-3 text-sm text-primary hover:underline">Criar primeiro usuário →</a>
             </div>
         @else
             <table class="w-full">
@@ -117,7 +117,7 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center justify-end gap-3">
                                     <a href="{{ route('users.edit', $user) }}"
-                                       class="text-xs font-medium text-blue-600 hover:text-blue-800 transition">Editar</a>
+                                       class="text-xs font-medium text-primary hover:text-secondary transition">Editar</a>
                                     <form method="POST" action="{{ route('users.destroy', $user) }}" data-confirm="Remover este usuário?">
                                         @csrf
                                         @method('DELETE')

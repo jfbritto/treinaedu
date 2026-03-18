@@ -15,14 +15,14 @@
             </div>
             <div class="flex flex-wrap gap-2">
                 <a href="{{ route('users.create') }}"
-                   class="inline-flex items-center gap-2 bg-white text-blue-700 hover:bg-blue-50 transition text-sm font-semibold px-4 py-2 rounded-lg">
+                   class="inline-flex items-center gap-2 bg-white text-blue-700 hover:bg-primary/5 transition text-sm font-semibold px-4 py-2 rounded-lg">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
                     </svg>
                     Novo Colaborador
                 </a>
                 <a href="{{ route('trainings.create') }}"
-                   class="inline-flex items-center gap-2 bg-blue-600 border border-blue-400 text-white hover:bg-blue-800 transition text-sm font-semibold px-4 py-2 rounded-lg">
+                   class="inline-flex items-center gap-2 bg-primary border border-blue-400 text-white hover:bg-blue-800 transition text-sm font-semibold px-4 py-2 rounded-lg">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
@@ -38,7 +38,7 @@
         <div class="bg-white rounded-xl shadow-sm p-5 flex flex-col gap-3">
             <div class="flex items-center justify-between">
                 <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
                     </svg>
                 </div>
@@ -131,7 +131,7 @@
         <div class="lg:col-span-3 bg-white rounded-xl shadow-sm p-6">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-sm font-semibold text-gray-700">Status dos Treinamentos</h3>
-                <a href="{{ route('reports.index') }}" class="text-xs text-blue-600 hover:underline">Ver relatório →</a>
+                <a href="{{ route('reports.index') }}" class="text-xs text-primary hover:underline">Ver relatório →</a>
             </div>
             @if($metrics['trainings_completed'] + $metrics['trainings_pending'] > 0)
                 <div class="flex flex-col sm:flex-row items-center gap-8">
@@ -184,7 +184,7 @@
         <div class="lg:col-span-2 bg-white rounded-xl shadow-sm p-6">
             <div class="flex items-center justify-between mb-5">
                 <h3 class="text-sm font-semibold text-gray-700">Top Treinamentos</h3>
-                <a href="{{ route('trainings.index') }}" class="text-xs text-blue-600 hover:underline">Ver todos →</a>
+                <a href="{{ route('trainings.index') }}" class="text-xs text-primary hover:underline">Ver todos →</a>
             </div>
             @if(empty($metrics['top_trainings']))
                 <p class="text-sm text-gray-400 mt-8 text-center">Nenhum treinamento criado ainda</p>
@@ -223,7 +223,7 @@
                     <div class="w-2 h-2 rounded-full bg-blue-400"></div>
                     <h3 class="text-sm font-semibold text-gray-700">Últimos Colaboradores</h3>
                 </div>
-                <a href="{{ route('users.index') }}" class="text-xs text-blue-600 hover:underline">Ver todos →</a>
+                <a href="{{ route('users.index') }}" class="text-xs text-primary hover:underline">Ver todos →</a>
             </div>
             @if(empty($metrics['recent_employees']))
                 <p class="text-sm text-gray-400 text-center py-10">Nenhum colaborador cadastrado</p>
@@ -251,7 +251,7 @@
                     <div class="w-2 h-2 rounded-full bg-green-400"></div>
                     <h3 class="text-sm font-semibold text-gray-700">Conclusões Recentes</h3>
                 </div>
-                <a href="{{ route('reports.index') }}" class="text-xs text-blue-600 hover:underline">Ver relatório →</a>
+                <a href="{{ route('reports.index') }}" class="text-xs text-primary hover:underline">Ver relatório →</a>
             </div>
             @if(empty($metrics['recent_completions']))
                 <p class="text-sm text-gray-400 text-center py-10">Nenhuma conclusão registrada</p>
@@ -281,7 +281,7 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <a href="{{ route('users.create') }}" class="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition group flex items-center gap-4">
             <div class="w-11 h-11 rounded-xl bg-blue-50 group-hover:bg-blue-100 flex items-center justify-center flex-shrink-0 transition">
-                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
                 </svg>
             </div>

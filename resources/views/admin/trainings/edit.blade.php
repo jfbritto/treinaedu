@@ -78,14 +78,14 @@
                         <div class="space-y-1">
                             <label class="block text-sm font-medium text-gray-700">Título <span class="text-red-500">*</span></label>
                             <input type="text" name="title" value="{{ old('title', $training->title) }}" required
-                                   class="w-full rounded-lg border @error('title') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                   class="w-full rounded-lg border @error('title') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                             @error('title')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                         </div>
 
                         <div class="space-y-1">
                             <label class="block text-sm font-medium text-gray-700">Descrição</label>
                             <textarea name="description" rows="3"
-                                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">{{ old('description', $training->description) }}</textarea>
+                                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">{{ old('description', $training->description) }}</textarea>
                         </div>
 
                         <div class="space-y-1">
@@ -93,7 +93,7 @@
                             <input type="url" name="video_url" x-model="videoUrl"
                                    value="{{ old('video_url', $training->video_url) }}" required
                                    placeholder="https://www.youtube.com/watch?v=..."
-                                   class="w-full rounded-lg border @error('video_url') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                   class="w-full rounded-lg border @error('video_url') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                             @error('video_url')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                         </div>
 
@@ -101,14 +101,14 @@
                             <div class="space-y-1">
                                 <label class="block text-sm font-medium text-gray-700">Duração (minutos) <span class="text-red-500">*</span></label>
                                 <input type="number" name="duration_minutes" value="{{ old('duration_minutes', $training->duration_minutes) }}" required min="1"
-                                       class="w-full rounded-lg border @error('duration_minutes') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                       class="w-full rounded-lg border @error('duration_minutes') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                                 @error('duration_minutes')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                             </div>
                             <div class="flex flex-col justify-end pb-0.5 space-y-1">
                                 <label class="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
                                     <input type="checkbox" name="active" value="1"
                                            {{ old('active', $training->active) ? 'checked' : '' }}
-                                           class="rounded border-gray-300 text-blue-600">
+                                           class="rounded border-gray-300 text-primary">
                                     Treinamento ativo
                                 </label>
                                 <p class="text-xs text-gray-400">Visível para os colaboradores</p>
@@ -121,7 +121,7 @@
                 <div class="bg-white rounded-xl shadow-sm p-6">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                             </svg>
                         </div>
@@ -135,7 +135,7 @@
                                 <input type="checkbox" name="has_quiz" value="1" x-model="hasQuiz"
                                        {{ old('has_quiz', $training->has_quiz) ? 'checked' : '' }}
                                        class="sr-only peer" form="training-form">
-                                <div class="w-10 h-5 bg-gray-200 peer-checked:bg-blue-600 rounded-full transition"></div>
+                                <div class="w-10 h-5 bg-gray-200 peer-checked:bg-primary rounded-full transition"></div>
                                 <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition peer-checked:translate-x-5"></div>
                             </div>
                         </label>
@@ -146,7 +146,7 @@
                             <label class="block text-sm font-medium text-gray-700">Nota mínima de aprovação (%)</label>
                             <input type="number" name="passing_score" form="training-form"
                                    value="{{ old('passing_score', $training->passing_score) }}" min="1" max="100"
-                                   class="w-32 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                   class="w-32 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                         </div>
 
                         <div class="space-y-4">
@@ -159,16 +159,16 @@
                                     </div>
                                     <input type="text" :name="'questions[' + qi + '][question]'"
                                            x-model="q.text" placeholder="Digite a pergunta..."
-                                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" form="training-form">
+                                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary" form="training-form">
                                     <div class="space-y-2">
                                         <p class="text-xs font-medium text-gray-500">Opções <span class="text-gray-400 font-normal">(marque a correta)</span></p>
                                         <template x-for="(opt, oi) in q.options" :key="oi">
                                             <div class="flex items-center gap-2">
                                                 <input type="radio" :name="'questions[' + qi + '][correct]'" :value="oi"
-                                                       x-model="q.correct" class="text-blue-600 border-gray-300" form="training-form">
+                                                       x-model="q.correct" class="text-primary border-gray-300" form="training-form">
                                                 <input type="text" :name="'questions[' + qi + '][options][' + oi + '][text]'"
                                                        x-model="opt.text" placeholder="Opção..."
-                                                       class="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" form="training-form">
+                                                       class="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary" form="training-form">
                                                 <button type="button" @click="removeOption(qi, oi)" x-show="q.options.length > 2"
                                                     class="text-gray-400 hover:text-red-500 transition">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -178,14 +178,14 @@
                                             </div>
                                         </template>
                                         <button type="button" @click="addOption(qi)"
-                                            class="text-xs text-blue-600 hover:text-blue-800 transition font-medium">+ Adicionar opção</button>
+                                            class="text-xs text-primary hover:text-secondary transition font-medium">+ Adicionar opção</button>
                                     </div>
                                 </div>
                             </template>
                         </div>
 
                         <button type="button" @click="addQuestion()"
-                            class="inline-flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-800 transition">
+                            class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-secondary transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                             </svg>
@@ -197,7 +197,7 @@
                 {{-- Botões --}}
                 <div class="flex gap-3">
                     <button type="submit" form="training-form"
-                            class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition">
+                            class="inline-flex items-center gap-2 bg-primary hover:bg-secondary text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                         </svg>
