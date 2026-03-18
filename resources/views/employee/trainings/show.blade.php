@@ -108,11 +108,12 @@
                     <div class="relative">
                         <div class="w-full bg-gray-100 rounded-full h-4 overflow-visible">
                             <div class="h-4 rounded-full transition-all duration-500"
-                                 :class="progress >= 90 ? 'bg-green-500' : 'bg-blue-500'"
+                                 :class="progress >= 90 ? 'bg-green-500' : 'bg-primary'"
                                  :style="'width: ' + progress + '%'"></div>
                         </div>
-                        {{-- Marcador de 90% --}}
-                        <div class="absolute top-0 bottom-0 flex flex-col items-center" style="left: 90%">
+                        {{-- Marcador de 90% — só aparece enquanto não atingido --}}
+                        <div x-show="progress < 90"
+                             class="absolute top-0 bottom-0 flex flex-col items-center" style="left: 90%">
                             <div class="w-0.5 h-4 bg-orange-400"></div>
                             <span class="text-xs text-orange-500 font-semibold mt-1 -translate-x-1/2 whitespace-nowrap">90%</span>
                         </div>
