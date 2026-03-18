@@ -131,7 +131,7 @@
                                 <span class="text-xs font-semibold text-gray-500 ml-2 flex-shrink-0">{{ $training['completed_count'] }} concl.</span>
                             </div>
                             <div class="w-full bg-gray-100 rounded-full h-1.5">
-                                <div class="bg-blue-500 h-1.5 rounded-full transition-all" style="width: {{ $training['completion_rate'] }}%"></div>
+                                <div class="bg-blue-500 h-1.5 rounded-full transition-all" style="width: {{ min(100, max(0, $training['completion_rate'])) }}%"></div>
                             </div>
                             <p class="text-xs text-gray-400 mt-0.5">{{ $training['completion_rate'] }}% de conclusão</p>
                         </div>
@@ -151,7 +151,7 @@
         <div class="bg-white rounded-xl shadow-sm p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-semibold text-gray-700">Últimos Colaboradores</h3>
-                <a href="{{ route('users.index') }}" class="text-xs text-blue-600 hover:underline">Ver todos</a>
+                <a href="{{ route('users.index') }}" class="text-xs text-blue-600 hover:underline" aria-label="Ver todos os colaboradores">Ver todos</a>
             </div>
             @if(empty($metrics['recent_employees']))
                 <p class="text-sm text-gray-400 text-center py-6">Nenhum colaborador cadastrado</p>
@@ -160,13 +160,13 @@
                     @foreach($metrics['recent_employees'] as $employee)
                         <div class="flex items-center gap-3">
                             <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                                <span class="text-xs font-semibold text-blue-700">{{ strtoupper(substr($employee['name'], 0, 2)) }}</span>
+                                <span class="text-xs font-semibold text-blue-700">{{ strtoupper(substr($employee['name'] ?? '?', 0, 2)) }}</span>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-gray-800 truncate">{{ $employee['name'] }}</p>
+                                <p class="text-sm font-medium text-gray-800 truncate">{{ $employee['name'] ?? '—' }}</p>
                                 <p class="text-xs text-gray-400 truncate">{{ $employee['email'] }}</p>
                             </div>
-                            <span class="text-xs text-gray-400 flex-shrink-0">{{ $employee['created_at']->diffForHumans() }}</span>
+                            <span class="text-xs text-gray-400 flex-shrink-0">{{ optional($employee['created_at'])->diffForHumans() ?? '—' }}</span>
                         </div>
                     @endforeach
                 </div>
@@ -177,7 +177,7 @@
         <div class="bg-white rounded-xl shadow-sm p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-semibold text-gray-700">Conclusões Recentes</h3>
-                <a href="{{ route('reports.index') }}" class="text-xs text-blue-600 hover:underline">Ver relatório</a>
+                <a href="{{ route('reports.index') }}" class="text-xs text-blue-600 hover:underline" aria-label="Ver relatório de conclusões">Ver relatório</a>
             </div>
             @if(empty($metrics['recent_completions']))
                 <p class="text-sm text-gray-400 text-center py-6">Nenhuma conclusão registrada</p>
@@ -194,7 +194,7 @@
                                 <p class="text-sm font-medium text-gray-800 truncate">{{ $completion['user_name'] ?? '—' }}</p>
                                 <p class="text-xs text-gray-400 truncate">{{ $completion['training_title'] ?? '—' }}</p>
                             </div>
-                            <span class="text-xs text-gray-400 flex-shrink-0">{{ $completion['completed_at']->diffForHumans() }}</span>
+                            <span class="text-xs text-gray-400 flex-shrink-0">{{ optional($completion['completed_at'])->diffForHumans() ?? '—' }}</span>
                         </div>
                     @endforeach
                 </div>
@@ -210,7 +210,7 @@
 
         <a href="{{ route('users.create') }}" class="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition group text-center">
             <div class="w-10 h-10 rounded-xl bg-blue-50 group-hover:bg-blue-100 flex items-center justify-center mx-auto mb-3 transition">
-                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
                 </svg>
             </div>
@@ -220,7 +220,7 @@
 
         <a href="{{ route('trainings.create') }}" class="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition group text-center">
             <div class="w-10 h-10 rounded-xl bg-green-50 group-hover:bg-green-100 flex items-center justify-center mx-auto mb-3 transition">
-                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                 </svg>
             </div>
@@ -230,7 +230,7 @@
 
         <a href="{{ route('training-assignments.create') }}" class="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition group text-center">
             <div class="w-10 h-10 rounded-xl bg-yellow-50 group-hover:bg-yellow-100 flex items-center justify-center mx-auto mb-3 transition">
-                <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                 </svg>
             </div>
@@ -240,7 +240,7 @@
 
         <a href="{{ route('reports.index') }}" class="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition group text-center">
             <div class="w-10 h-10 rounded-xl bg-purple-50 group-hover:bg-purple-100 flex items-center justify-center mx-auto mb-3 transition">
-                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
             </div>
@@ -277,7 +277,7 @@
                     legend: { display: false },
                     tooltip: {
                         callbacks: {
-                            label: ctx => ` ${ctx.label}: ${ctx.parsed}`,
+                            label: tooltipItem => ` ${tooltipItem.label}: ${tooltipItem.parsed}`,
                         },
                     },
                 },
