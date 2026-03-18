@@ -36,13 +36,11 @@ Displayed as a `grid grid-cols-2 lg:grid-cols-5` row at the top.
 ### 2. Middle Row — 2 Columns
 
 **Left (60%): Donut Chart — Status dos Treinamentos**
-- Chart.js donut chart with 3 segments:
+- Chart.js donut chart with 2 segments (both from TrainingView table — same unit):
   - Concluídos (`trainings_completed`) — green (#10B981)
   - Em Andamento (`trainings_pending`) — blue (#3B82F6)
-  - Não Iniciados (`trainings_not_started`) — gray (#E5E7EB)
-- `trainings_not_started` = total training-user assignments that have no TrainingView record yet
-- Legend below the chart (3 colored dots + labels + counts)
-- If all values are 0, show a centered "Nenhum dado ainda" message instead of chart
+- Legend below the chart (2 colored dots + labels + counts)
+- If both values are 0, show a centered "Nenhum dado ainda" message instead of chart
 
 **Right (40%): Top 5 Treinamentos por Conclusão**
 - Each row: training title (truncated), completion count, inline progress bar
@@ -77,42 +75,61 @@ Each card: white bg, rounded-xl, shadow-sm, hover:shadow-md, icon in primary col
 
 ## Controller Changes — `adminDashboard()`
 
-Add to the cached closure:
+The method is refactored as follows:
 
 ```php
-'trainings_not_started' => TrainingAssignment::withoutGlobalScope('company')
-    ->where('company_id', $companyId)
-    ->whereDoesntHave('training.views', fn($q) => $q->where('user_id', ...) )
-    // simpler: count assignments with no TrainingView for that user/training pair
-    ->count(), // see implementation note below
-'completion_rate'       => ... (computed from completed/pending),
-'top_trainings'         => Training::withoutGlobalScope('company')
-    ->where('company_id', $companyId)
-    ->withCount([
-        'views',
-        'views as completed_count' => fn($q) => $q->whereNotNull('completed_at'),
-    ])
-    ->orderByDesc('completed_count')
-    ->limit(5)
-    ->get(),
-'recent_employees'      => User::where('company_id', $companyId)
-    ->where('role', 'employee')
-    ->orderByDesc('created_at')
-    ->limit(5)
-    ->get(),
-'recent_completions'    => TrainingView::withoutGlobalScope('company')
-    ->where('company_id', $companyId)
-    ->whereNotNull('completed_at')
-    ->with(['user', 'training'])
-    ->orderByDesc('completed_at')
-    ->limit(5)
-    ->get(),
-'plan_user_limit'       => auth()->user()->company->subscription?->plan?->max_users,
+private function adminDashboard()
+{
+    $companyId = auth()->user()->company_id;
+    // plan_user_limit fetched outside cache (requires auth context)
+    $planUserLimit = auth()->user()->company->subscription?->plan?->max_users;
+
+    $metrics = Cache::remember("dashboard_metrics_{$companyId}", 300, function () use ($companyId) {
+        $completed = TrainingView::withoutGlobalScope('company')
+            ->where('company_id', $companyId)->whereNotNull('completed_at')->count();
+        $pending   = TrainingView::withoutGlobalScope('company')
+            ->where('company_id', $companyId)->whereNull('completed_at')->count();
+        $total     = $completed + $pending;
+
+        return [
+            'total_employees'     => User::where('company_id', $companyId)->where('role', 'employee')->count(),
+            'trainings_created'   => Training::withoutGlobalScope('company')->where('company_id', $companyId)->count(),
+            'trainings_completed' => $completed,
+            'trainings_pending'   => $pending,
+            'certificates_issued' => Certificate::withoutGlobalScope('company')->where('company_id', $companyId)->count(),
+            'completion_rate'     => $total > 0 ? round(($completed / $total) * 100, 1) : 0,
+            'top_trainings'       => Training::withoutGlobalScope('company')
+                ->where('company_id', $companyId)
+                ->withCount([
+                    'views',
+                    'views as completed_count' => fn($q) => $q->whereNotNull('completed_at'),
+                ])
+                ->orderByDesc('completed_count')
+                ->limit(5)
+                ->get(),
+            'recent_employees'    => User::where('company_id', $companyId)
+                ->where('role', 'employee')
+                ->orderByDesc('created_at')
+                ->limit(5)
+                ->get(),
+            'recent_completions'  => TrainingView::withoutGlobalScope('company')
+                ->where('company_id', $companyId)
+                ->whereNotNull('completed_at')
+                ->with(['user', 'training'])
+                ->orderByDesc('completed_at')
+                ->limit(5)
+                ->get(),
+        ];
+    });
+
+    $metrics['plan_user_limit'] = $planUserLimit;
+    return view('admin.dashboard', compact('metrics'));
+}
 ```
 
-**Implementation note for `trainings_not_started`:** count TrainingAssignment rows (one per user-group-training combo) that have no matching TrainingView. Use a subquery or `whereDoesntHave`. This may require adjusting depending on TrainingAssignment model relationships.
+**`completion_rate_per_training` for Top 5 bars:** Each training in `top_trainings` has `completed_count` (from withCount). For the progress bar percentage, use `$training->completionRate()` which does the correct join through `group_user`. This is N+1 for 5 items — acceptable for a cached dashboard.
 
-The existing cache key stays at 300 seconds. All new queries are appended to the same `Cache::remember` closure.
+The existing cache key stays at 300 seconds.
 
 ## Data passed to view
 
