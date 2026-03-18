@@ -2,104 +2,149 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Certificado de Conclusão</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        @page { margin: 0; size: A4 landscape; }
 
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            background-color: #ffffff;
-            color: #333333;
+            font-family: Georgia, 'Times New Roman', serif;
+            background: #ffffff;
             width: 297mm;
             height: 210mm;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .certificate {
-            width: 100%;
-            height: 100%;
-            padding: 20mm 25mm;
-            border: 8px solid #1a5276;
+            width: 297mm;
+            height: 210mm;
+            background: linear-gradient(135deg, #f8faff 0%, #eef2ff 100%);
+            border: 10px solid #1a3a6e;
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            position: relative;
+            padding: 18mm 28mm;
         }
 
         .inner-border {
             position: absolute;
-            top: 12px;
-            left: 12px;
-            right: 12px;
-            bottom: 12px;
-            border: 2px solid #1a5276;
-            pointer-events: none;
+            top: 14px;
+            left: 14px;
+            right: 14px;
+            bottom: 14px;
+            border: 2px solid #1a3a6e;
+            opacity: 0.35;
         }
 
         .logo {
-            max-height: 70px;
-            max-width: 200px;
-            margin-bottom: 20px;
+            max-height: 60px;
+            max-width: 180px;
+            margin-bottom: 14px;
+        }
+
+        .company-name {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 13px;
+            font-weight: bold;
+            color: #1a3a6e;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
         }
 
         .title {
-            font-size: 28px;
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 26px;
             font-weight: bold;
-            color: #1a5276;
-            letter-spacing: 4px;
+            color: #1a3a6e;
+            letter-spacing: 5px;
             text-transform: uppercase;
-            margin-bottom: 30px;
-        }
-
-        .body-text {
-            font-size: 14px;
-            line-height: 1.8;
-            max-width: 520px;
-            color: #444444;
             margin-bottom: 20px;
         }
 
-        .body-text .highlight {
-            font-size: 18px;
-            font-weight: bold;
-            color: #1a5276;
+        .certifies {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            color: #888888;
+            margin-bottom: 8px;
         }
 
-        .date {
-            font-size: 13px;
+        .recipient {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 32px;
+            font-weight: bold;
+            color: #1a3a6e;
+            margin-bottom: 10px;
+        }
+
+        .completed {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
             color: #666666;
-            margin-bottom: 30px;
+            margin-bottom: 6px;
+        }
+
+        .training-title {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 18px;
+            font-weight: bold;
+            color: #222222;
+            margin-bottom: 10px;
+        }
+
+        .meta {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            color: #777777;
+            margin-bottom: 14px;
+        }
+
+        .meta strong {
+            color: #333333;
+        }
+
+        .date-line {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            color: #777777;
+            margin-bottom: 0;
+        }
+
+        .date-line strong {
+            color: #333333;
+        }
+
+        .divider {
+            width: 80px;
+            height: 2px;
+            background-color: #1a3a6e;
+            margin: 14px auto 14px;
+            opacity: 0.3;
         }
 
         .footer {
             position: absolute;
-            bottom: 20px;
+            bottom: 22px;
             left: 30px;
             right: 30px;
+            border-top: 1px solid #d0d8f0;
+            padding-top: 8px;
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
-            font-size: 10px;
-            color: #999999;
+            align-items: center;
         }
 
-        .certificate-code {
+        .footer .code {
             font-family: 'Courier New', Courier, monospace;
-            font-size: 10px;
+            font-size: 9px;
             color: #aaaaaa;
         }
 
-        .verify-url {
-            font-size: 10px;
+        .footer .verify {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 9px;
             color: #aaaaaa;
         }
     </style>
@@ -109,25 +154,44 @@
         <div class="inner-border"></div>
 
         @if(!empty($companyLogo))
-            <img src="{{ storage_path('app/' . $companyLogo) }}" alt="Logo" class="logo">
+            <img src="{{ storage_path('app/' . $companyLogo) }}" alt="{{ $companyName }}" class="logo">
+        @else
+            <div class="company-name">{{ $companyName }}</div>
         @endif
 
         <div class="title">Certificado de Conclusão</div>
 
-        <div class="body-text">
-            Certificamos que<br>
-            <span class="highlight">{{ $userName }}</span><br>
-            concluiu com sucesso o treinamento<br>
-            <span class="highlight">{{ $trainingTitle }}</span><br>
-            com carga horária de {{ (int) round($durationMinutes / 60) }}h,
-            na empresa <strong>{{ $companyName }}</strong>.
+        <div class="certifies">Certificamos que</div>
+
+        <div class="recipient">{{ $userName }}</div>
+
+        <div class="completed">concluiu com sucesso o treinamento</div>
+
+        <div class="training-title">{{ $trainingTitle }}</div>
+
+        @php
+            $mins = (int) $durationMinutes;
+            $durLabel = $mins >= 60
+                ? floor($mins/60).'h'.($mins%60 > 0 ? ' '.($mins%60).'min' : '')
+                : ($mins > 0 ? $mins.' min' : null);
+        @endphp
+
+        <div class="meta">
+            @if($durLabel)
+                com carga horária de <strong>{{ $durLabel }}</strong>,
+            @endif
+            na empresa <strong>{{ $companyName }}</strong>
         </div>
 
-        <div class="date">Data de conclusão: {{ $completionDate }}</div>
+        <div class="divider"></div>
+
+        <div class="date-line">
+            Data de conclusão: <strong>{{ $completionDate }}</strong>
+        </div>
 
         <div class="footer">
-            <span class="certificate-code">Código: {{ $certificateCode }}</span>
-            <span class="verify-url">Verifique este certificado em: {{ url('/certificate/verify') }}</span>
+            <span class="code">Código: {{ $certificateCode }}</span>
+            <span class="verify">{{ url('/certificate/verify') }}</span>
         </div>
     </div>
 </body>

@@ -54,7 +54,7 @@ class CertificateService
             'userName' => $user->name,
             'trainingTitle' => $training->title,
             'durationMinutes' => $training->duration_minutes,
-            'completionDate' => now()->format('d/m/Y'),
+            'completionDate' => now()->locale('pt_BR')->translatedFormat('d \d\e F \d\e Y'),
             'companyName' => $company->name,
             'companyLogo' => $company->logo_path,
             'certificateCode' => $code,

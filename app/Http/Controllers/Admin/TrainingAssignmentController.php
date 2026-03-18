@@ -29,17 +29,19 @@ class TrainingAssignmentController extends Controller
     {
         $request->validate([
             'training_id' => 'required|exists:trainings,id,company_id,' . auth()->user()->company_id,
-            'group_ids' => 'required|array|min:1',
+            'group_ids'   => 'required|array|min:1',
             'group_ids.*' => 'exists:groups,id,company_id,' . auth()->user()->company_id,
-            'due_date' => 'nullable|date|after:today',
+            'due_date'    => 'nullable|date|after:today',
+            'mandatory'   => 'boolean',
         ]);
 
         foreach ($request->group_ids as $groupId) {
-            TrainingAssignment::firstOrCreate(
+            TrainingAssignment::updateOrCreate(
                 ['training_id' => $request->training_id, 'group_id' => $groupId],
                 [
                     'company_id' => auth()->user()->company_id,
-                    'due_date' => $request->due_date,
+                    'due_date'   => $request->due_date,
+                    'mandatory'  => $request->boolean('mandatory'),
                 ]
             );
         }

@@ -10,7 +10,7 @@
                 <x-forms.input name="name" label="Nome do Grupo" :value="$group->name" required />
                 <div class="space-y-1">
                     <label class="block text-sm font-medium text-gray-700">Descrição</label>
-                    <textarea name="description" rows="3" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">{{ old('description', $group->description) }}</textarea>
+                    <textarea name="description" rows="3" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">{{ old('description', $group->description) }}</textarea>
                 </div>
                 @php $groupUserIds = $group->users->pluck('id')->toArray(); @endphp
                 @if($users->isNotEmpty())

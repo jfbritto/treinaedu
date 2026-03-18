@@ -9,11 +9,14 @@ class TrainingAssignment extends Model
 {
     use BelongsToCompany;
 
-    protected $fillable = ['company_id', 'training_id', 'group_id', 'due_date'];
+    protected $fillable = ['company_id', 'training_id', 'group_id', 'due_date', 'mandatory'];
 
     protected function casts(): array
     {
-        return ['due_date' => 'date'];
+        return [
+            'due_date'  => 'date',
+            'mandatory' => 'boolean',
+        ];
     }
 
     public function training()

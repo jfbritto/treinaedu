@@ -14,6 +14,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::where('company_id', auth()->user()->company_id)
+            ->where('id', '!=', auth()->id())
             ->with('groups')
             ->paginate(15);
 
@@ -51,8 +52,11 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
+        if ($user->is(auth()->user())) {
+            return redirect()->route('profile.edit');
+        }
         $this->authorizeCompany($user);
-        $groups = Group::all();
+        $groups = Group::where('company_id', auth()->user()->company_id)->get();
         return view('admin.users.edit', compact('user', 'groups'));
     }
 

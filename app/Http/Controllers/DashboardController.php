@@ -28,22 +28,66 @@ class DashboardController extends Controller
     private function adminDashboard()
     {
         $companyId = auth()->user()->company_id;
+        $planUserLimit = auth()->user()->company->subscription?->plan?->max_users;
 
         $metrics = Cache::remember("dashboard_metrics_{$companyId}", 300, function () use ($companyId) {
+            $completed = TrainingView::withoutGlobalScope('company')
+                ->where('company_id', $companyId)->whereNotNull('completed_at')->count();
+            $pending = TrainingView::withoutGlobalScope('company')
+                ->where('company_id', $companyId)->whereNull('completed_at')->count();
+            $total = $completed + $pending;
+
             return [
-                'total_employees' => User::where('company_id', $companyId)
-                    ->where('role', 'employee')->count(),
-                'trainings_created' => Training::withoutGlobalScope('company')
-                    ->where('company_id', $companyId)->count(),
-                'trainings_completed' => TrainingView::withoutGlobalScope('company')
-                    ->where('company_id', $companyId)->whereNotNull('completed_at')->count(),
-                'trainings_pending' => TrainingView::withoutGlobalScope('company')
-                    ->where('company_id', $companyId)->whereNull('completed_at')->count(),
-                'certificates_issued' => Certificate::withoutGlobalScope('company')
-                    ->where('company_id', $companyId)->count(),
+                'total_employees'     => User::where('company_id', $companyId)->where('role', 'employee')->count(),
+                'trainings_created'   => Training::withoutGlobalScope('company')->where('company_id', $companyId)->count(),
+                'trainings_completed' => $completed,
+                'trainings_pending'   => $pending,
+                'certificates_issued' => Certificate::withoutGlobalScope('company')->where('company_id', $companyId)->count(),
+                'completion_rate'     => $total > 0 ? round(($completed / $total) * 100, 1) : 0.0,
+                'top_trainings'       => Training::withoutGlobalScope('company')
+                    ->where('company_id', $companyId)
+                    ->withCount([
+                        'views',
+                        'views as completed_count' => fn($q) => $q->whereNotNull('completed_at'),
+                    ])
+                    ->orderByDesc('completed_count')
+                    ->limit(5)
+                    ->get()
+                    ->map(fn($t) => [
+                        'title'           => $t->title,
+                        'completed_count' => $t->completed_count,
+                        'completion_rate' => $t->completionRate(),
+                    ])
+                    ->all(),
+                'recent_employees'    => User::where('company_id', $companyId)
+                    ->where('role', 'employee')
+                    ->orderByDesc('created_at')
+                    ->limit(5)
+                    ->get()
+                    ->map(fn($u) => [
+                        'name'       => $u->name,
+                        'email'      => $u->email,
+                        'created_at' => $u->created_at,
+                    ])
+                    ->all(),
+                'recent_completions'  => TrainingView::withoutGlobalScope('company')
+                    ->where('company_id', $companyId)
+                    ->whereNotNull('completed_at')
+                    ->with(['user', 'training'])
+                    ->orderByDesc('completed_at')
+                    ->limit(5)
+                    ->get()
+                    ->map(fn($v) => [
+                        'user_name'      => $v->user?->name,
+                        'training_title' => $v->training?->title,
+                        'completed_at'   => $v->completed_at,
+                    ])
+                    ->all(),
             ];
         });
 
+        // plan_user_limit is intentionally set outside the cache: auth() context must not be serialized.
+        $metrics['plan_user_limit'] = $planUserLimit;
         return view('admin.dashboard', compact('metrics'));
     }
 
@@ -68,15 +112,28 @@ class DashboardController extends Controller
             ->with(['views' => fn ($q) => $q->where('user_id', $user->id)])
             ->get();
 
-        $pending = $assignedTrainings->filter(function ($training) {
-            $view = $training->views->first();
-            return !$view || !$view->completed_at;
+        $assignedTrainings->each(function ($training) {
+            $training->is_mandatory      = $training->assignments->contains('mandatory', true);
+            $training->effective_due_date = $training->assignments
+                ->whereNotNull('due_date')
+                ->sortBy('due_date')
+                ->first()?->due_date;
         });
 
-        $completed = $assignedTrainings->filter(function ($training) {
-            $view = $training->views->first();
-            return $view && $view->completed_at;
-        });
+        $pending = $assignedTrainings
+            ->filter(fn ($t) => !$t->views->first()?->completed_at)
+            ->sortBy([
+                fn ($a, $b) => $b->is_mandatory <=> $a->is_mandatory,
+                fn ($a, $b) => match(true) {
+                    $a->effective_due_date && $b->effective_due_date => $a->effective_due_date <=> $b->effective_due_date,
+                    (bool) $a->effective_due_date => -1,
+                    (bool) $b->effective_due_date => 1,
+                    default => 0,
+                },
+            ])
+            ->values();
+
+        $completed = $assignedTrainings->filter(fn ($t) => (bool) $t->views->first()?->completed_at)->values();
 
         $certificates = $user->certificates()->with('training')->latest()->get();
 

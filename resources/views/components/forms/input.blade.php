@@ -10,7 +10,7 @@
         name="{{ $name }}"
         value="{{ old($name, $value) }}"
         {{ $required ? 'required' : '' }}
-        {{ $attributes->merge(['class' => 'w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2 border']) }}
+        {{ $attributes->merge(['class' => 'w-full rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary text-sm px-3 py-2 border']) }}
     >
     @error($name)
         <p class="text-red-500 text-xs">{{ $message }}</p>

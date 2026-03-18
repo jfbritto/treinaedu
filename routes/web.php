@@ -5,7 +5,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\GroupController;
 use App\Http\Controllers\Admin\TrainingController as AdminTrainingController;
-use App\Http\Controllers\Admin\TrainingAssignmentController;
 use App\Http\Controllers\Admin\CertificateController as AdminCertificateController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\CompanySettingsController;
@@ -34,6 +33,8 @@ Route::get('/certificate/verify', [CertificateVerificationController::class, 'sh
     ->name('certificate.verify');
 Route::post('/certificate/verify', [CertificateVerificationController::class, 'verify'])
     ->name('certificate.verify.post');
+Route::get('/certificate/{code}', [CertificateVerificationController::class, 'showByCode'])
+    ->name('certificate.show');
 
 // Asaas Webhook (excluded from CSRF)
 Route::post('/asaas/webhook', [AsaasWebhookController::class, 'handle'])
@@ -63,8 +64,10 @@ Route::middleware(['auth', 'theme'])->group(function () {
             Route::resource('users', UserController::class)->except('show');
             Route::resource('groups', GroupController::class);
             Route::resource('trainings', AdminTrainingController::class);
-            Route::resource('training-assignments', TrainingAssignmentController::class)
-                ->only(['index', 'create', 'store', 'destroy']);
+            Route::post('trainings/{training}/assignments', [AdminTrainingController::class, 'storeAssignment'])
+                ->name('trainings.assignments.store');
+            Route::delete('trainings/{training}/assignments/{assignment}', [AdminTrainingController::class, 'destroyAssignment'])
+                ->name('trainings.assignments.destroy');
             Route::get('certificates', [AdminCertificateController::class, 'index'])
                 ->name('admin.certificates.index');
             Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
@@ -86,21 +89,23 @@ Route::middleware(['auth', 'theme'])->group(function () {
         });
 
         // Employee routes
-        Route::middleware('role:employee')->group(function () {
+        Route::middleware('role:employee')->prefix('employee')->name('employee.')->group(function () {
+            Route::get('trainings', [EmployeeTrainingController::class, 'index'])
+                ->name('trainings.index');
             Route::get('trainings/{training}', [EmployeeTrainingController::class, 'show'])
-                ->name('employee.trainings.show');
+                ->name('trainings.show');
             Route::post('trainings/{training}/complete', [EmployeeTrainingController::class, 'complete'])
-                ->name('employee.trainings.complete');
+                ->name('trainings.complete');
             Route::get('trainings/{training}/quiz', [QuizController::class, 'show'])
-                ->name('employee.quiz.show');
+                ->name('quiz.show');
             Route::post('trainings/{training}/quiz', [QuizController::class, 'submit'])
-                ->name('employee.quiz.submit');
+                ->name('quiz.submit');
             Route::get('certificates', [EmployeeCertificateController::class, 'index'])
-                ->name('employee.certificates.index');
+                ->name('certificates.index');
             Route::get('certificates/{certificate}/download', [EmployeeCertificateController::class, 'download'])
-                ->name('employee.certificates.download');
+                ->name('certificates.download');
             Route::post('certificates/{training}/generate', [EmployeeCertificateController::class, 'generate'])
-                ->name('employee.certificates.generate');
+                ->name('certificates.generate');
         });
     });
 });

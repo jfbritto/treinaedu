@@ -4,11 +4,46 @@ namespace App\Http\Controllers\Employee;
 
 use App\Http\Controllers\Controller;
 use App\Models\Training;
+use App\Models\TrainingAssignment;
 use App\Models\TrainingView;
 use App\Services\VideoProgressService;
 
 class TrainingController extends Controller
 {
+    public function index()
+    {
+        $user = auth()->user();
+        $assignedTrainings = $user->assignedTrainings()
+            ->with(['views' => fn ($q) => $q->where('user_id', $user->id)])
+            ->get();
+
+        // Compute mandatory/due_date from the user's group assignments
+        $assignedTrainings->each(function ($training) {
+            $training->is_mandatory      = $training->assignments->contains('mandatory', true);
+            $training->effective_due_date = $training->assignments
+                ->whereNotNull('due_date')
+                ->sortBy('due_date')
+                ->first()?->due_date;
+        });
+
+        $pending = $assignedTrainings
+            ->filter(fn ($t) => !$t->views->first()?->completed_at)
+            ->sortBy([
+                fn ($a, $b) => $b->is_mandatory <=> $a->is_mandatory,
+                fn ($a, $b) => match(true) {
+                    $a->effective_due_date && $b->effective_due_date => $a->effective_due_date <=> $b->effective_due_date,
+                    (bool) $a->effective_due_date => -1,
+                    (bool) $b->effective_due_date => 1,
+                    default => 0,
+                },
+            ])
+            ->values();
+
+        $completed = $assignedTrainings->filter(fn ($t) => (bool) $t->views->first()?->completed_at)->values();
+
+        return view('employee.trainings.index', compact('pending', 'completed'));
+    }
+
     public function show(Training $training)
     {
         $user = auth()->user();
@@ -43,9 +78,17 @@ class TrainingController extends Controller
             ->where('training_id', $training->id)
             ->first();
 
+        $groupIds = $user->groups()->pluck('groups.id');
+        $assignments = TrainingAssignment::where('training_id', $training->id)
+            ->whereIn('group_id', $groupIds)
+            ->get();
+        $isMandatory    = $assignments->contains('mandatory', true);
+        $effectiveDue   = $assignments->whereNotNull('due_date')->sortBy('due_date')->first()?->due_date;
+
         return view('employee.trainings.show', compact(
             'training', 'view', 'canComplete', 'isCompleted',
-            'quizPassed', 'canGenerateCertificate', 'existingCertificate'
+            'quizPassed', 'canGenerateCertificate', 'existingCertificate',
+            'isMandatory', 'effectiveDue'
         ));
     }
 

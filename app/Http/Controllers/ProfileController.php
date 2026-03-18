@@ -16,9 +16,22 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
+        $user = $request->user();
+
+        $stats = null;
+        if ($user->isEmployee()) {
+            $assigned = $user->assignedTrainings()
+                ->with(['views' => fn ($q) => $q->where('user_id', $user->id)])
+                ->get();
+
+            $stats = [
+                'completed'    => $assigned->filter(fn ($t) => $t->views->first()?->completed_at)->count(),
+                'pending'      => $assigned->filter(fn ($t) => !$t->views->first()?->completed_at)->count(),
+                'certificates' => $user->certificates()->count(),
+            ];
+        }
+
+        return view('profile.edit', compact('user', 'stats'));
     }
 
     /**

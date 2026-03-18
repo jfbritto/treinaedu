@@ -23,4 +23,14 @@ class CertificateVerificationController extends Controller
 
         return view('certificates.verify', compact('certificate'));
     }
+
+    public function showByCode(string $code)
+    {
+        $certificate = Certificate::withoutGlobalScopes()
+            ->with(['user', 'training', 'company'])
+            ->where('certificate_code', $code)
+            ->firstOrFail();
+
+        return view('certificates.show', compact('certificate'));
+    }
 }
