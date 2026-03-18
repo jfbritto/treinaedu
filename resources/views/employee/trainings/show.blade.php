@@ -383,43 +383,107 @@
 
             {{-- Info do treinamento --}}
             <div class="bg-white rounded-xl shadow-sm p-5">
-                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Detalhes</p>
-                <dl class="space-y-2.5 text-sm">
-                    <div class="flex items-center justify-between">
-                        <dt class="text-gray-500">Duração</dt>
-                        <dd class="font-medium text-gray-800">{{ $training->duration_minutes }} min</dd>
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Detalhes</p>
+                <div class="space-y-3">
+
+                    {{-- Duração --}}
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400">Duração</p>
+                            <p class="text-sm font-semibold text-gray-800">
+                                @if($training->duration_minutes >= 60)
+                                    {{ floor($training->duration_minutes / 60) }}h {{ $training->duration_minutes % 60 > 0 ? ($training->duration_minutes % 60).'min' : '' }}
+                                @else
+                                    {{ $training->duration_minutes }} min
+                                @endif
+                            </p>
+                        </div>
                     </div>
-                    <div class="flex items-center justify-between">
-                        <dt class="text-gray-500">Provedor</dt>
-                        <dd class="font-medium text-gray-800">{{ ucfirst($training->video_provider) }}</dd>
+
+                    {{-- Progresso atual --}}
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0
+                            {{ $isCompleted ? 'bg-green-50' : 'bg-primary/10' }}">
+                            <svg class="w-4 h-4 {{ $isCompleted ? 'text-green-500' : 'text-primary' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs text-gray-400">Seu progresso</p>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                <div class="flex-1 bg-gray-100 rounded-full h-1.5">
+                                    <div class="h-1.5 rounded-full {{ $isCompleted ? 'bg-green-500' : 'bg-primary' }}"
+                                         style="width: {{ min(100, $view->progress_percent) }}%"></div>
+                                </div>
+                                <span class="text-xs font-semibold {{ $isCompleted ? 'text-green-600' : 'text-gray-600' }} flex-shrink-0">
+                                    {{ $isCompleted ? '100%' : $view->progress_percent.'%' }}
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex items-center justify-between">
-                        <dt class="text-gray-500">Quiz</dt>
-                        <dd class="font-medium text-gray-800">
-                            @if($training->has_quiz) Sim — mín. {{ $training->passing_score ?? 70 }}%
-                            @else Não
-                            @endif
-                        </dd>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <dt class="text-gray-500">Obrigatoriedade</dt>
-                        <dd>
+
+                    {{-- Obrigatoriedade --}}
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg {{ $isMandatory ? 'bg-red-50' : 'bg-gray-50' }} flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 {{ $isMandatory ? 'text-red-400' : 'text-gray-300' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400">Obrigatoriedade</p>
                             @if($isMandatory)
-                                <span class="text-xs font-semibold bg-red-100 text-red-700 rounded-full px-2 py-0.5">Obrigatório</span>
+                                <span class="text-xs font-semibold text-red-600">Obrigatório</span>
                             @else
-                                <span class="text-xs font-medium text-gray-400">Opcional</span>
+                                <span class="text-sm font-medium text-gray-500">Opcional</span>
                             @endif
-                        </dd>
+                        </div>
                     </div>
+
+                    {{-- Prazo (só se existir) --}}
                     @if($effectiveDue)
-                        <div class="flex items-center justify-between">
-                            <dt class="text-gray-500">Prazo</dt>
-                            <dd class="font-medium {{ $dueOverdue ? 'text-red-600' : ($dueSoon ? 'text-yellow-600' : 'text-gray-800') }}">
-                                {{ $effectiveDue->format('d/m/Y') }}
-                            </dd>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg {{ $dueOverdue ? 'bg-red-50' : ($dueSoon ? 'bg-yellow-50' : 'bg-gray-50') }} flex items-center justify-center flex-shrink-0">
+                                <svg class="w-4 h-4 {{ $dueOverdue ? 'text-red-400' : ($dueSoon ? 'text-yellow-400' : 'text-gray-400') }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-400">Prazo</p>
+                                <p class="text-sm font-semibold {{ $dueOverdue ? 'text-red-600' : ($dueSoon ? 'text-yellow-600' : 'text-gray-800') }}">
+                                    {{ $effectiveDue->format('d/m/Y') }}
+                                    @if($dueOverdue) <span class="text-xs font-normal">— vencido</span>
+                                    @elseif($dueSoon) <span class="text-xs font-normal">— {{ $dueSoonDays }}d restantes</span>
+                                    @endif
+                                </p>
+                            </div>
                         </div>
                     @endif
-                </dl>
+
+                    {{-- Quiz --}}
+                    @if($training->has_quiz)
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg {{ $quizPassed ? 'bg-green-50' : 'bg-gray-50' }} flex items-center justify-center flex-shrink-0">
+                                <svg class="w-4 h-4 {{ $quizPassed ? 'text-green-500' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-400">Quiz</p>
+                                @if($quizPassed)
+                                    <p class="text-sm font-semibold text-green-600">Aprovado ✓</p>
+                                @else
+                                    <p class="text-sm font-medium text-gray-700">Mínimo {{ $training->passing_score ?? 70 }}%</p>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
+                </div>
             </div>
 
         </div>
