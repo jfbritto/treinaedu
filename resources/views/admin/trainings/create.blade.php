@@ -1,4 +1,32 @@
 <x-layout.app title="Novo Treinamento">
+
+    <script>
+        function trainingForm() {
+            return {
+                hasQuiz: {{ old('has_quiz') ? 'true' : 'false' }},
+                videoUrl: @json(old('video_url', '')),
+                embedUrl: null,
+                init() {
+                    this.$watch('videoUrl', url => this.updateEmbed(url));
+                    this.updateEmbed(this.videoUrl);
+                },
+                updateEmbed(url) {
+                    if (!url) { this.embedUrl = null; return; }
+                    const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+                    if (yt) { this.embedUrl = 'https://www.youtube.com/embed/' + yt[1]; return; }
+                    const vm = url.match(/vimeo\.com\/(\d+)/);
+                    if (vm) { this.embedUrl = 'https://player.vimeo.com/video/' + vm[1]; return; }
+                    this.embedUrl = null;
+                },
+                questions: [{ text: '', correct: 0, options: [{ text: '' }, { text: '' }] }],
+                addQuestion() { this.questions.push({ text: '', correct: 0, options: [{ text: '' }, { text: '' }] }); },
+                removeQuestion(qi) { this.questions.splice(qi, 1); },
+                addOption(qi) { this.questions[qi].options.push({ text: '' }); },
+                removeOption(qi, oi) { this.questions[qi].options.splice(oi, 1); },
+            }
+        }
+    </script>
+
     <div x-data="trainingForm()" class="max-w-6xl">
 
         <div class="flex items-center gap-3 mb-6">
@@ -173,32 +201,3 @@
     </div>
 </x-layout.app>
 
-@push('scripts')
-<script>
-function trainingForm() {
-    return {
-        hasQuiz: {{ old('has_quiz') ? 'true' : 'false' }},
-        videoUrl: '{{ old('video_url') }}',
-        get embedUrl() {
-            const url = this.videoUrl.trim();
-            if (!url) return null;
-
-            // YouTube
-            const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
-            if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
-
-            // Vimeo
-            const vmMatch = url.match(/vimeo\.com\/(\d+)/);
-            if (vmMatch) return `https://player.vimeo.com/video/${vmMatch[1]}`;
-
-            return null;
-        },
-        questions: [{ text: '', correct: 0, options: [{ text: '' }, { text: '' }] }],
-        addQuestion() { this.questions.push({ text: '', correct: 0, options: [{ text: '' }, { text: '' }] }); },
-        removeQuestion(qi) { this.questions.splice(qi, 1); },
-        addOption(qi) { this.questions[qi].options.push({ text: '' }); },
-        removeOption(qi, oi) { this.questions[qi].options.splice(oi, 1); },
-    }
-}
-</script>
-@endpush
