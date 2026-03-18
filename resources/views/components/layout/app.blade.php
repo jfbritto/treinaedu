@@ -223,12 +223,12 @@
 
             {{-- Content --}}
             <main class="flex-1 overflow-y-auto p-4 sm:p-6">
-                <x-ui.alert />
                 {{ $slot }}
             </main>
 
         </div>
     </div>
+    <x-ui.alert />
     @stack('scripts')
     <script>
         document.querySelectorAll('form[data-confirm]').forEach(form => {
