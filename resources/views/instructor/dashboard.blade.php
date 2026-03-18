@@ -9,11 +9,11 @@
     @endphp
 
     {{-- Banner --}}
-    <div class="bg-gradient-to-r from-blue-700 to-blue-500 rounded-xl p-6 mb-6 text-white">
+    <div class="rounded-xl p-6 mb-6 text-white" style="background: linear-gradient(to right, var(--secondary), var(--primary))">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <h2 class="text-xl font-bold mb-0.5">Olá, {{ explode(' ', $user->name)[0] }}! 👋</h2>
-                <p class="text-blue-100 text-sm">
+                <p class="text-white/70 text-sm">
                     @if($totalTrainings === 0)
                         Comece criando seu primeiro treinamento.
                     @elseif($avgRate >= 80)
@@ -26,7 +26,8 @@
                 </p>
             </div>
             <a href="{{ route('instructor.trainings.create') }}"
-               class="inline-flex items-center gap-2 bg-white text-blue-700 hover:bg-primary/5 transition text-sm font-semibold px-4 py-2 rounded-lg flex-shrink-0">
+               class="inline-flex items-center gap-2 bg-white hover:bg-white/90 transition text-sm font-semibold px-4 py-2 rounded-lg flex-shrink-0"
+               style="color: var(--primary)">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
@@ -38,7 +39,7 @@
     {{-- KPIs --}}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div class="bg-white rounded-xl shadow-sm p-5 flex items-center gap-4">
-            <div class="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+            <div class="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
                 <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                 </svg>
@@ -84,7 +85,7 @@
                 </div>
             </div>
             <div class="w-full bg-gray-100 rounded-full h-1.5">
-                <div class="h-1.5 rounded-full {{ $avgRate >= 70 ? 'bg-teal-500' : ($avgRate >= 40 ? 'bg-yellow-400' : 'bg-blue-400') }}"
+                <div class="h-1.5 rounded-full {{ $avgRate >= 70 ? 'bg-teal-500' : ($avgRate >= 40 ? 'bg-yellow-400' : 'bg-primary/60') }}"
                      style="width: {{ $avgRate }}%"></div>
             </div>
         </div>
@@ -94,7 +95,7 @@
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
             <div class="flex items-center gap-2">
-                <div class="w-2 h-2 rounded-full bg-blue-400"></div>
+                <div class="w-2 h-2 rounded-full bg-primary/60"></div>
                 <h3 class="text-sm font-semibold text-gray-700">Meus Treinamentos</h3>
             </div>
             <a href="{{ route('instructor.trainings.index') }}" class="text-xs text-primary hover:underline">Ver todos →</a>
@@ -129,7 +130,7 @@
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                                    <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                                         <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
                                         </svg>
@@ -152,7 +153,7 @@
                                 @if($rate !== null)
                                     <div class="flex items-center gap-2 w-28">
                                         <div class="flex-1 bg-gray-100 rounded-full h-1.5">
-                                            <div class="h-1.5 rounded-full {{ $rate >= 70 ? 'bg-green-500' : ($rate >= 30 ? 'bg-yellow-400' : 'bg-blue-400') }}"
+                                            <div class="h-1.5 rounded-full {{ $rate >= 70 ? 'bg-green-500' : ($rate >= 30 ? 'bg-yellow-400' : 'bg-primary/60') }}"
                                                  style="width: {{ $rate }}%"></div>
                                         </div>
                                         <span class="text-xs font-medium text-gray-600 w-8 text-right">{{ $rate }}%</span>
