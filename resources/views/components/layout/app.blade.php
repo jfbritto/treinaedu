@@ -60,26 +60,25 @@
             class="fixed inset-y-0 left-0 lg:static lg:inset-auto z-50 w-64 flex-shrink-0 text-white flex flex-col transition-transform duration-300 ease-in-out"
             style="background-color: var(--primary)">
 
-            <div class="p-4 flex items-center justify-between gap-2" style="border-bottom: 1px solid rgba(255,255,255,0.12)">
-                <div class="min-w-0">
+            <div class="px-4 py-3.5 flex items-center justify-between gap-2" style="border-bottom: 1px solid rgba(255,255,255,0.12)">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    {{-- Ícone do livro --}}
                     @if($companyLogo ?? null)
-                        <img src="{{ Storage::url($companyLogo) }}" alt="Logo" class="h-8 object-contain">
+                        <img src="{{ Storage::url($companyLogo) }}" alt="Logo" class="h-8 w-8 object-contain rounded-md flex-shrink-0">
                     @else
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0">
-                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                                </svg>
-                            </div>
-                            <span class="text-xl font-bold text-white">TreinaEdu</span>
+                        <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
                         </div>
                     @endif
-                    @if($currentCompany ?? null)
-                        <div class="flex items-center gap-1.5 mt-1.5">
-                            <div class="w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0"></div>
-                            <p class="text-xs font-medium text-gray-300 truncate">{{ $currentCompany->name }}</p>
-                        </div>
-                    @endif
+                    {{-- Textos --}}
+                    <div class="min-w-0">
+                        <p class="text-sm font-bold text-white leading-tight">TreinaEdu</p>
+                        @if($currentCompany ?? null)
+                            <p class="text-xs text-white/60 truncate leading-tight mt-0.5">{{ $currentCompany->name }}</p>
+                        @endif
+                    </div>
                 </div>
                 {{-- Close button (mobile only) --}}
                 <button @click="sidebarOpen = false" class="lg:hidden flex-shrink-0 p-1.5 rounded-md text-gray-400 hover:text-white hover:bg-white/10 transition">
