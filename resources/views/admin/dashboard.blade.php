@@ -7,22 +7,23 @@
     @endphp
 
     {{-- Banner de boas-vindas --}}
-    <div class="bg-gradient-to-r from-blue-700 to-blue-500 rounded-xl p-6 mb-6 text-white">
+    <div class="rounded-xl p-6 mb-6 text-white" style="background: linear-gradient(to right, var(--secondary), var(--primary))">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <h2 class="text-xl font-bold mb-0.5">Painel de Gestão</h2>
-                <p class="text-blue-100 text-sm">Acompanhe o desempenho da equipe em tempo real.</p>
+                <p class="text-white/70 text-sm">Acompanhe o desempenho da equipe em tempo real.</p>
             </div>
             <div class="flex flex-wrap gap-2">
                 <a href="{{ route('users.create') }}"
-                   class="inline-flex items-center gap-2 bg-white text-blue-700 hover:bg-primary/5 transition text-sm font-semibold px-4 py-2 rounded-lg">
+                   class="inline-flex items-center gap-2 bg-white hover:bg-white/90 transition text-sm font-semibold px-4 py-2 rounded-lg"
+                   style="color: var(--primary)">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
                     </svg>
                     Novo Colaborador
                 </a>
                 <a href="{{ route('trainings.create') }}"
-                   class="inline-flex items-center gap-2 bg-primary border border-blue-400 text-white hover:bg-blue-800 transition text-sm font-semibold px-4 py-2 rounded-lg">
+                   class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 border border-white/30 text-white transition text-sm font-semibold px-4 py-2 rounded-lg">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
@@ -37,12 +38,12 @@
 
         <div class="bg-white rounded-xl shadow-sm p-5 flex flex-col gap-3">
             <div class="flex items-center justify-between">
-                <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+                <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                     <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
                     </svg>
                 </div>
-                <a href="{{ route('users.index') }}" class="text-xs text-blue-500 hover:underline">Ver →</a>
+                <a href="{{ route('users.index') }}" class="text-xs text-primary hover:underline">Ver →</a>
             </div>
             <div>
                 <p class="text-2xl font-bold text-gray-800">{{ $metrics['total_employees'] }}</p>
@@ -55,7 +56,7 @@
                         <span class="font-medium {{ $usagePercent >= 90 ? 'text-red-500' : 'text-gray-500' }}">{{ $usagePercent }}%</span>
                     </div>
                     <div class="w-full bg-gray-100 rounded-full h-1.5">
-                        <div class="h-1.5 rounded-full {{ $usagePercent >= 90 ? 'bg-red-400' : 'bg-blue-500' }}" style="width: {{ $usagePercent }}%"></div>
+                        <div class="h-1.5 rounded-full {{ $usagePercent >= 90 ? 'bg-red-400' : 'bg-primary' }}" style="width: {{ $usagePercent }}%"></div>
                     </div>
                 </div>
             @endif
@@ -68,7 +69,7 @@
                         <path fill-rule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clip-rule="evenodd"/>
                     </svg>
                 </div>
-                <a href="{{ route('trainings.index') }}" class="text-xs text-blue-500 hover:underline">Ver →</a>
+                <a href="{{ route('trainings.index') }}" class="text-xs text-primary hover:underline">Ver →</a>
             </div>
             <div>
                 <p class="text-2xl font-bold text-gray-800">{{ $metrics['trainings_created'] }}</p>
@@ -97,7 +98,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
-                <a href="{{ route('reports.index') }}" class="text-xs text-blue-500 hover:underline">Ver →</a>
+                <a href="{{ route('reports.index') }}" class="text-xs text-primary hover:underline">Ver →</a>
             </div>
             <div>
                 <p class="text-2xl font-bold text-gray-800">{{ $metrics['completion_rate'] }}%</p>
@@ -159,13 +160,13 @@
                         <div>
                             <div class="flex items-center justify-between mb-1.5">
                                 <div class="flex items-center gap-2">
-                                    <div class="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
+                                    <div class="w-2.5 h-2.5 rounded-full bg-primary"></div>
                                     <span class="text-sm text-gray-600">Em Andamento</span>
                                 </div>
                                 <span class="text-sm font-bold text-gray-800">{{ $metrics['trainings_pending'] }}</span>
                             </div>
                             <div class="w-full bg-gray-100 rounded-full h-2">
-                                <div class="bg-blue-500 h-2 rounded-full" style="width: {{ 100 - $completedPct }}%"></div>
+                                <div class="bg-primary h-2 rounded-full" style="width: {{ 100 - $completedPct }}%"></div>
                             </div>
                         </div>
                     </div>
@@ -202,7 +203,7 @@
                             </div>
                             <div class="pl-7">
                                 <div class="w-full bg-gray-100 rounded-full h-1.5">
-                                    <div class="bg-blue-500 h-1.5 rounded-full" style="width: {{ min(100, max(0, $training['completion_rate'])) }}%"></div>
+                                    <div class="bg-primary h-1.5 rounded-full" style="width: {{ min(100, max(0, $training['completion_rate'])) }}%"></div>
                                 </div>
                                 <p class="text-xs text-gray-400 mt-0.5">{{ $training['completion_rate'] }}% de conclusão</p>
                             </div>
@@ -220,7 +221,7 @@
         <div class="bg-white rounded-xl shadow-sm overflow-hidden">
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                 <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-blue-400"></div>
+                    <div class="w-2 h-2 rounded-full bg-primary/60"></div>
                     <h3 class="text-sm font-semibold text-gray-700">Últimos Colaboradores</h3>
                 </div>
                 <a href="{{ route('users.index') }}" class="text-xs text-primary hover:underline">Ver todos →</a>
@@ -231,8 +232,8 @@
                 <div class="divide-y divide-gray-50">
                     @foreach($metrics['recent_employees'] as $employee)
                         <div class="flex items-center gap-3 px-6 py-3.5">
-                            <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                                <span class="text-xs font-bold text-blue-700">{{ strtoupper(substr($employee['name'] ?? '?', 0, 2)) }}</span>
+                            <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                <span class="text-xs font-bold text-primary">{{ strtoupper(substr($employee['name'] ?? '?', 0, 2)) }}</span>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium text-gray-800 truncate">{{ $employee['name'] ?? '—' }}</p>
@@ -280,7 +281,7 @@
     {{-- Ações Rápidas --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <a href="{{ route('users.create') }}" class="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition group flex items-center gap-4">
-            <div class="w-11 h-11 rounded-xl bg-blue-50 group-hover:bg-blue-100 flex items-center justify-center flex-shrink-0 transition">
+            <div class="w-11 h-11 rounded-xl bg-primary/10 group-hover:bg-primary/20 flex items-center justify-center flex-shrink-0 transition">
                 <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
                 </svg>
@@ -336,13 +337,14 @@
     (function () {
         const ctx = document.getElementById('trainingStatusChart');
         if (!ctx) return;
+        const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#3B82F6';
         new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: ['Concluídos', 'Em Andamento'],
                 datasets: [{
                     data: [{{ $metrics['trainings_completed'] }}, {{ $metrics['trainings_pending'] }}],
-                    backgroundColor: ['#10B981', '#3B82F6'],
+                    backgroundColor: ['#10B981', primaryColor],
                     borderWidth: 0,
                     hoverOffset: 6,
                 }],
