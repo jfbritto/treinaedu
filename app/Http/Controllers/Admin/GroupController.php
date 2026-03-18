@@ -11,7 +11,7 @@ class GroupController extends Controller
 {
     public function index()
     {
-        $groups = Group::withCount('users')->paginate(15);
+        $groups = Group::withCount('users')->with('users')->paginate(15);
         return view('admin.groups.index', compact('groups'));
     }
 

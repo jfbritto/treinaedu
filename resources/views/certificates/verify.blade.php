@@ -27,34 +27,40 @@
 
         @if(isset($certificate) && $certificate)
             <div class="bg-green-50 border border-green-300 rounded-lg p-6">
-                <div class="flex items-center mb-4">
-                    <svg class="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex items-center gap-2 mb-5">
+                    <svg class="w-6 h-6 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                     <h2 class="text-lg font-semibold text-green-800">Certificado Válido</h2>
                 </div>
-                <dl class="space-y-2 text-sm text-gray-700">
-                    <div class="flex justify-between">
-                        <dt class="font-medium">Funcionário:</dt>
-                        <dd>{{ $certificate->user->name }}</dd>
+                <dl class="space-y-3 text-sm text-gray-700">
+                    <div class="flex justify-between gap-4">
+                        <dt class="font-medium text-gray-500">Funcionário</dt>
+                        <dd class="font-medium text-gray-800">{{ $certificate->user->name }}</dd>
                     </div>
-                    <div class="flex justify-between">
-                        <dt class="font-medium">Treinamento:</dt>
-                        <dd>{{ $certificate->training->title }}</dd>
+                    <div class="flex justify-between gap-4">
+                        <dt class="font-medium text-gray-500">Treinamento</dt>
+                        <dd class="text-gray-800">{{ $certificate->training->title }}</dd>
                     </div>
-                    <div class="flex justify-between">
-                        <dt class="font-medium">Empresa:</dt>
-                        <dd>{{ $certificate->company->name }}</dd>
+                    <div class="flex justify-between gap-4">
+                        <dt class="font-medium text-gray-500">Empresa</dt>
+                        <dd class="text-gray-800">{{ $certificate->company->name }}</dd>
                     </div>
-                    <div class="flex justify-between">
-                        <dt class="font-medium">Data de emissão:</dt>
-                        <dd>{{ $certificate->generated_at->format('d/m/Y') }}</dd>
+                    <div class="flex justify-between gap-4">
+                        <dt class="font-medium text-gray-500">Data de emissão</dt>
+                        <dd class="text-gray-800">{{ $certificate->generated_at->format('d/m/Y') }}</dd>
                     </div>
-                    <div class="flex justify-between">
-                        <dt class="font-medium">Código:</dt>
-                        <dd class="font-mono">{{ $certificate->certificate_code }}</dd>
+                    <div class="flex justify-between gap-4 pt-2 border-t border-green-200">
+                        <dt class="font-medium text-gray-500">Código</dt>
+                        <dd class="font-mono text-xs text-gray-600">{{ $certificate->certificate_code }}</dd>
                     </div>
                 </dl>
+                <div class="mt-4 pt-4 border-t border-green-200">
+                    <a href="{{ route('certificate.show', $certificate->certificate_code) }}"
+                        class="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline font-medium">
+                        Ver certificado completo →
+                    </a>
+                </div>
             </div>
         @elseif(isset($certificate) && $certificate === null)
             <div class="bg-red-50 border border-red-300 rounded-lg p-4 text-center text-red-700">

@@ -1,4 +1,4 @@
-@props(['videoUrl', 'provider', 'trainingId'])
+@props(['videoUrl', 'provider', 'trainingId', 'initialProgress' => 0])
 
 @php
     $videoId = '';
@@ -11,11 +11,10 @@
     }
 @endphp
 
-<div x-data="videoPlayer(@js($trainingId), @js($provider), @js($videoId))" class="space-y-4">
-
+<div x-data="videoPlayer(@js($trainingId), @js($provider), @js($videoId), @js((int) $initialProgress))">
     @if($provider === 'youtube')
         <div class="relative aspect-video rounded-xl overflow-hidden bg-black">
-            <div id="yt-player-{{ $trainingId }}"></div>
+            <div id="yt-player-{{ $trainingId }}" class="absolute inset-0 w-full h-full"></div>
         </div>
     @elseif($provider === 'vimeo')
         <div class="relative aspect-video rounded-xl overflow-hidden bg-black">
@@ -29,26 +28,13 @@
             </iframe>
         </div>
     @endif
-
-    <div x-show="progress >= 90" class="text-center" x-cloak>
-        <form method="POST" action="{{ route('employee.trainings.complete', $trainingId) }}">
-            @csrf
-            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-3 rounded-lg">
-                Marcar como Concluído
-            </button>
-        </form>
-    </div>
-
-    <div class="text-center text-sm text-gray-500">
-        Progresso: <span x-text="progress"></span>%
-    </div>
 </div>
 
 @push('scripts')
 <script>
-    function videoPlayer(trainingId, provider, videoId) {
+    function videoPlayer(trainingId, provider, videoId, initialProgress) {
         return {
-            progress: 0,
+            progress: initialProgress,
             interval: null,
             player: null,
 
@@ -62,13 +48,19 @@
 
             initYouTube(trainingId, videoId) {
                 const self = this;
-                if (typeof YT !== 'undefined') {
+                if (typeof YT !== 'undefined' && YT.Player) {
                     self.createYTPlayer(trainingId, videoId);
                 } else {
-                    window.onYouTubeIframeAPIReady = () => self.createYTPlayer(trainingId, videoId);
-                    const tag = document.createElement('script');
-                    tag.src = 'https://www.youtube.com/iframe_api';
-                    document.head.appendChild(tag);
+                    const prev = window.onYouTubeIframeAPIReady;
+                    window.onYouTubeIframeAPIReady = () => {
+                        if (prev) prev();
+                        self.createYTPlayer(trainingId, videoId);
+                    };
+                    if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
+                        const tag = document.createElement('script');
+                        tag.src = 'https://www.youtube.com/iframe_api';
+                        document.head.appendChild(tag);
+                    }
                 }
             },
 
@@ -76,6 +68,8 @@
                 const self = this;
                 self.player = new YT.Player('yt-player-' + trainingId, {
                     videoId: videoId,
+                    width: '100%',
+                    height: '100%',
                     events: {
                         onStateChange(event) {
                             if (event.data === YT.PlayerState.PLAYING) {
@@ -91,12 +85,11 @@
             checkYTProgress() {
                 if (!this.player) return;
                 const duration = this.player.getDuration();
-                const current = this.player.getCurrentTime();
+                const current  = this.player.getCurrentTime();
                 if (duration > 0) {
                     const pct = Math.floor((current / duration) * 100);
                     if (pct > this.progress) {
-                        this.progress = pct;
-                        this.sendProgress(pct);
+                        this.updateProgress(pct);
                     }
                 }
             },
@@ -107,20 +100,25 @@
                 window.addEventListener('message', (event) => {
                     if (event.origin !== 'https://player.vimeo.com') return;
                     let data;
-                    try {
-                        data = JSON.parse(event.data);
-                    } catch (e) {
-                        return;
-                    }
+                    try { data = JSON.parse(event.data); } catch (e) { return; }
                     if ((data.event === 'playProgress' || data.event === 'timeupdate') && data.data?.percent !== undefined) {
                         const pct = Math.floor(data.data.percent * 100);
                         if (pct > self.progress && (pct % 5 === 0 || pct >= 90)) {
-                            self.progress = pct;
-                            self.sendProgress(pct);
+                            self.updateProgress(pct);
                         }
                     }
                 });
-                iframe.contentWindow.postMessage(JSON.stringify({ method: 'addEventListener', value: 'playProgress' }), 'https://player.vimeo.com');
+                iframe.contentWindow.postMessage(
+                    JSON.stringify({ method: 'addEventListener', value: 'playProgress' }),
+                    'https://player.vimeo.com'
+                );
+            },
+
+            updateProgress(pct) {
+                this.progress = pct;
+                // Notify parent Alpine components listening on window
+                window.dispatchEvent(new CustomEvent('video-progress', { detail: { percent: pct } }));
+                this.sendProgress(pct);
             },
 
             sendProgress(pct) {

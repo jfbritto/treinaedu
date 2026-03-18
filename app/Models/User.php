@@ -57,7 +57,11 @@ class User extends Authenticatable
 
         return Training::whereHas('assignments', function ($query) use ($groupIds) {
             $query->whereIn('group_id', $groupIds);
-        })->where('active', true);
+        })
+        ->where('active', true)
+        ->with(['assignments' => function ($query) use ($groupIds) {
+            $query->whereIn('group_id', $groupIds)->select(['training_id', 'due_date', 'mandatory']);
+        }]);
     }
 
     public function isAdmin(): bool

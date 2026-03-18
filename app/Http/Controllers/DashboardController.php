@@ -112,15 +112,28 @@ class DashboardController extends Controller
             ->with(['views' => fn ($q) => $q->where('user_id', $user->id)])
             ->get();
 
-        $pending = $assignedTrainings->filter(function ($training) {
-            $view = $training->views->first();
-            return !$view || !$view->completed_at;
+        $assignedTrainings->each(function ($training) {
+            $training->is_mandatory      = $training->assignments->contains('mandatory', true);
+            $training->effective_due_date = $training->assignments
+                ->whereNotNull('due_date')
+                ->sortBy('due_date')
+                ->first()?->due_date;
         });
 
-        $completed = $assignedTrainings->filter(function ($training) {
-            $view = $training->views->first();
-            return $view && $view->completed_at;
-        });
+        $pending = $assignedTrainings
+            ->filter(fn ($t) => !$t->views->first()?->completed_at)
+            ->sortBy([
+                fn ($a, $b) => $b->is_mandatory <=> $a->is_mandatory,
+                fn ($a, $b) => match(true) {
+                    $a->effective_due_date && $b->effective_due_date => $a->effective_due_date <=> $b->effective_due_date,
+                    (bool) $a->effective_due_date => -1,
+                    (bool) $b->effective_due_date => 1,
+                    default => 0,
+                },
+            ])
+            ->values();
+
+        $completed = $assignedTrainings->filter(fn ($t) => (bool) $t->views->first()?->completed_at)->values();
 
         $certificates = $user->certificates()->with('training')->latest()->get();
 
