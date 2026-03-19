@@ -38,11 +38,11 @@
             <div class="w-full bg-gray-100 rounded-full h-2">
                 <div class="h-2 rounded-full transition-all" :style="'width: ' + pct + '%; background-color: var(--secondary)'"></div>
             </div>
-            <p x-show="pct >= 90" x-cloak class="text-xs text-green-600 mt-2 flex items-center gap-1">
+            <p x-show="pct >= 100" x-cloak class="text-xs text-green-600 mt-2 flex items-center gap-1">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                 </svg>
-                Você assistiu o suficiente desta aula.
+                Aula concluída
             </p>
         </div>
 
