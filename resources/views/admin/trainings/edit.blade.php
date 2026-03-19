@@ -21,6 +21,12 @@
             z-index: 50;
         }
         .tip:hover::after { opacity: 1; }
+        @keyframes flash-move {
+            0% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+            30% { box-shadow: 0 0 0 4px rgba(59,130,246,0.3); }
+            100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+        }
+        .flash-move { animation: flash-move 0.6s ease-out; }
     </style>
 
     <div x-data="{
@@ -59,6 +65,10 @@
             const j = i + dir;
             if (j < 0 || j >= this.modules.length) return;
             [this.modules[i], this.modules[j]] = [this.modules[j], this.modules[i]];
+            this.$nextTick(() => {
+                const cards = this.$el.querySelectorAll('[data-module-card]');
+                if (cards[j]) { cards[j].classList.remove('flash-move'); void cards[j].offsetWidth; cards[j].classList.add('flash-move'); }
+            });
         },
         addLesson(mi) {
             this.modules[mi].lessons.push({ id: null, title: '', type: 'video', video_url: '', duration_minutes: 0, content: '', hasQuiz: false, questions: [{ text: '', options: [{ text: '' }, { text: '' }], correct: 0 }] });
@@ -71,6 +81,13 @@
             const j = li + dir;
             if (j < 0 || j >= lessons.length) return;
             [lessons[li], lessons[j]] = [lessons[j], lessons[li]];
+            this.$nextTick(() => {
+                const cards = this.$el.querySelectorAll('[data-module-card]');
+                if (cards[mi]) {
+                    const lessonCards = cards[mi].querySelectorAll('[data-lesson-card]');
+                    if (lessonCards[j]) { lessonCards[j].classList.remove('flash-move'); void lessonCards[j].offsetWidth; lessonCards[j].classList.add('flash-move'); }
+                }
+            });
         },
         getEmbedUrl(url) {
             if (!url) return '';
@@ -212,7 +229,7 @@
                 </div>
 
                 <template x-for="(module, mi) in modules" :key="mi">
-                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-white rounded-xl shadow-sm transition-shadow" data-module-card>
                         {{-- Hidden ID for existing modules --}}
                         <template x-if="module.id">
                             <input type="hidden" :name="'modules['+mi+'][id]'" :value="module.id">
@@ -274,7 +291,7 @@
                         {{-- Lessons --}}
                         <div class="p-6 space-y-3">
                             <template x-for="(lesson, li) in module.lessons" :key="li">
-                                <div class="bg-gray-50 rounded-xl border border-gray-100 p-4 space-y-3">
+                                <div class="bg-gray-50 rounded-xl border border-gray-100 p-4 space-y-3 transition-shadow" data-lesson-card>
                                     {{-- Hidden ID for existing lessons --}}
                                     <template x-if="lesson.id">
                                         <input type="hidden" :name="'modules['+mi+'][lessons]['+li+'][id]'" :value="lesson.id">
