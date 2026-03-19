@@ -208,15 +208,15 @@
                                        class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary">
                                 <div class="flex items-center gap-1">
                                     <button type="button" @click="moveModule(mi, -1)" x-show="mi > 0"
-                                            class="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-400 transition" title="Mover para cima">
+                                            class="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-400 transition" title="Subir módulo na ordem">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
                                     </button>
                                     <button type="button" @click="moveModule(mi, 1)" x-show="mi < modules.length - 1"
-                                            class="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-400 transition" title="Mover para baixo">
+                                            class="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-400 transition" title="Descer módulo na ordem">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                     </button>
                                     <button type="button" @click="removeModule(mi)" x-show="modules.length > 1"
-                                            class="p-1.5 rounded-lg border border-red-200 hover:bg-red-50 text-red-400 hover:text-red-600 transition" title="Remover módulo">
+                                            class="p-1.5 rounded-lg border border-red-200 hover:bg-red-50 text-red-400 hover:text-red-600 transition" title="Excluir este módulo">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                     </button>
                                 </div>
@@ -292,15 +292,15 @@
                                         {{-- Lesson actions --}}
                                         <div class="flex items-center gap-1">
                                             <button type="button" @click="moveLesson(mi, li, -1)" x-show="li > 0"
-                                                    class="p-1 rounded border border-gray-200 hover:bg-gray-100 text-gray-400 transition" title="Mover para cima">
+                                                    class="p-1 rounded border border-gray-200 hover:bg-gray-100 text-gray-400 transition" title="Subir aula na ordem">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
                                             </button>
                                             <button type="button" @click="moveLesson(mi, li, 1)" x-show="li < module.lessons.length - 1"
-                                                    class="p-1 rounded border border-gray-200 hover:bg-gray-100 text-gray-400 transition" title="Mover para baixo">
+                                                    class="p-1 rounded border border-gray-200 hover:bg-gray-100 text-gray-400 transition" title="Descer aula na ordem">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                             </button>
                                             <button type="button" @click="removeLesson(mi, li)" x-show="module.lessons.length > 1"
-                                                    class="p-1 rounded border border-red-200 hover:bg-red-50 text-red-400 hover:text-red-600 transition" title="Remover aula">
+                                                    class="p-1 rounded border border-red-200 hover:bg-red-50 text-red-400 hover:text-red-600 transition" title="Excluir esta aula">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                             </button>
                                         </div>
