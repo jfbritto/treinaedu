@@ -29,6 +29,9 @@ Route::get('/', function () {
     return view('welcome', compact('plans'));
 })->name('home');
 
+Route::get('/termos-de-uso', fn () => view('pages.termos-de-uso'))->name('termos');
+Route::get('/politica-de-privacidade', fn () => view('pages.politica-de-privacidade'))->name('privacidade');
+
 Route::get('/certificate/verify', [CertificateVerificationController::class, 'show'])
     ->name('certificate.verify');
 Route::post('/certificate/verify', [CertificateVerificationController::class, 'verify'])
