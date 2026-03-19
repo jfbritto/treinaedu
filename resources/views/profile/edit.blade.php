@@ -20,9 +20,9 @@
     {{-- Cabeçalho: banner + avatar --}}
     <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
         {{-- Banner --}}
-        <div class="h-28 bg-gradient-to-r from-blue-600 to-blue-400 relative">
+        <div class="h-28 relative" style="background: linear-gradient(to right, var(--secondary), var(--primary))">
             <div class="absolute -bottom-10 left-6">
-                <div class="w-20 h-20 rounded-full bg-blue-700 border-4 border-white flex items-center justify-center shadow">
+                <div class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center shadow" style="background-color: var(--primary)">
                     <span class="text-white text-2xl font-bold">{{ $initials }}</span>
                 </div>
             </div>
@@ -52,7 +52,7 @@
                         <p class="text-xs text-gray-400 mt-0.5">Concluído{{ $stats['completed'] !== 1 ? 's' : '' }}</p>
                     </div>
                     <div class="text-center">
-                        <p class="text-2xl font-bold text-blue-500">{{ $stats['certificates'] }}</p>
+                        <p class="text-2xl font-bold" style="color: var(--primary)">{{ $stats['certificates'] }}</p>
                         <p class="text-xs text-gray-400 mt-0.5">Certificado{{ $stats['certificates'] !== 1 ? 's' : '' }}</p>
                     </div>
                 </div>
@@ -123,13 +123,13 @@
             </div>
 
             {{-- Dica de segurança --}}
-            <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 flex gap-3">
-                <svg class="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="rounded-xl p-4 flex gap-3" style="background-color: color-mix(in srgb, var(--primary) 8%, transparent); border: 1px solid color-mix(in srgb, var(--primary) 15%, transparent)">
+                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: var(--primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 <div>
-                    <p class="text-sm font-medium text-secondary mb-0.5">Dica de segurança</p>
-                    <p class="text-xs text-primary">Nunca compartilhe sua senha com ninguém. Nenhum funcionário autorizado vai pedir sua senha.</p>
+                    <p class="text-sm font-medium mb-0.5" style="color: var(--secondary)">Dica de segurança</p>
+                    <p class="text-xs" style="color: var(--primary)">Nunca compartilhe sua senha com ninguém. Nenhum funcionário autorizado vai pedir sua senha.</p>
                 </div>
             </div>
         </div>

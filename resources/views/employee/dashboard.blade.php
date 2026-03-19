@@ -7,11 +7,11 @@
     @endphp
 
     {{-- Boas-vindas + progresso geral --}}
-    <div class="bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl p-6 mb-6 text-white">
+    <div class="rounded-xl p-6 mb-6 text-white" style="background: linear-gradient(to right, var(--secondary), var(--primary))">
         <div class="flex flex-col sm:flex-row sm:items-center gap-4">
             <div class="flex-1">
                 <h2 class="text-xl font-bold mb-0.5">Olá, {{ explode(' ', $user->name)[0] }}! 👋</h2>
-                <p class="text-blue-100 text-sm">
+                <p class="text-white/70 text-sm">
                     @if($pct === 100)
                         Parabéns! Você concluiu todos os treinamentos.
                     @elseif($pct > 50)
@@ -23,14 +23,14 @@
                     @endif
                 </p>
                 <div class="mt-3">
-                    <div class="flex justify-between text-xs text-blue-200 mb-1">
+                    <div class="flex justify-between text-xs text-white/60 mb-1">
                         <span>Progresso geral</span>
                         <span class="font-semibold text-white">{{ $pct }}%</span>
                     </div>
-                    <div class="w-full bg-blue-400 bg-opacity-50 rounded-full h-2">
+                    <div class="w-full rounded-full h-2" style="background-color: rgba(255,255,255,0.25)">
                         <div class="bg-white h-2 rounded-full transition-all" style="width: {{ $pct }}%"></div>
                     </div>
-                    <p class="text-xs text-blue-200 mt-1.5">{{ $completed->count() }} de {{ $total }} treinamento{{ $total !== 1 ? 's' : '' }} concluído{{ $completed->count() !== 1 ? 's' : '' }}</p>
+                    <p class="text-xs text-white/60 mt-1.5">{{ $completed->count() }} de {{ $total }} treinamento{{ $total !== 1 ? 's' : '' }} concluído{{ $completed->count() !== 1 ? 's' : '' }}</p>
                 </div>
             </div>
         </div>
@@ -61,8 +61,8 @@
             </div>
         </div>
         <div class="bg-white rounded-xl shadow-sm p-5 flex items-center gap-4">
-            <div class="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
                 </svg>
             </div>
@@ -110,8 +110,8 @@
                                 {{ $overdue ? 'border-l-2 border-red-400' : ($training->is_mandatory ? 'border-l-2 border-red-200' : '') }}">
                             {{-- Ícone --}}
                             <div class="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center
-                                {{ $started ? 'bg-yellow-50' : 'bg-gray-50' }}">
-                                <svg class="w-6 h-6 {{ $started ? 'text-yellow-500' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 24 24">
+                                {{ $started ? 'bg-primary/10' : 'bg-gray-50' }}">
+                                <svg class="w-6 h-6 {{ $started ? 'text-primary' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 24 24">
                                     <path fill-rule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clip-rule="evenodd"/>
                                 </svg>
                             </div>
@@ -128,7 +128,7 @@
                                 @if($started)
                                     <div class="flex items-center gap-2 mt-1.5">
                                         <div class="flex-1 bg-gray-100 rounded-full h-1.5">
-                                            <div class="bg-yellow-400 h-1.5 rounded-full" style="width: {{ $progress }}%"></div>
+                                            <div class="h-1.5 rounded-full" style="width: {{ $progress }}%; background-color: var(--secondary)"></div>
                                         </div>
                                         <span class="text-xs text-gray-400 flex-shrink-0">{{ $progress }}%</span>
                                     </div>
@@ -161,7 +161,7 @@
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                 <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
                     <div class="flex items-center gap-2">
-                        <div class="w-2 h-2 rounded-full bg-blue-400"></div>
+                        <div class="w-2 h-2 rounded-full bg-primary"></div>
                         <h3 class="text-sm font-semibold text-gray-700">Certificados</h3>
                     </div>
                     <a href="{{ route('employee.certificates.index') }}" class="text-xs text-primary hover:underline">Ver todos →</a>
@@ -175,8 +175,8 @@
                     <div class="divide-y divide-gray-50">
                         @foreach($certificates->take(3) as $cert)
                             <div class="px-5 py-3.5 flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
                                     </svg>
                                 </div>
@@ -202,15 +202,15 @@
             @if($completed->isNotEmpty())
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                     <div class="flex items-center gap-2 px-5 py-4 border-b border-gray-100">
-                        <div class="w-2 h-2 rounded-full bg-green-400"></div>
+                        <div class="w-2 h-2 rounded-full bg-primary"></div>
                         <h3 class="text-sm font-semibold text-gray-700">Recém Concluídos</h3>
                     </div>
                     <div class="divide-y divide-gray-50">
                         @foreach($completed->take(3) as $training)
                             <div class="px-5 py-3.5 flex items-center gap-3">
-                                <div class="w-2 h-2 rounded-full bg-green-400 flex-shrink-0 ml-1"></div>
+                                <div class="w-2 h-2 rounded-full bg-primary flex-shrink-0 ml-1"></div>
                                 <p class="text-xs text-gray-700 flex-1 truncate">{{ $training->title }}</p>
-                                <svg class="w-3.5 h-3.5 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-3.5 h-3.5 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
                                 </svg>
                             </div>
