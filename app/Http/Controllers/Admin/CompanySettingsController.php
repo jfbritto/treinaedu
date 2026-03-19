@@ -28,12 +28,15 @@ class CompanySettingsController extends Controller
 
         $company->name = $request->name;
 
-        if ($request->hasFile('logo')) {
-            // Delete old logo if exists
+        if ($request->boolean('remove_logo')) {
             if ($company->logo_path) {
                 Storage::disk('public')->delete($company->logo_path);
             }
-            // Store on public disk → returns relative path like "logos/1/file.jpg"
+            $company->logo_path = null;
+        } elseif ($request->hasFile('logo')) {
+            if ($company->logo_path) {
+                Storage::disk('public')->delete($company->logo_path);
+            }
             $company->logo_path = $request->file('logo')->store("logos/{$company->id}", 'public');
         }
 
