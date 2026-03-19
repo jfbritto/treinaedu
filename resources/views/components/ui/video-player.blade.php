@@ -13,13 +13,7 @@
 
 <div x-data="videoPlayer(@js($trainingId), @js($provider), @js($videoId), @js((int) $initialProgress), @js($nextLessonUrl))">
     @if($provider === 'youtube')
-        <style>
-            .yt-container iframe { pointer-events: auto; }
-            .yt-container .ytp-watermark,
-            .yt-container .ytp-youtube-button,
-            .yt-container .ytp-impression-link { display: none !important; }
-        </style>
-        <div class="relative aspect-video rounded-xl overflow-hidden bg-black yt-container">
+        <div class="relative aspect-video rounded-xl overflow-hidden bg-black">
             <div id="yt-player-{{ $trainingId }}" class="absolute inset-0 w-full h-full"></div>
         </div>
     @elseif($provider === 'vimeo')
