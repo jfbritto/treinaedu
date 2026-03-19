@@ -33,7 +33,7 @@ class LessonProgressService
         // Auto-complete lesson if threshold reached
         $lesson = TrainingLesson::find($lessonId);
         if ($lesson && !$lessonView->completed_at && $lessonView->progress_percent >= $lesson->completionThreshold()) {
-            $lessonView->update(['completed_at' => now()]);
+            $lessonView->update(['completed_at' => now(), 'progress_percent' => 100]);
         }
 
         // Recalculate training progress
