@@ -78,7 +78,24 @@
                                     </svg>
                                 @endif
                                 <span class="{{ $isCurrent ? 'font-semibold text-primary' : ($lessonComplete ? 'text-gray-500' : 'text-gray-700') }} truncate">{{ $lesson->title }}</span>
-                                @if($lesson->duration_minutes > 0)
+                                @if($lesson->quiz)
+                                    @php
+                                        $lessonQuizPassed = auth()->user()->quizAttempts()
+                                            ->where('quiz_id', $lesson->quiz->id)
+                                            ->where('passed', true)->exists();
+                                    @endphp
+                                    <span class="flex-shrink-0 ml-auto flex items-center gap-1">
+                                        @if($lessonQuizPassed)
+                                            <svg class="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" title="Quiz aprovado">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                                            </svg>
+                                        @else
+                                            <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" title="Quiz pendente">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                            </svg>
+                                        @endif
+                                    </span>
+                                @elseif($lesson->duration_minutes > 0)
                                     <span class="text-xs text-gray-400 flex-shrink-0 ml-auto">{{ $lesson->duration_minutes }}min</span>
                                 @endif
                             </a>

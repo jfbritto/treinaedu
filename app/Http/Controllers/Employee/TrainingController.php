@@ -55,6 +55,7 @@ class TrainingController extends Controller
 
         // Load modules with lessons
         $training->load([
+            'modules.lessons.quiz',
             'modules.lessons',
             'modules.quiz',
             'trainingQuiz',
@@ -132,6 +133,19 @@ class TrainingController extends Controller
             }
         }
 
+        // Lesson quiz states
+        $allLessonQuizzesPassed = true;
+        foreach ($training->modules as $module) {
+            foreach ($module->lessons as $lesson) {
+                if ($lesson->quiz) {
+                    $passed = $user->quizAttempts()
+                        ->where('quiz_id', $lesson->quiz->id)
+                        ->where('passed', true)->exists();
+                    if (!$passed) $allLessonQuizzesPassed = false;
+                }
+            }
+        }
+
         // Training quiz state
         $trainingQuizPassed = true;
         if ($training->trainingQuiz) {
@@ -141,9 +155,9 @@ class TrainingController extends Controller
         }
 
         $isCompleted = $trainingView?->completed_at !== null;
-        $canComplete = $allLessonsComplete && $allModuleQuizzesPassed && $trainingQuizPassed && !$isCompleted;
+        $canComplete = $allLessonsComplete && $allModuleQuizzesPassed && $allLessonQuizzesPassed && $trainingQuizPassed && !$isCompleted;
 
-        $canGenerateCertificate = $isCompleted && $allModuleQuizzesPassed && $trainingQuizPassed;
+        $canGenerateCertificate = $isCompleted && $allModuleQuizzesPassed && $allLessonQuizzesPassed && $trainingQuizPassed;
 
         // Get assignment info for due date
         $assignment = $training->assignments()
@@ -209,11 +223,17 @@ class TrainingController extends Controller
                 $view = $lessonViews[$lesson->id] ?? null;
                 $lessonComplete = $view && $view->completed_at;
 
+                // If lesson has a quiz, it's only fully complete when quiz is passed
+                $lessonQuizPassed = !$lesson->quiz || $user->quizAttempts()
+                    ->where('quiz_id', $lesson->quiz->id)
+                    ->where('passed', true)->exists();
+                $lessonFullyComplete = $lessonComplete && $lessonQuizPassed;
+
                 $lessonUnlocked = $moduleUnlocked && (!$module->is_sequential || $prevLessonComplete);
                 $states['lessons'][$lesson->id] = $lessonUnlocked;
 
-                if (!$lessonComplete) $allLessonsComplete = false;
-                $prevLessonComplete = $lessonComplete;
+                if (!$lessonFullyComplete) $allLessonsComplete = false;
+                $prevLessonComplete = $lessonFullyComplete;
             }
 
             $quizPassed = !$module->quiz || $user->quizAttempts()

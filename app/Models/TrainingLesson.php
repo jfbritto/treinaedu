@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class TrainingLesson extends Model
 {
@@ -16,6 +17,11 @@ class TrainingLesson extends Model
     public function module(): BelongsTo
     {
         return $this->belongsTo(TrainingModule::class, 'module_id');
+    }
+
+    public function quiz(): HasOne
+    {
+        return $this->hasOne(Quiz::class, 'lesson_id');
     }
 
     public function lessonViews(): HasMany
