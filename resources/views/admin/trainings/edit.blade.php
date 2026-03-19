@@ -270,13 +270,24 @@
                                                class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white">
 
                                         {{-- Lesson type --}}
-                                        <select :name="'modules['+mi+'][lessons]['+li+'][type]'"
-                                                x-model="lesson.type"
-                                                class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white w-32">
-                                            <option value="video">Vídeo</option>
-                                            <option value="document">Documento</option>
-                                            <option value="text">Texto</option>
-                                        </select>
+                                        <div class="flex items-center gap-1 flex-shrink-0">
+                                            <input type="hidden" :name="'modules['+mi+'][lessons]['+li+'][type]'" x-model="lesson.type">
+                                            <button type="button" @click="lesson.type = 'video'"
+                                                :class="lesson.type === 'video' ? 'bg-primary/10 text-primary border-primary/30' : 'bg-white text-gray-400 border-gray-200 hover:text-gray-600'"
+                                                class="p-1.5 rounded-lg border transition" title="Vídeo">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            </button>
+                                            <button type="button" @click="lesson.type = 'document'"
+                                                :class="lesson.type === 'document' ? 'bg-primary/10 text-primary border-primary/30' : 'bg-white text-gray-400 border-gray-200 hover:text-gray-600'"
+                                                class="p-1.5 rounded-lg border transition" title="Documento">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                            </button>
+                                            <button type="button" @click="lesson.type = 'text'"
+                                                :class="lesson.type === 'text' ? 'bg-primary/10 text-primary border-primary/30' : 'bg-white text-gray-400 border-gray-200 hover:text-gray-600'"
+                                                class="p-1.5 rounded-lg border transition" title="Texto">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+                                            </button>
+                                        </div>
 
                                         {{-- Lesson actions --}}
                                         <div class="flex items-center gap-1">
@@ -347,9 +358,12 @@
 
                                     {{-- Video preview --}}
                                     <div x-show="lesson.type === 'video' && getEmbedUrl(lesson.video_url)" x-cloak class="pl-9">
-                                        <div class="aspect-video rounded-lg overflow-hidden bg-black border border-gray-200">
-                                            <iframe :src="getEmbedUrl(lesson.video_url)" class="w-full h-full" frameborder="0" allowfullscreen
-                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+                                        <p class="text-xs font-medium text-gray-500 mb-1.5">Preview</p>
+                                        <div class="rounded-lg overflow-hidden bg-black border border-gray-200" style="max-width: 480px">
+                                            <div class="aspect-video">
+                                                <iframe :src="getEmbedUrl(lesson.video_url)" class="w-full h-full" frameborder="0" allowfullscreen
+                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+                                            </div>
                                         </div>
                                     </div>
 
