@@ -49,6 +49,36 @@
         </div>
     </div>
 
+    {{-- Filters --}}
+    <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+        <form method="GET" action="{{ route('users.index') }}" class="flex flex-wrap items-end gap-3">
+            <div class="flex-1 min-w-[200px]">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Buscar</label>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Nome ou e-mail..."
+                       class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+            </div>
+            <div class="w-36">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Perfil</label>
+                <select name="role" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                    <option value="">Todos</option>
+                    <option value="employee" {{ request('role') === 'employee' ? 'selected' : '' }}>Colaborador</option>
+                    <option value="instructor" {{ request('role') === 'instructor' ? 'selected' : '' }}>Instrutor</option>
+                </select>
+            </div>
+            <div class="flex items-center gap-2">
+                <button type="submit" class="inline-flex items-center gap-1.5 bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    Filtrar
+                </button>
+                @if(request()->hasAny(['search', 'role']))
+                    <a href="{{ route('users.index') }}" class="text-sm text-gray-500 hover:text-gray-700 transition">Limpar</a>
+                @endif
+            </div>
+        </form>
+    </div>
+
     {{-- Table --}}
     <div class="bg-white rounded-xl shadow-sm overflow-hidden overflow-x-auto">
         @if($users->isEmpty())
