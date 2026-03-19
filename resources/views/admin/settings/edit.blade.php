@@ -42,7 +42,7 @@
                 {{-- Logo com Cropper --}}
                 <div class="bg-white rounded-xl shadow-sm p-6" x-data="logoUploader()">
                     <div class="flex items-center gap-3 mb-5">
-                        <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                        <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                             <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                             </svg>
@@ -119,30 +119,30 @@
                     </div>
 
                     {{-- Cores extraídas da logo --}}
-                    <div x-show="extractedColors.length > 0" x-cloak class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                    <div x-show="extractedColors.length > 0" x-cloak class="mt-4 p-4 bg-primary/5 border border-primary/20 rounded-xl">
                         <div class="flex items-center gap-2 mb-3">
-                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
                             </svg>
-                            <p class="text-sm font-semibold text-blue-700">Cores detectadas na logo</p>
+                            <p class="text-sm font-semibold text-primary">Cores detectadas na logo</p>
                         </div>
                         <div class="flex flex-wrap gap-2 mb-3">
                             <template x-for="(color, index) in extractedColors" :key="index">
                                 <button type="button"
                                     @click="selectedColorIndex = index"
                                     class="w-10 h-10 rounded-lg border-2 transition-transform hover:scale-110 cursor-pointer"
-                                    :class="selectedColorIndex === index ? 'border-blue-500 ring-2 ring-blue-300' : 'border-gray-200'"
+                                    :class="selectedColorIndex === index ? 'border-primary ring-2 ring-primary/30' : 'border-gray-200'"
                                     :style="'background-color:' + color">
                                 </button>
                             </template>
                         </div>
                         <div x-show="selectedColorIndex !== null" class="flex gap-2">
                             <button type="button" @click="applyColorAs('primary')"
-                                class="flex-1 text-xs font-medium px-3 py-2 rounded-lg bg-white border border-blue-200 text-blue-700 hover:bg-blue-100 transition">
+                                class="flex-1 text-xs font-medium px-3 py-2 rounded-lg bg-white border border-primary/20 text-primary hover:bg-primary/10 transition">
                                 Usar como Cor do Menu
                             </button>
                             <button type="button" @click="applyColorAs('secondary')"
-                                class="flex-1 text-xs font-medium px-3 py-2 rounded-lg bg-white border border-blue-200 text-blue-700 hover:bg-blue-100 transition">
+                                class="flex-1 text-xs font-medium px-3 py-2 rounded-lg bg-white border border-primary/20 text-primary hover:bg-primary/10 transition">
                                 Usar como Cor de Destaque
                             </button>
                         </div>

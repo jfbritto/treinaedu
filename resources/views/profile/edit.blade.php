@@ -11,7 +11,7 @@
         };
         $roleColor = match($user->role) {
             'admin'      => 'bg-purple-100 text-purple-700',
-            'instructor' => 'bg-blue-100 text-blue-700',
+            'instructor' => 'bg-primary/15 text-primary',
             'employee'   => 'bg-green-100 text-green-700',
             default      => 'bg-gray-100 text-gray-700',
         };
@@ -67,7 +67,7 @@
         <div class="space-y-6">
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <div class="flex items-center gap-3 mb-5">
-                    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                    <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                         </svg>
@@ -205,7 +205,7 @@
                     <div class="space-y-2">
                         <a href="{{ route('employee.trainings.index') }}"
                             class="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:border-primary/30 hover:bg-primary/5 transition">
-                            <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                            <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                                 <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                                 </svg>

@@ -8,7 +8,7 @@
             'employee'   => 'Colaborador',
             default      => ucfirst($user->role),
         };
-        $roleColor = $user->role === 'instructor' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700';
+        $roleColor = $user->role === 'instructor' ? 'bg-purple-100 text-purple-700' : 'bg-primary/15 text-primary';
         $avatarBg  = $user->role === 'instructor' ? 'bg-purple-600' : 'bg-primary';
     @endphp
 
@@ -52,7 +52,7 @@
             {{-- Informações básicas --}}
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <div class="flex items-center gap-3 mb-5">
-                    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                    <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                         </svg>

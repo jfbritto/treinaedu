@@ -30,7 +30,7 @@
     @endphp
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div class="bg-white rounded-xl shadow-sm p-4 flex items-center gap-4">
-            <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
                 <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
@@ -63,7 +63,7 @@
             </div>
         </div>
         <div class="bg-white rounded-xl shadow-sm p-4 flex items-center gap-4">
-            <div class="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center flex-shrink-0">
+            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
                 <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                 </svg>
@@ -161,8 +161,8 @@
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                                        <span class="text-xs font-bold text-blue-700">
+                                    <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                        <span class="text-xs font-bold text-primary">
                                             {{ strtoupper(substr($view->user->name ?? '?', 0, 2)) }}
                                         </span>
                                     </div>
@@ -178,7 +178,7 @@
                             <td class="px-6 py-4 hidden lg:table-cell">
                                 <div class="flex items-center gap-2 w-36">
                                     <div class="flex-1 bg-gray-100 rounded-full h-2">
-                                        <div class="h-2 rounded-full {{ $view->progress_percent >= 100 ? 'bg-green-500' : ($view->progress_percent >= 50 ? 'bg-blue-500' : 'bg-yellow-400') }}"
+                                        <div class="h-2 rounded-full {{ $view->progress_percent >= 100 ? 'bg-green-500' : ($view->progress_percent >= 50 ? 'bg-primary' : 'bg-yellow-400') }}"
                                              style="width: {{ $view->progress_percent }}%"></div>
                                     </div>
                                     <span class="text-xs font-medium text-gray-600 w-8 text-right flex-shrink-0">{{ $view->progress_percent }}%</span>

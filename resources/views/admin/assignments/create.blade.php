@@ -105,7 +105,7 @@
 
         {{-- Dica lateral --}}
         <div>
-            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <div class="bg-primary/5 border border-primary/20 rounded-xl p-4">
                 <div class="flex items-center gap-2 mb-3">
                     <div class="w-6 h-6 rounded-md bg-primary flex items-center justify-center flex-shrink-0">
                         <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,15 +117,15 @@
                 <div class="space-y-3">
                     <div class="flex gap-2.5">
                         <span class="w-5 h-5 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
-                        <p class="text-xs text-blue-700">O treinamento aparece automaticamente para todos os membros dos grupos selecionados.</p>
+                        <p class="text-xs text-primary">O treinamento aparece automaticamente para todos os membros dos grupos selecionados.</p>
                     </div>
                     <div class="flex gap-2.5">
                         <span class="w-5 h-5 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
-                        <p class="text-xs text-blue-700">Se marcar como <strong>obrigatório</strong>, o colaborador vê um destaque vermelho e sabe que é exigência.</p>
+                        <p class="text-xs text-primary">Se marcar como <strong>obrigatório</strong>, o colaborador vê um destaque vermelho e sabe que é exigência.</p>
                     </div>
                     <div class="flex gap-2.5">
                         <span class="w-5 h-5 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
-                        <p class="text-xs text-blue-700">A <strong>data limite</strong> é exibida ao colaborador com aviso de urgência quando o prazo se aproxima.</p>
+                        <p class="text-xs text-primary">A <strong>data limite</strong> é exibida ao colaborador com aviso de urgência quando o prazo se aproxima.</p>
                     </div>
                 </div>
             </div>
