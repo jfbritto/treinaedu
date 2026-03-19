@@ -32,7 +32,14 @@ class UserController extends Controller
 
         $users = $query->orderBy('name')->paginate(15)->withQueryString();
 
-        return view('admin.users.index', compact('users'));
+        // Stats gerais (não filtrados)
+        $companyUsers = User::where('company_id', auth()->user()->company_id)
+            ->where('id', '!=', auth()->id());
+        $totalUsers = $companyUsers->count();
+        $totalActive = (clone $companyUsers)->where('active', true)->count();
+        $totalInstructors = (clone $companyUsers)->where('role', 'instructor')->count();
+
+        return view('admin.users.index', compact('users', 'totalUsers', 'totalActive', 'totalInstructors'));
     }
 
     public function create()

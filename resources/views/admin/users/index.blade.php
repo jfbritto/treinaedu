@@ -1,9 +1,9 @@
 <x-layout.app title="Usuários">
 
     @php
-        $total     = $users->total();
-        $active    = $users->getCollection()->where('active', true)->count();
-        $instructors = $users->getCollection()->where('role', 'instructor')->count();
+        $total = $totalUsers;
+        $active = $totalActive;
+        $instructors = $totalInstructors;
     @endphp
 
     {{-- Header --}}
