@@ -33,13 +33,13 @@ class StoreTrainingRequest extends FormRequest
             'modules.*.lessons.*.duration_minutes' => 'nullable|integer|min:0',
             'modules.*.lessons.*.content' => 'required_if:modules.*.lessons.*.type,text|nullable|string',
 
-            // Quiz (training-level)
+            // Quiz (training-level) — only validated when has_quiz is checked
             'has_quiz' => 'boolean',
-            'passing_score' => 'nullable|required_if:has_quiz,1|integer|min:1|max:100',
-            'questions' => 'nullable|required_if:has_quiz,1|array|min:1',
+            'passing_score' => 'nullable|integer|min:1|max:100',
+            'questions' => 'exclude_unless:has_quiz,1|array|min:1',
             'questions.*.question' => 'required_with:questions|string',
             'questions.*.options' => 'required_with:questions|array|min:2',
-            'questions.*.options.*.text' => 'required|string|max:500',
+            'questions.*.options.*.text' => 'required_with:questions|string|max:500',
             'questions.*.correct' => 'required_with:questions|integer|min:0',
         ];
     }
