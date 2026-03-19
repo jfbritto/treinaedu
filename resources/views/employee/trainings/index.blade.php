@@ -13,7 +13,7 @@
                 <span class="text-sm font-bold text-primary">{{ $pct }}% concluído</span>
             </div>
             <div class="w-full bg-gray-100 rounded-full h-2.5">
-                <div class="bg-blue-500 h-2.5 rounded-full transition-all" style="width: {{ $pct }}%"></div>
+                <div class="bg-primary h-2.5 rounded-full transition-all" style="width: {{ $pct }}%"></div>
             </div>
             <p class="text-xs text-gray-400 mt-2">
                 {{ $completed->count() }} de {{ $total }} treinamento{{ $total !== 1 ? 's' : '' }} concluído{{ $completed->count() !== 1 ? 's' : '' }}
@@ -49,18 +49,19 @@
                         $dueSoon   = $soonDays !== null && $soonDays >= 0 && $soonDays <= 7;
                         $borderCls = $overdue
                             ? 'border-red-500'
-                            : ($training->is_mandatory ? 'border-red-300' : 'border-yellow-400');
+                            : ($training->is_mandatory ? 'border-red-300' : '');
                     @endphp
                     <a href="{{ route('employee.trainings.show', $training) }}"
-                        class="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all border-l-4 {{ $borderCls }} flex flex-col overflow-hidden">
+                        class="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all border-l-4 {{ $borderCls }} flex flex-col overflow-hidden"
+                        @if(!$overdue && !$training->is_mandatory) style="border-left-color: var(--secondary)" @endif>
 
                         {{-- Cabeçalho do card --}}
                         <div class="p-5 flex-1 flex flex-col">
                             <div class="flex items-start gap-3 mb-2">
                                 {{-- Ícone play --}}
                                 <div class="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center mt-0.5
-                                    {{ $started ? 'bg-yellow-50' : 'bg-gray-50' }}">
-                                    <svg class="w-6 h-6 {{ $started ? 'text-yellow-500' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 24 24">
+                                    {{ $started ? 'bg-primary/10' : 'bg-gray-50' }}">
+                                    <svg class="w-6 h-6 {{ $started ? 'text-primary' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 24 24">
                                         <path fill-rule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clip-rule="evenodd"/>
                                     </svg>
                                 </div>
@@ -70,7 +71,7 @@
                                             {{ $training->title }}
                                         </h4>
                                         @if($started)
-                                            <span class="flex-shrink-0 text-xs bg-yellow-50 text-yellow-700 border border-yellow-200 rounded-full px-2 py-0.5">Em andamento</span>
+                                            <span class="flex-shrink-0 text-xs rounded-full px-2 py-0.5" style="background-color: color-mix(in srgb, var(--secondary) 15%, transparent); color: var(--secondary); border: 1px solid color-mix(in srgb, var(--secondary) 30%, transparent)">Em andamento</span>
                                         @else
                                             <span class="flex-shrink-0 text-xs bg-gray-50 text-gray-400 border border-gray-200 rounded-full px-2 py-0.5">Não iniciado</span>
                                         @endif
@@ -109,7 +110,7 @@
                                     {{ $training->duration_minutes }} min
                                 </span>
                                 @if($training->has_quiz)
-                                    <span class="inline-flex items-center gap-1 text-xs text-blue-500">
+                                    <span class="inline-flex items-center gap-1 text-xs text-primary">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                                         Com quiz
                                     </span>
@@ -121,10 +122,10 @@
                         <div class="px-5 pb-4">
                             <div class="flex justify-between text-xs text-gray-400 mb-1">
                                 <span>Progresso</span>
-                                <span class="font-medium {{ $started ? 'text-yellow-600' : '' }}">{{ $progress }}%</span>
+                                <span class="font-medium" {!! $started ? 'style="color: var(--secondary)"' : '' !!}>{{ $progress }}%</span>
                             </div>
                             <div class="w-full bg-gray-100 rounded-full h-1.5">
-                                <div class="bg-yellow-400 h-1.5 rounded-full transition-all" style="width: {{ $progress }}%"></div>
+                                <div class="h-1.5 rounded-full transition-all" style="width: {{ $progress }}%; background-color: var(--secondary)"></div>
                             </div>
                         </div>
 
@@ -151,14 +152,15 @@
                 @foreach($completed as $training)
                     @php $view = $training->views->first(); @endphp
                     <a href="{{ route('employee.trainings.show', $training) }}"
-                        class="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all border-l-4 border-green-400 flex flex-col overflow-hidden">
+                        class="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all border-l-4 flex flex-col overflow-hidden"
+                        style="border-left-color: var(--primary)">
 
                         <div class="p-5 flex-1 flex flex-col">
                             <div class="flex items-start justify-between gap-2 mb-3">
                                 <h4 class="font-semibold text-gray-800 leading-snug group-hover:text-primary transition-colors">
                                     {{ $training->title }}
                                 </h4>
-                                <span class="flex-shrink-0 text-xs bg-green-50 text-green-700 border border-green-200 rounded-full px-2 py-0.5">Concluído</span>
+                                <span class="flex-shrink-0 text-xs rounded-full px-2 py-0.5" style="background-color: color-mix(in srgb, var(--primary) 10%, transparent); color: var(--primary); border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent)">Concluído</span>
                             </div>
                             @if($training->description)
                                 <p class="text-xs text-gray-400 leading-relaxed line-clamp-2 mb-3">{{ $training->description }}</p>
@@ -170,7 +172,7 @@
                                     {{ $training->duration_minutes }} min
                                 </span>
                                 @if($training->has_quiz)
-                                    <span class="inline-flex items-center gap-1 text-xs text-blue-500">
+                                    <span class="inline-flex items-center gap-1 text-xs text-primary">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                                         Quiz aprovado
                                     </span>
@@ -186,7 +188,7 @@
 
                         <div class="px-5 pb-4">
                             <div class="w-full bg-gray-100 rounded-full h-1.5">
-                                <div class="bg-green-400 h-1.5 rounded-full w-full"></div>
+                                <div class="h-1.5 rounded-full w-full" style="background-color: var(--primary)"></div>
                             </div>
                         </div>
                     </a>

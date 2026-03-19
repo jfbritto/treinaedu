@@ -201,7 +201,7 @@
                     </div>
                 </div>
 
-                <div class="flex justify-end">
+                <div class="flex justify-end mt-6">
                     <button type="submit"
                             class="inline-flex items-center gap-2 bg-primary hover:bg-secondary text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition shadow-sm">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
