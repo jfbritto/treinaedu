@@ -71,7 +71,7 @@
                     videoId: videoId,
                     width: '100%',
                     height: '100%',
-                    playerVars: { autoplay: autoplay },
+                    playerVars: { autoplay: autoplay, rel: 0, modestbranding: 1 },
                     events: {
                         onStateChange(event) {
                             if (event.data === YT.PlayerState.PLAYING) {
