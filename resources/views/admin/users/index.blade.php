@@ -35,7 +35,7 @@
             </div>
             <div>
                 <p class="text-2xl font-bold text-gray-800">{{ $active }}</p>
-                <p class="text-xs text-gray-400">Ativos (nesta página)</p>
+                <p class="text-xs text-gray-400">Ativos</p>
             </div>
         </div>
         <div class="bg-white rounded-xl shadow-sm p-4 flex items-center gap-4">
@@ -44,7 +44,7 @@
             </div>
             <div>
                 <p class="text-2xl font-bold text-gray-800">{{ $instructors }}</p>
-                <p class="text-xs text-gray-400">Instrutores (nesta página)</p>
+                <p class="text-xs text-gray-400">Instrutores</p>
             </div>
         </div>
     </div>
