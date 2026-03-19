@@ -23,7 +23,7 @@
     @else
         {{-- Summary bar --}}
         <div class="bg-white rounded-xl shadow-sm p-4 mb-6 flex items-center gap-5">
-            <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
                 <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                 </svg>
@@ -42,7 +42,7 @@
                     <div class="h-1.5" style="background: linear-gradient(to right, var(--secondary), var(--primary))"></div>
                     <div class="p-5 flex-1 flex flex-col gap-4">
                         <div class="flex items-start justify-between gap-2">
-                            <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
                                 <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                                 </svg>
@@ -59,7 +59,7 @@
                             {{-- Member avatars --}}
                             <div class="flex -space-x-2">
                                 @foreach($group->users->take(5) as $member)
-                                    <div class="w-7 h-7 rounded-full bg-blue-200 border-2 border-white flex items-center justify-center"
+                                    <div class="w-7 h-7 rounded-full bg-primary/30 border-2 border-white flex items-center justify-center"
                                          title="{{ $member->name }}">
                                         <span class="text-xs font-bold text-secondary">{{ strtoupper(substr($member->name, 0, 1)) }}</span>
                                     </div>
@@ -77,7 +77,7 @@
 
                         <div class="flex items-center gap-2 mt-auto pt-3 border-t border-gray-100">
                             <a href="{{ route('groups.edit', $group) }}"
-                               class="flex-1 flex items-center justify-center gap-1.5 text-xs font-medium text-primary bg-blue-50 hover:bg-blue-100 transition rounded-lg px-3 py-2">
+                               class="flex-1 flex items-center justify-center gap-1.5 text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 transition rounded-lg px-3 py-2">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>

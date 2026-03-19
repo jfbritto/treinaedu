@@ -94,7 +94,25 @@ class TrainingController extends Controller
             }
         }
 
-        // Create/update lesson view for current lesson
+        // Calculate unlock states BEFORE creating lesson view
+        $unlockStates = $this->calculateUnlockStates($training, $lessonViews, $user);
+
+        // If user is trying to access a locked lesson, redirect to first available
+        if ($currentLesson && !($unlockStates['lessons'][$currentLesson->id] ?? false)) {
+            // Find first unlocked incomplete lesson
+            foreach ($training->modules as $module) {
+                foreach ($module->lessons as $lesson) {
+                    if ($unlockStates['lessons'][$lesson->id] ?? false) {
+                        $view = $lessonViews[$lesson->id] ?? null;
+                        if (!$view || !$view->completed_at) {
+                            return redirect()->route('employee.trainings.show', ['training' => $training, 'lesson' => $lesson->id]);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Create/update lesson view for current lesson (only if unlocked)
         if ($currentLesson) {
             \App\Models\LessonView::withoutGlobalScope('company')->firstOrCreate(
                 ['lesson_id' => $currentLesson->id, 'user_id' => $user->id],
@@ -106,10 +124,9 @@ class TrainingController extends Controller
                 ->whereIn('lesson_id', $lessonIds)
                 ->get()
                 ->keyBy('lesson_id');
+            // Recalculate unlock states with fresh data
+            $unlockStates = $this->calculateUnlockStates($training, $lessonViews, $user);
         }
-
-        // Calculate unlock states
-        $unlockStates = $this->calculateUnlockStates($training, $lessonViews, $user);
 
         // Training view
         $trainingView = \App\Models\TrainingView::where('training_id', $training->id)

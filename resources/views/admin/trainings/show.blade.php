@@ -53,7 +53,7 @@
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                 <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                     <div class="flex items-center gap-2">
-                        <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                        <div class="w-2 h-2 rounded-full bg-primary"></div>
                         <h3 class="text-sm font-semibold text-gray-700">Grupos Atribuídos</h3>
                         <span class="text-xs text-gray-400 bg-gray-100 rounded-full px-2 py-0.5">{{ $training->assignments->count() }}</span>
                     </div>
@@ -181,7 +181,7 @@
 
         {{-- Sidebar info --}}
         <div class="space-y-4">
-            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <div class="bg-primary/5 border border-primary/20 rounded-xl p-4">
                 <div class="flex items-center gap-2 mb-3">
                     <div class="w-6 h-6 rounded-md bg-primary flex items-center justify-center flex-shrink-0">
                         <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -190,7 +190,7 @@
                     </div>
                     <p class="text-sm font-semibold text-blue-900">Como funciona</p>
                 </div>
-                <div class="space-y-2.5 text-xs text-blue-700">
+                <div class="space-y-2.5 text-xs text-primary">
                     <p>Atribuindo a um grupo, todos os membros desse grupo passam a ver este treinamento automaticamente.</p>
                     <p>Marcar como <strong>obrigatório</strong> destaca o treinamento para o colaborador e sinaliza que a conclusão é exigida.</p>
                     <p>A <strong>data limite</strong> aparece com indicador de urgência quando o prazo se aproxima.</p>

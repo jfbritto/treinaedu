@@ -41,7 +41,7 @@
                 </div>
             </div>
             <div class="bg-white rounded-xl shadow-sm p-4 flex items-center gap-4">
-                <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
@@ -84,7 +84,7 @@
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                                    <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                                         <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
                                             <path fill-rule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clip-rule="evenodd"/>
                                         </svg>
@@ -138,7 +138,7 @@
                             <td class="px-6 py-4 hidden lg:table-cell">
                                 <div class="flex items-center gap-2 w-32">
                                     <div class="flex-1 bg-gray-100 rounded-full h-1.5">
-                                        <div class="h-1.5 rounded-full {{ $rate >= 70 ? 'bg-green-500' : ($rate >= 30 ? 'bg-yellow-400' : 'bg-blue-400') }}"
+                                        <div class="h-1.5 rounded-full {{ $rate >= 70 ? 'bg-green-500' : ($rate >= 30 ? 'bg-yellow-400' : 'bg-primary') }}"
                                              style="width: {{ $rate }}%"></div>
                                     </div>
                                     <span class="text-xs font-medium text-gray-600 flex-shrink-0 w-8 text-right">{{ $rate }}%</span>

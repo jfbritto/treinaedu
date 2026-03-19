@@ -33,11 +33,11 @@ class LessonProgressService
         // Auto-complete lesson if threshold reached
         $lesson = TrainingLesson::find($lessonId);
         if ($lesson && !$lessonView->completed_at && $lessonView->progress_percent >= $lesson->completionThreshold()) {
-            $lessonView->update(['completed_at' => now()]);
+            $lessonView->update(['completed_at' => now(), 'progress_percent' => 100]);
         }
 
         // Recalculate training progress
-        $training = $lesson->module->training;
+        $training = Training::withoutGlobalScopes()->find($lesson->module->training_id);
         $this->recalculateTrainingProgress($training, $userId, $companyId);
 
         return $lessonView->fresh();
@@ -51,18 +51,31 @@ class LessonProgressService
             return;
         }
 
-        $avgProgress = LessonView::withoutGlobalScope('company')
+        // Calculate average across ALL lessons (not just ones with views)
+        $viewsMap = LessonView::withoutGlobalScope('company')
             ->where('user_id', $userId)
             ->whereIn('lesson_id', $lessonIds)
-            ->avg('progress_percent') ?? 0;
+            ->pluck('progress_percent', 'lesson_id');
 
-        TrainingView::withoutGlobalScope('company')->updateOrCreate(
-            ['training_id' => $training->id, 'user_id' => $userId],
-            [
+        $totalLessons = $lessonIds->count();
+        $sumProgress = $lessonIds->sum(fn($id) => $viewsMap[$id] ?? 0);
+        $avgProgress = $totalLessons > 0 ? $sumProgress / $totalLessons : 0;
+
+        $trainingView = TrainingView::withoutGlobalScope('company')
+            ->where('training_id', $training->id)
+            ->where('user_id', $userId)
+            ->first();
+
+        if ($trainingView) {
+            $trainingView->update(['progress_percent' => (int) round($avgProgress)]);
+        } else {
+            TrainingView::withoutGlobalScope('company')->create([
+                'training_id' => $training->id,
+                'user_id' => $userId,
                 'company_id' => $companyId,
                 'progress_percent' => (int) round($avgProgress),
-                'started_at' => DB::raw('COALESCE(started_at, NOW())'),
-            ]
-        );
+                'started_at' => now(),
+            ]);
+        }
     }
 }

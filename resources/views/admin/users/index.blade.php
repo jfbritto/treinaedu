@@ -21,7 +21,7 @@
     {{-- Stats --}}
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div class="bg-white rounded-xl shadow-sm p-4 flex items-center gap-4">
-            <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
                 <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                 </svg>
@@ -82,8 +82,8 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0
-                                        {{ $user->role === 'instructor' ? 'bg-purple-100' : 'bg-blue-100' }}">
-                                        <span class="text-xs font-bold {{ $user->role === 'instructor' ? 'text-purple-700' : 'text-blue-700' }}">
+                                        {{ $user->role === 'instructor' ? 'bg-purple-100' : 'bg-primary/10' }}">
+                                        <span class="text-xs font-bold {{ $user->role === 'instructor' ? 'text-purple-700' : 'text-primary' }}">
                                             {{ strtoupper(substr($user->name, 0, 2)) }}
                                         </span>
                                     </div>
@@ -95,7 +95,7 @@
                             </td>
                             <td class="px-6 py-4">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                    {{ $user->role === 'instructor' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700' }}">
+                                    {{ $user->role === 'instructor' ? 'bg-purple-100 text-purple-700' : 'bg-primary/15 text-primary' }}">
                                     {{ $user->role === 'instructor' ? 'Instrutor' : 'Colaborador' }}
                                 </span>
                             </td>
