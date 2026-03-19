@@ -37,7 +37,7 @@ class LessonProgressService
         }
 
         // Recalculate training progress
-        $training = $lesson->module->training;
+        $training = Training::withoutGlobalScopes()->find($lesson->module->training_id);
         $this->recalculateTrainingProgress($training, $userId, $companyId);
 
         return $lessonView->fresh();
@@ -51,10 +51,15 @@ class LessonProgressService
             return;
         }
 
-        $avgProgress = LessonView::withoutGlobalScope('company')
+        // Calculate average across ALL lessons (not just ones with views)
+        $viewsMap = LessonView::withoutGlobalScope('company')
             ->where('user_id', $userId)
             ->whereIn('lesson_id', $lessonIds)
-            ->avg('progress_percent') ?? 0;
+            ->pluck('progress_percent', 'lesson_id');
+
+        $totalLessons = $lessonIds->count();
+        $sumProgress = $lessonIds->sum(fn($id) => $viewsMap[$id] ?? 0);
+        $avgProgress = $totalLessons > 0 ? $sumProgress / $totalLessons : 0;
 
         TrainingView::withoutGlobalScope('company')->updateOrCreate(
             ['training_id' => $training->id, 'user_id' => $userId],

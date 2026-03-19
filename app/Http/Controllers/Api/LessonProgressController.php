@@ -19,11 +19,20 @@ class LessonProgressController extends Controller
             'progress_percent' => 'required|integer|min:0|max:100',
         ]);
 
-        $user = $request->user();
+        $user = auth()->user();
         $lesson = TrainingLesson::find($validated['lesson_id']);
 
+        if (!$lesson) {
+            abort(404);
+        }
+
         // Verify lesson belongs to user's company via training
-        $training = $lesson->module->training;
+        $module = $lesson->module;
+        $training = $module ? \App\Models\Training::withoutGlobalScopes()->find($module->training_id) : null;
+
+        if (!$training) {
+            abort(404);
+        }
         if ($training->company_id !== $user->company_id) {
             abort(403);
         }

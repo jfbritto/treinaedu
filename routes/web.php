@@ -115,6 +115,10 @@ Route::middleware('auth')->prefix('api')->group(function () {
     Route::post('training-progress', [TrainingProgressController::class, 'update'])
         ->name('api.training-progress')
         ->middleware('throttle:30,1');
+
+    Route::post('lesson-progress', \App\Http\Controllers\Api\LessonProgressController::class)
+        ->name('api.lesson-progress')
+        ->middleware('throttle:30,1');
 });
 
 // Super Admin routes

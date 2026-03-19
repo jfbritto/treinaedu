@@ -27,23 +27,23 @@
             :initial-progress="$progress"
         />
 
-        {{-- Progress bar --}}
-        <div class="bg-white rounded-xl shadow-sm p-4 mt-4">
+        {{-- Progress bar (reactive) --}}
+        <div class="bg-white rounded-xl shadow-sm p-4 mt-4"
+             x-data="{ pct: {{ $progress }} }"
+             @video-progress.window="pct = $event.detail.percent">
             <div class="flex justify-between text-sm text-gray-500 mb-2">
                 <span>Progresso do vídeo</span>
-                <span class="font-semibold" style="color: var(--secondary)">{{ $progress }}%</span>
+                <span class="font-semibold" style="color: var(--secondary)" x-text="pct + '%'"></span>
             </div>
             <div class="w-full bg-gray-100 rounded-full h-2">
-                <div class="h-2 rounded-full transition-all" style="width: {{ $progress }}%; background-color: var(--secondary)"></div>
+                <div class="h-2 rounded-full transition-all" style="background-color: var(--secondary)" :style="'width: ' + pct + '%'"></div>
             </div>
-            @if($progress >= 90)
-                <p class="text-xs text-green-600 mt-2 flex items-center gap-1">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    Você assistiu o suficiente desta aula.
-                </p>
-            @endif
+            <p x-show="pct >= 90" x-cloak class="text-xs text-green-600 mt-2 flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Você assistiu o suficiente desta aula.
+            </p>
         </div>
 
     @elseif($lesson->isDocument())
