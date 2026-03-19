@@ -4,7 +4,25 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>TreinaEdu — Plataforma de Treinamentos Corporativos</title>
-    <meta name="description" content="Capacite sua equipe com treinamentos em vídeo, quizzes inteligentes e certificados digitais. Plataforma completa para empresas de todos os tamanhos.">
+    <meta name="description" content="Capacite sua equipe com treinamentos em video, quizzes inteligentes e certificados digitais. Plataforma completa para empresas de todos os tamanhos.">
+
+    {{-- Open Graph --}}
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url('/') }}">
+    <meta property="og:title" content="TreinaEdu — Capacite sua equipe. Certifique com confianca.">
+    <meta property="og:description" content="Plataforma de treinamentos corporativos com videos, modulos, quizzes e certificados digitais verificaveis. Comece gratuitamente.">
+    <meta property="og:image" content="{{ url('/og-image.png') }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:site_name" content="TreinaEdu">
+
+    {{-- Twitter Card --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="TreinaEdu — Capacite sua equipe. Certifique com confianca.">
+    <meta name="twitter:description" content="Treinamentos corporativos com videos, quizzes e certificados digitais. Comece gratuitamente.">
+    <meta name="twitter:image" content="{{ url('/og-image.png') }}">
+
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800,900&display=swap" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
