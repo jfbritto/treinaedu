@@ -3,10 +3,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 
-    <div class="mb-6">
-        <h2 class="text-lg font-bold text-gray-800">Configurações da Empresa</h2>
-        <p class="text-xs text-gray-400 mt-0.5">Personalize a identidade visual da plataforma</p>
-    </div>
+    <p class="text-sm text-gray-500 mb-6">Personalize a identidade visual da plataforma</p>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
