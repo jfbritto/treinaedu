@@ -42,6 +42,24 @@
             const j = li + dir;
             if (j < 0 || j >= lessons.length) return;
             [lessons[li], lessons[j]] = [lessons[j], lessons[li]];
+        },
+        hasQuiz: {{ $training->has_quiz ? 'true' : 'false' }},
+        questions: @js($training->quiz ? $training->quiz->questions->map(fn($q) => [
+            'text' => $q->question,
+            'options' => $q->options->map(fn($o) => ['text' => $o->option_text])->values()->toArray(),
+            'correct' => $q->options->search(fn($o) => $o->is_correct) ?? 0,
+        ])->values()->toArray() : [['text' => '', 'options' => [['text' => ''], ['text' => '']], 'correct' => 0]]),
+        addQuestion() {
+            this.questions.push({ text: '', options: [{ text: '' }, { text: '' }], correct: 0 });
+        },
+        removeQuestion(qi) {
+            if (this.questions.length > 1) this.questions.splice(qi, 1);
+        },
+        addOption(qi) {
+            this.questions[qi].options.push({ text: '' });
+        },
+        removeOption(qi, oi) {
+            if (this.questions[qi].options.length > 2) this.questions[qi].options.splice(oi, 1);
         }
     }">
 
@@ -325,7 +343,81 @@
                 </button>
             </div>
 
-            {{-- Section 3: Submit --}}
+            {{-- Section 3: Quiz --}}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-800">Quiz de avaliação</h3>
+                        <p class="text-xs text-gray-400">Opcional — aplicado ao final do treinamento</p>
+                    </div>
+                    <label class="ml-auto flex items-center gap-2 cursor-pointer">
+                        <span class="text-xs text-gray-500">Ativar quiz</span>
+                        <div class="relative">
+                            <input type="checkbox" name="has_quiz" value="1" x-model="hasQuiz" class="sr-only peer">
+                            <div class="w-10 h-5 bg-gray-200 peer-checked:bg-primary rounded-full transition"></div>
+                            <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition peer-checked:translate-x-5"></div>
+                        </div>
+                    </label>
+                </div>
+
+                <div x-show="hasQuiz" x-cloak class="space-y-5">
+                    <div class="space-y-1">
+                        <label class="block text-sm font-medium text-gray-700">Nota mínima de aprovação (%)</label>
+                        <input type="number" name="passing_score" value="{{ old('passing_score', $training->passing_score ?? 70) }}" min="1" max="100"
+                               class="w-32 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+
+                    <div class="space-y-4">
+                        <template x-for="(q, qi) in questions" :key="qi">
+                            <div class="border border-gray-200 rounded-xl p-4 space-y-3 bg-gray-50">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide" x-text="'Questão ' + (qi + 1)"></span>
+                                    <button type="button" @click="removeQuestion(qi)" x-show="questions.length > 1"
+                                        class="text-xs text-red-500 hover:text-red-700 transition">Remover</button>
+                                </div>
+                                <input type="text" :name="'questions[' + qi + '][question]'"
+                                       x-model="q.text" placeholder="Digite a pergunta..."
+                                       class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary">
+                                <div class="space-y-2">
+                                    <p class="text-xs font-medium text-gray-500">Opções <span class="text-gray-400 font-normal">(marque a correta)</span></p>
+                                    <template x-for="(opt, oi) in q.options" :key="oi">
+                                        <div class="flex items-center gap-2">
+                                            <input type="radio" :name="'questions[' + qi + '][correct]'" :value="oi"
+                                                   x-model="q.correct" class="text-primary border-gray-300">
+                                            <input type="text" :name="'questions[' + qi + '][options][' + oi + '][text]'"
+                                                   x-model="opt.text" placeholder="Opção..."
+                                                   class="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary">
+                                            <button type="button" @click="removeOption(qi, oi)" x-show="q.options.length > 2"
+                                                class="text-gray-400 hover:text-red-500 transition">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </template>
+                                    <button type="button" @click="addOption(qi)"
+                                        class="text-xs text-primary hover:text-secondary transition font-medium">+ Adicionar opção</button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <button type="button" @click="addQuestion()"
+                        class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-secondary transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Adicionar questão
+                    </button>
+                </div>
+            </div>
+
+            {{-- Section 4: Submit --}}
             <div class="flex gap-3">
                 <button type="submit"
                         class="inline-flex items-center gap-2 bg-primary hover:bg-secondary text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition shadow-sm">
