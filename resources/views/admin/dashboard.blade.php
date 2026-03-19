@@ -62,7 +62,7 @@
 
         <div class="bg-white rounded-xl shadow-sm p-5 flex flex-col gap-3">
             <div class="flex items-center justify-between">
-                <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center">
+                <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                     <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm14.024-.983a1.125 1.125 0 010 1.966l-5.603 3.113A1.125 1.125 0 019 15.113V8.887c0-.857.921-1.4 1.671-.983l5.603 3.113z" clip-rule="evenodd"/></svg>
                 </div>
                 <a href="{{ route('trainings.index') }}" class="text-xs text-primary hover:underline">Ver →</a>
@@ -88,7 +88,7 @@
         <div class="bg-white rounded-xl shadow-sm p-5 flex flex-col gap-3">
             <div class="flex items-center justify-between">
                 <div class="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>
+                    <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>
                 </div>
                 <a href="{{ route('reports.index') }}" class="text-xs text-primary hover:underline">Ver →</a>
             </div>
