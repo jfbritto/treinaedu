@@ -55,19 +55,22 @@
         {{-- Content area (3/4) --}}
         <div class="lg:col-span-3 order-1 lg:order-2">
             @if($currentLesson)
-                <x-ui.lesson-player
-                    :lesson="$currentLesson"
-                    :lesson-view="$lessonViews[$currentLesson->id] ?? null"
-                    :training="$training"
-                />
-
-                {{-- Next lesson button --}}
                 @php
                     $allLessons = $training->modules->flatMap->lessons;
                     $currentIndex = $allLessons->search(fn($l) => $l->id === $currentLesson->id);
                     $nextLesson = $currentIndex !== false ? $allLessons->get($currentIndex + 1) : null;
                     $nextUnlocked = $nextLesson && ($unlockStates['lessons'][$nextLesson->id] ?? false);
+                    $nextLessonUrl = $nextLesson
+                        ? route('employee.trainings.show', ['training' => $training, 'lesson' => $nextLesson->id, 'autoplay' => 1])
+                        : null;
                 @endphp
+
+                <x-ui.lesson-player
+                    :lesson="$currentLesson"
+                    :lesson-view="$lessonViews[$currentLesson->id] ?? null"
+                    :training="$training"
+                    :next-lesson-url="$nextLessonUrl"
+                />
 
                 @if($nextLesson && $nextUnlocked)
                     <div class="mt-4 flex justify-end">

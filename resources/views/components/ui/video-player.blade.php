@@ -1,4 +1,4 @@
-@props(['videoUrl', 'provider', 'trainingId', 'initialProgress' => 0])
+@props(['videoUrl', 'provider', 'trainingId', 'initialProgress' => 0, 'nextLessonUrl' => null])
 
 @php
     $videoId = '';
@@ -11,7 +11,7 @@
     }
 @endphp
 
-<div x-data="videoPlayer(@js($trainingId), @js($provider), @js($videoId), @js((int) $initialProgress))">
+<div x-data="videoPlayer(@js($trainingId), @js($provider), @js($videoId), @js((int) $initialProgress), @js($nextLessonUrl))">
     @if($provider === 'youtube')
         <div class="relative aspect-video rounded-xl overflow-hidden bg-black">
             <div id="yt-player-{{ $trainingId }}" class="absolute inset-0 w-full h-full"></div>
@@ -32,7 +32,7 @@
 
 @push('scripts')
 <script>
-    function videoPlayer(trainingId, provider, videoId, initialProgress) {
+    function videoPlayer(trainingId, provider, videoId, initialProgress, nextLessonUrl) {
         return {
             progress: initialProgress,
             interval: null,
@@ -66,10 +66,12 @@
 
             createYTPlayer(trainingId, videoId) {
                 const self = this;
+                const autoplay = new URLSearchParams(window.location.search).get('autoplay') === '1' ? 1 : 0;
                 self.player = new YT.Player('yt-player-' + trainingId, {
                     videoId: videoId,
                     width: '100%',
                     height: '100%',
+                    playerVars: { autoplay: autoplay },
                     events: {
                         onStateChange(event) {
                             if (event.data === YT.PlayerState.PLAYING) {
@@ -81,6 +83,14 @@
                                 // captura seek com pause, e fim do vídeo
                                 if (event.data === YT.PlayerState.ENDED) {
                                     if (self.progress < 100) self.updateProgress(100);
+                                    // Navigate to next lesson or reload to refresh state
+                                    setTimeout(() => {
+                                        if (nextLessonUrl) {
+                                            window.location.href = nextLessonUrl;
+                                        } else {
+                                            window.location.reload();
+                                        }
+                                    }, 1500);
                                 } else if (event.data === YT.PlayerState.PAUSED ||
                                     event.data === YT.PlayerState.BUFFERING) {
                                     self.checkYTProgress();
@@ -143,15 +153,8 @@
                     },
                     body: JSON.stringify({ lesson_id: trainingId, progress_percent: pct })
                 }).then(r => r.ok ? r.json() : null).then(data => {
-                    if (data) {
-                        if (data.training_progress !== undefined) {
-                            window.dispatchEvent(new CustomEvent('training-progress-updated', { detail: { trainingProgress: data.training_progress } }));
-                        }
-                        // Reload page when lesson is completed to refresh unlock states
-                        if (data.lesson_completed && !this._reloaded) {
-                            this._reloaded = true;
-                            setTimeout(() => window.location.reload(), 1500);
-                        }
+                    if (data && data.training_progress !== undefined) {
+                        window.dispatchEvent(new CustomEvent('training-progress-updated', { detail: { trainingProgress: data.training_progress } }));
                     }
                 }).catch(() => {});
             }

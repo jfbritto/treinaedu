@@ -1,4 +1,4 @@
-@props(['lesson', 'lessonView', 'training'])
+@props(['lesson', 'lessonView', 'training', 'nextLessonUrl' => null])
 
 @php
     $progress = $lessonView?->progress_percent ?? 0;
@@ -25,6 +25,7 @@
             :provider="$lesson->video_provider"
             :training-id="$lesson->id"
             :initial-progress="$progress"
+            :next-lesson-url="$nextLessonUrl"
         />
 
         {{-- Progress bar (reactive) --}}
