@@ -34,10 +34,14 @@
                         <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100 mb-4">
                             <img src="{{ Storage::url($company->logo_path) }}" alt="Logo atual"
                                  class="h-12 w-auto max-w-32 object-contain rounded-lg border border-gray-200 bg-white p-1.5">
-                            <div>
+                            <div class="flex-1">
                                 <p class="text-sm font-medium text-gray-700">Logo atual</p>
                                 <p class="text-xs text-gray-400">Envie uma nova imagem para substituir</p>
                             </div>
+                            <label class="flex items-center gap-1.5 text-xs text-red-500 hover:text-red-700 cursor-pointer transition">
+                                <input type="checkbox" name="remove_logo" value="1" class="rounded border-gray-300 text-red-500 focus:ring-red-400">
+                                Remover logo
+                            </label>
                         </div>
                     @endif
 
