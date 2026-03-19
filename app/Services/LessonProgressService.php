@@ -61,13 +61,21 @@ class LessonProgressService
         $sumProgress = $lessonIds->sum(fn($id) => $viewsMap[$id] ?? 0);
         $avgProgress = $totalLessons > 0 ? $sumProgress / $totalLessons : 0;
 
-        TrainingView::withoutGlobalScope('company')->updateOrCreate(
-            ['training_id' => $training->id, 'user_id' => $userId],
-            [
+        $trainingView = TrainingView::withoutGlobalScope('company')
+            ->where('training_id', $training->id)
+            ->where('user_id', $userId)
+            ->first();
+
+        if ($trainingView) {
+            $trainingView->update(['progress_percent' => (int) round($avgProgress)]);
+        } else {
+            TrainingView::withoutGlobalScope('company')->create([
+                'training_id' => $training->id,
+                'user_id' => $userId,
                 'company_id' => $companyId,
                 'progress_percent' => (int) round($avgProgress),
-                'started_at' => DB::raw('COALESCE(started_at, NOW())'),
-            ]
-        );
+                'started_at' => now(),
+            ]);
+        }
     }
 }
