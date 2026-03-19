@@ -83,14 +83,14 @@
                                 // captura seek com pause, e fim do vídeo
                                 if (event.data === YT.PlayerState.ENDED) {
                                     if (self.progress < 100) self.updateProgress(100);
-                                    // Navigate to next lesson or reload to refresh state
+                                    // Navigate to next lesson or show completion
                                     setTimeout(() => {
                                         if (nextLessonUrl) {
                                             window.location.href = nextLessonUrl;
                                         } else {
-                                            window.location.reload();
+                                            window.dispatchEvent(new CustomEvent('training-last-lesson-ended'));
                                         }
-                                    }, 1500);
+                                    }, 1000);
                                 } else if (event.data === YT.PlayerState.PAUSED ||
                                     event.data === YT.PlayerState.BUFFERING) {
                                     self.checkYTProgress();

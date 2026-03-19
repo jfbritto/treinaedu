@@ -43,7 +43,7 @@
         </div>
 
         {{-- Content area (3/4) --}}
-        <div class="lg:col-span-3 order-1 lg:order-2">
+        <div class="lg:col-span-3 order-1 lg:order-2" x-data="{ showCelebration: false }" @training-last-lesson-ended.window="showCelebration = true">
             @if($currentLesson)
                 @php
                     $allLessons = $training->modules->flatMap->lessons;
@@ -60,17 +60,66 @@
                         : null;
                     $currentNum = $currentIndex !== false ? $currentIndex + 1 : 1;
                     $totalLessons = $allLessons->count();
+                    $isLastLesson = !$nextLesson;
                 @endphp
 
-                <x-ui.lesson-player
-                    :lesson="$currentLesson"
-                    :lesson-view="$lessonViews[$currentLesson->id] ?? null"
-                    :training="$training"
-                    :next-lesson-url="$nextLessonUrl"
-                    :prev-lesson-url="$prevLessonUrl"
-                    :current-num="$currentNum"
-                    :total-lessons="$totalLessons"
-                />
+                {{-- Lesson player (hidden when celebration shows) --}}
+                <div x-show="!showCelebration">
+                    <x-ui.lesson-player
+                        :lesson="$currentLesson"
+                        :lesson-view="$lessonViews[$currentLesson->id] ?? null"
+                        :training="$training"
+                        :next-lesson-url="$nextLessonUrl"
+                        :prev-lesson-url="$prevLessonUrl"
+                        :current-num="$currentNum"
+                        :total-lessons="$totalLessons"
+                    />
+                </div>
+
+                {{-- Celebration screen --}}
+                <div x-show="showCelebration" x-cloak
+                     x-transition:enter="transition ease-out duration-500"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     class="rounded-xl overflow-hidden text-center py-16 px-8"
+                     style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
+
+                    {{-- Confetti animation --}}
+                    <div class="relative" x-init="$watch('showCelebration', val => { if (val) startConfetti() })">
+                        <canvas id="confetti-canvas" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 1"></canvas>
+
+                        <div class="relative" style="z-index: 2">
+                            {{-- Trophy icon --}}
+                            <div class="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-6">
+                                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-4.5A3.375 3.375 0 0019.875 11l1.5-.75M7.5 18.75v-4.5A3.375 3.375 0 004.125 11l-1.5-.75M12 2.25l.75 3m-.75-3-.75 3m.75-3V1.5m3 3.75L14.25 3m.75 2.25L16.5 3M9 5.25L9.75 3M9 5.25 7.5 3"/>
+                                </svg>
+                            </div>
+
+                            <h2 class="text-3xl font-bold text-white mb-3">Parabéns!</h2>
+                            <p class="text-white/80 text-lg mb-2">Você concluiu todas as aulas de</p>
+                            <p class="text-white font-bold text-xl mb-8">{{ $training->title }}</p>
+
+                            <div class="flex flex-col items-center gap-3">
+                                @if($canComplete)
+                                    <form method="POST" action="{{ route('employee.trainings.complete', $training) }}">
+                                        @csrf
+                                        <button type="submit" class="inline-flex items-center gap-2 bg-white font-bold px-8 py-3 rounded-xl text-sm transition shadow-lg hover:shadow-xl hover:scale-105" style="color: var(--primary)">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                                            </svg>
+                                            Concluir Treinamento
+                                        </button>
+                                    </form>
+                                @endif
+
+                                <button @click="showCelebration = false" class="text-white/60 hover:text-white text-sm transition">
+                                    Voltar para a aula
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             @else
                 <div class="bg-white rounded-xl shadow-sm p-12 text-center">
                     <p class="text-gray-400">Nenhuma aula disponível neste treinamento.</p>
@@ -78,5 +127,53 @@
             @endif
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+    function startConfetti() {
+        const canvas = document.getElementById('confetti-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        canvas.width = canvas.parentElement.offsetWidth;
+        canvas.height = canvas.parentElement.offsetHeight;
+
+        const particles = [];
+        const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98FB98'];
+
+        for (let i = 0; i < 80; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                w: Math.random() * 8 + 4,
+                h: Math.random() * 4 + 2,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                speed: Math.random() * 3 + 2,
+                angle: Math.random() * 360,
+                spin: (Math.random() - 0.5) * 8,
+                drift: (Math.random() - 0.5) * 2,
+            });
+        }
+
+        let frame = 0;
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.y += p.speed;
+                p.x += p.drift;
+                p.angle += p.spin;
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.angle * Math.PI / 180);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                ctx.restore();
+            });
+            frame++;
+            if (frame < 180) requestAnimationFrame(animate);
+        }
+        animate();
+    }
+    </script>
+    @endpush
 
 </x-layout.app>
