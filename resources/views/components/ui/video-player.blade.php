@@ -143,8 +143,15 @@
                     },
                     body: JSON.stringify({ lesson_id: trainingId, progress_percent: pct })
                 }).then(r => r.ok ? r.json() : null).then(data => {
-                    if (data && data.training_progress !== undefined) {
-                        window.dispatchEvent(new CustomEvent('training-progress-updated', { detail: { trainingProgress: data.training_progress } }));
+                    if (data) {
+                        if (data.training_progress !== undefined) {
+                            window.dispatchEvent(new CustomEvent('training-progress-updated', { detail: { trainingProgress: data.training_progress } }));
+                        }
+                        // Reload page when lesson is completed to refresh unlock states
+                        if (data.lesson_completed && !this._reloaded) {
+                            this._reloaded = true;
+                            setTimeout(() => window.location.reload(), 1500);
+                        }
                     }
                 }).catch(() => {});
             }

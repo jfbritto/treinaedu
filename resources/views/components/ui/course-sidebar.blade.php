@@ -31,15 +31,15 @@
                     {{ !$moduleUnlocked ? 'disabled' : '' }}>
 
                     @if(!$moduleUnlocked)
-                        <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                         </svg>
                     @elseif($moduleComplete)
-                        <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     @else
-                        <svg class="w-4 h-4 flex-shrink-0 transition-transform" :class="openModule === {{ $module->id }} ? 'rotate-90' : ''" fill="none" stroke="currentColor" style="color: var(--primary)" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 flex-shrink-0 transition-transform" :class="openModule === {{ $module->id }} ? 'rotate-90' : ''" fill="none" stroke="currentColor" style="color: var(--primary)" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     @endif
@@ -70,11 +70,11 @@
                                 class="flex items-center gap-3 px-4 py-2.5 pl-8 text-sm transition {{ $isCurrent ? 'bg-primary/10 border-l-2' : 'hover:bg-gray-100' }}"
                                 @if($isCurrent) style="border-left-color: var(--primary)" @endif>
                                 @if($lessonComplete)
-                                    <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                     </svg>
                                 @else
-                                    <svg class="w-4 h-4 flex-shrink-0 {{ $isCurrent ? 'text-primary' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 flex-shrink-0 {{ $isCurrent ? 'text-primary' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $typeIcon }}"/>
                                     </svg>
                                 @endif
@@ -102,7 +102,7 @@
                             </a>
                         @else
                             <div class="flex items-center gap-3 px-4 py-2.5 pl-8 text-sm text-gray-300 cursor-not-allowed">
-                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                                 </svg>
                                 <span class="truncate">{{ $lesson->title }}</span>
