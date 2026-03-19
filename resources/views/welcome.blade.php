@@ -223,10 +223,20 @@
     </section>
 
     {{-- Footer --}}
-    <footer class="bg-gray-950 py-12">
+    <footer class="bg-gray-950 pt-12 pb-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="flex items-center gap-2">
+            {{-- Nav links --}}
+            <div class="flex flex-wrap items-center justify-center gap-6 pb-8 border-b border-gray-800">
+                <a href="#funcionalidades" class="text-sm text-gray-400 hover:text-white transition">Funcionalidades</a>
+                <span class="text-gray-700">|</span>
+                <a href="{{ route('login') }}" class="text-sm text-gray-400 hover:text-white transition">Entrar</a>
+                <span class="text-gray-700">|</span>
+                <a href="{{ route('register') }}" class="text-sm text-gray-400 hover:text-white transition">Criar conta</a>
+            </div>
+
+            {{-- Company info --}}
+            <div class="pt-8 text-center space-y-3">
+                <div class="flex items-center justify-center gap-2 mb-4">
                     <div class="w-7 h-7 bg-gradient-to-br from-brand-500 to-brand-700 rounded-lg flex items-center justify-center">
                         <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
@@ -234,7 +244,19 @@
                     </div>
                     <span class="text-white font-bold">TreinaEdu</span>
                 </div>
-                <p class="text-sm text-gray-500">&copy; {{ date('Y') }} TreinaEdu. Todos os direitos reservados.</p>
+
+                <p class="text-xs text-gray-500">
+                    TreinaEdu e um produto da <strong class="text-gray-400">HELPFLUX SOLUCOES EM TECNOLOGIA LTDA</strong>
+                </p>
+                <p class="text-xs text-gray-600">CNPJ: 58.063.432/0001-21 — Santa Maria de Jetiba – ES</p>
+
+                <p class="text-xs text-gray-500">&copy; {{ date('Y') }} TreinaEdu. Todos os direitos reservados.</p>
+
+                <div class="flex items-center justify-center gap-4 pt-2">
+                    <a href="{{ route('termos') }}" class="text-xs text-gray-500 hover:text-white transition">Termos de Uso</a>
+                    <span class="text-gray-700">|</span>
+                    <a href="{{ route('privacidade') }}" class="text-xs text-gray-500 hover:text-white transition">Politica de Privacidade</a>
+                </div>
             </div>
         </div>
     </footer>
