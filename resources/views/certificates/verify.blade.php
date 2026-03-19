@@ -28,7 +28,7 @@
         @if(isset($certificate) && $certificate)
             <div class="bg-green-50 border border-green-300 rounded-lg p-6">
                 <div class="flex items-center gap-2 mb-5">
-                    <svg class="w-6 h-6 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                     <h2 class="text-lg font-semibold text-green-800">Certificado Válido</h2>
