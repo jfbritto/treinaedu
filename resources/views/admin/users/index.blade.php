@@ -49,26 +49,31 @@
         </div>
     </div>
 
-    {{-- Table with reactive filters --}}
-    <div class="bg-white rounded-xl shadow-sm overflow-hidden" x-data="{ search: '', role: '' }">
+    {{-- Table with server-side filters --}}
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
         {{-- Filters --}}
-        <div class="px-6 py-4 border-b border-gray-100 flex flex-wrap items-center gap-3">
+        <form method="GET" action="{{ route('users.index') }}" id="filter-form"
+              x-data="{ timer: null }" class="px-6 py-4 border-b border-gray-100 flex flex-wrap items-center gap-3">
             <div class="relative flex-1 min-w-[200px]">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                 </div>
-                <input type="text" x-model="search" placeholder="Buscar por nome ou e-mail..."
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Buscar por nome ou e-mail..."
+                       @input="clearTimeout(timer); timer = setTimeout(() => $el.closest('form').submit(), 400)"
                        class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary">
             </div>
-            <select x-model="role" class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+            <select name="role" onchange="this.form.submit()"
+                    class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                 <option value="">Todos os perfis</option>
-                <option value="employee">Colaborador</option>
-                <option value="instructor">Instrutor</option>
+                <option value="employee" {{ request('role') === 'employee' ? 'selected' : '' }}>Colaborador</option>
+                <option value="instructor" {{ request('role') === 'instructor' ? 'selected' : '' }}>Instrutor</option>
             </select>
-            <span x-show="search || role" x-cloak @click="search = ''; role = ''" class="text-xs text-gray-500 hover:text-gray-700 cursor-pointer transition">Limpar</span>
-        </div>
+            @if(request()->hasAny(['search', 'role']))
+                <a href="{{ route('users.index') }}" class="text-xs text-gray-500 hover:text-gray-700 transition">Limpar</a>
+            @endif
+        </form>
 
         {{-- Table --}}
         <div class="overflow-x-auto">
@@ -93,9 +98,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-50">
                     @foreach($users as $user)
-                        <tr class="hover:bg-gray-50 transition"
-                            x-show="(!search || '{{ strtolower(addslashes($user->name)) }}'.includes(search.toLowerCase()) || '{{ strtolower($user->email) }}'.includes(search.toLowerCase())) && (!role || role === '{{ $user->role }}')"
-                            x-cloak>
+                        <tr class="hover:bg-gray-50 transition">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0

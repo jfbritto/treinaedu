@@ -52,20 +52,25 @@
             </div>
         </div>
 
-        {{-- Table with reactive filter --}}
-        <div class="bg-white rounded-xl shadow-sm overflow-hidden" x-data="{ search: '' }">
+        {{-- Table with server-side filter --}}
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
             {{-- Search --}}
-            <div class="px-6 py-4 border-b border-gray-100">
-                <div class="relative max-w-md">
+            <form method="GET" action="{{ route('trainings.index') }}" x-data="{ timer: null }"
+                  class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
+                <div class="relative flex-1 max-w-md">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                     </div>
-                    <input type="text" x-model="search" placeholder="Buscar treinamento..."
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Buscar treinamento..."
+                           @input="clearTimeout(timer); timer = setTimeout(() => $el.closest('form').submit(), 400)"
                            class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary">
                 </div>
-            </div>
+                @if(request('search'))
+                    <a href="{{ route('trainings.index') }}" class="text-xs text-gray-500 hover:text-gray-700 transition">Limpar</a>
+                @endif
+            </form>
 
             <div class="overflow-x-auto">
             <table class="w-full">
@@ -83,9 +88,7 @@
                 <tbody class="divide-y divide-gray-50">
                     @foreach($trainings as $training)
                         @php $rate = $training->completionRate(); @endphp
-                        <tr class="hover:bg-gray-50 transition"
-                            x-show="!search || '{{ strtolower(addslashes($training->title)) }}'.includes(search.toLowerCase())"
-                            x-cloak>
+                        <tr class="hover:bg-gray-50 transition">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
