@@ -135,13 +135,13 @@
             },
 
             sendProgress(pct) {
-                fetch('/api/training-progress', {
+                fetch('/api/lesson-progress', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     },
-                    body: JSON.stringify({ training_id: trainingId, progress_percent: pct })
+                    body: JSON.stringify({ lesson_id: trainingId, progress_percent: pct })
                 });
             }
         }

@@ -63,7 +63,7 @@
                 <p class="cert-font text-2xl font-bold text-gray-800 mb-4">{{ $certificate->training->title }}</p>
                 <p class="text-gray-500 text-sm">
                     @php
-                        $mins = $certificate->training->duration_minutes;
+                        $mins = $certificate->training->calculatedDuration();
                         $durLabel = $mins >= 60
                             ? floor($mins/60).'h'.($mins%60 > 0 ? ' '.($mins%60).'min' : '')
                             : $mins.' min';
@@ -171,6 +171,23 @@
                     <dd class="font-mono text-xs text-gray-600 pt-0.5">{{ $certificate->certificate_code }}</dd>
                 </div>
             </dl>
+
+            @php
+                $modules = $certificate->training->modules()->with('lessons')->orderBy('sort_order')->get();
+            @endphp
+            @if($modules->count() > 0)
+                <div class="mt-5 pt-4 border-t border-gray-100">
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Conteúdo Programático</h3>
+                    <ul class="space-y-1 text-sm text-gray-700">
+                        @foreach($modules as $module)
+                            <li>
+                                <span class="font-medium">{{ $module->title }}</span>
+                                <span class="text-gray-400 text-xs">({{ $module->lessons->count() }} aula{{ $module->lessons->count() !== 1 ? 's' : '' }}{{ $module->quiz ? ' + avaliação' : '' }})</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
         </div>
 
     </main>

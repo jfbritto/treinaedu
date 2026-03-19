@@ -189,6 +189,17 @@
             Data de conclusão: <strong>{{ $completionDate }}</strong>
         </div>
 
+        @if(!empty($modules) && $modules->count() > 0)
+            <div style="margin-top: 10px; text-align: center;">
+                <p style="font-family: Arial, sans-serif; font-size: 9px; color: #888; margin-bottom: 4px;">Conteúdo Programático</p>
+                @foreach($modules as $module)
+                    <p style="font-family: Arial, sans-serif; font-size: 9px; color: #555;">
+                        {{ $module->title }} ({{ $module->lessons->count() }} aula{{ $module->lessons->count() !== 1 ? 's' : '' }}{{ $module->quiz ? ' + avaliação' : '' }})
+                    </p>
+                @endforeach
+            </div>
+        @endif
+
         <div class="footer">
             <span class="code">Código: {{ $certificateCode }}</span>
             <span class="verify">{{ url('/certificate/verify') }}</span>

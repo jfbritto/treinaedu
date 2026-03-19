@@ -22,15 +22,14 @@ class CertificateService
             return false;
         }
 
-        if ($training->has_quiz) {
+        // Check ALL quizzes (module-level + training-level)
+        $quizzes = $training->quizzes()->get();
+        foreach ($quizzes as $quiz) {
             $passed = $user->quizAttempts()
-                ->whereHas('quiz', fn ($q) => $q->where('training_id', $training->id))
+                ->whereHas('quiz', fn ($q) => $q->where('id', $quiz->id))
                 ->where('passed', true)
                 ->exists();
-
-            if (!$passed) {
-                return false;
-            }
+            if (!$passed) return false;
         }
 
         return true;
@@ -49,15 +48,17 @@ class CertificateService
 
         $code = $this->generateUniqueCode();
         $company = $user->company;
+        $modules = $training->modules()->with('lessons')->orderBy('sort_order')->get();
 
         $pdf = Pdf::loadView('certificates.template', [
             'userName' => $user->name,
             'trainingTitle' => $training->title,
-            'durationMinutes' => $training->duration_minutes,
+            'durationMinutes' => $training->calculatedDuration(),
             'completionDate' => now()->locale('pt_BR')->translatedFormat('d \d\e F \d\e Y'),
             'companyName' => $company->name,
             'companyLogo' => $company->logo_path,
             'certificateCode' => $code,
+            'modules' => $modules,
         ])->setPaper('a4', 'landscape');
 
         $directory = "certificates/{$company->id}";

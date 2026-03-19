@@ -3,25 +3,30 @@
 namespace App\Http\Controllers\Employee;
 
 use App\Http\Controllers\Controller;
+use App\Models\LessonView;
+use App\Models\Quiz;
 use App\Models\QuizAttempt;
 use App\Models\Training;
+use App\Models\TrainingModule;
 use Illuminate\Http\Request;
 
 class QuizController extends Controller
 {
-    public function show(Training $training)
+    public function show(Request $request, Training $training)
     {
         $user = auth()->user();
-        $completed = \App\Models\TrainingView::where('training_id', $training->id)
-            ->where('user_id', $user->id)
-            ->whereNotNull('completed_at')
-            ->exists();
+        $moduleId = $request->query('module');
 
-        if (!$completed) {
-            abort(403, 'Você precisa concluir o treinamento antes de fazer o quiz.');
+        if ($moduleId) {
+            // Module-level quiz
+            $module = $training->modules()->where('id', $moduleId)->firstOrFail();
+            $this->ensureModuleLessonsCompleted($user, $module);
+            $quiz = $module->quiz()->with('questions.options')->firstOrFail();
+        } else {
+            // Training-level quiz: all modules must be completed (lessons + module quizzes passed)
+            $this->ensureTrainingCompleted($user, $training);
+            $quiz = $training->quiz()->with('questions.options')->firstOrFail();
         }
-
-        $quiz = $training->quiz()->with('questions.options')->firstOrFail();
 
         return view('employee.quiz.show', compact('training', 'quiz'));
     }
@@ -29,16 +34,16 @@ class QuizController extends Controller
     public function submit(Request $request, Training $training)
     {
         $user = auth()->user();
-        $completed = \App\Models\TrainingView::where('training_id', $training->id)
-            ->where('user_id', $user->id)
-            ->whereNotNull('completed_at')
-            ->exists();
+        $moduleId = $request->query('module');
 
-        if (!$completed) {
-            abort(403, 'Você precisa concluir o treinamento antes de fazer o quiz.');
+        if ($moduleId) {
+            $module = $training->modules()->where('id', $moduleId)->firstOrFail();
+            $this->ensureModuleLessonsCompleted($user, $module);
+            $quiz = $module->quiz()->with('questions.options')->firstOrFail();
+        } else {
+            $this->ensureTrainingCompleted($user, $training);
+            $quiz = $training->quiz()->with('questions.options')->firstOrFail();
         }
-
-        $quiz = $training->quiz()->with('questions.options')->firstOrFail();
 
         $request->validate([
             'answers' => 'required|array',
@@ -52,14 +57,16 @@ class QuizController extends Controller
             return back()->withErrors(['answers' => 'Responda todas as perguntas.']);
         }
 
-        $alreadyPassed = \App\Models\QuizAttempt::where('quiz_id', $quiz->id)
+        $alreadyPassed = QuizAttempt::where('quiz_id', $quiz->id)
             ->where('user_id', auth()->id())
             ->where('passed', true)
             ->exists();
 
         if ($alreadyPassed) {
-            return redirect()->route('employee.quiz.show', $training)
-                ->with('info', 'Você já foi aprovado neste quiz.');
+            return redirect()->route('employee.quiz.show', array_filter([
+                'training' => $training->id,
+                'module' => $moduleId,
+            ]))->with('info', 'Você já foi aprovado neste quiz.');
         }
 
         $correctAnswers = 0;
@@ -86,5 +93,63 @@ class QuizController extends Controller
         ]);
 
         return view('employee.quiz.result', compact('training', 'attempt', 'score', 'passed'));
+    }
+
+    /**
+     * Ensure all lessons in the module are completed.
+     */
+    private function ensureModuleLessonsCompleted($user, TrainingModule $module): void
+    {
+        $lessonIds = $module->lessons()->pluck('id');
+
+        if ($lessonIds->isEmpty()) {
+            return;
+        }
+
+        $completedCount = LessonView::withoutGlobalScope('company')
+            ->where('user_id', $user->id)
+            ->whereIn('lesson_id', $lessonIds)
+            ->whereNotNull('completed_at')
+            ->count();
+
+        if ($completedCount < $lessonIds->count()) {
+            abort(403, 'Você precisa concluir todas as aulas do módulo antes de fazer o quiz.');
+        }
+    }
+
+    /**
+     * Ensure all modules are completed: all lessons done + all module quizzes passed.
+     */
+    private function ensureTrainingCompleted($user, Training $training): void
+    {
+        $modules = $training->modules()->with(['lessons', 'quiz'])->get();
+
+        foreach ($modules as $module) {
+            // Check all lessons completed
+            $lessonIds = $module->lessons->pluck('id');
+            if ($lessonIds->isNotEmpty()) {
+                $completedCount = LessonView::withoutGlobalScope('company')
+                    ->where('user_id', $user->id)
+                    ->whereIn('lesson_id', $lessonIds)
+                    ->whereNotNull('completed_at')
+                    ->count();
+
+                if ($completedCount < $lessonIds->count()) {
+                    abort(403, 'Você precisa concluir todos os módulos antes de fazer o quiz final.');
+                }
+            }
+
+            // Check module quiz passed (if exists)
+            if ($module->quiz) {
+                $passed = $user->quizAttempts()
+                    ->where('quiz_id', $module->quiz->id)
+                    ->where('passed', true)
+                    ->exists();
+
+                if (!$passed) {
+                    abort(403, 'Você precisa ser aprovado em todos os quizzes de módulo antes de fazer o quiz final.');
+                }
+            }
+        }
     }
 }

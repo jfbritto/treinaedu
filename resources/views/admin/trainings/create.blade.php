@@ -1,34 +1,47 @@
 <x-layout.app title="Novo Treinamento">
 
-    <script>
-        function trainingForm() {
-            return {
-                hasQuiz: {{ old('has_quiz') ? 'true' : 'false' }},
-                videoUrl: @json(old('video_url', '')),
-                embedUrl: null,
-                init() {
-                    this.$watch('videoUrl', url => this.updateEmbed(url));
-                    this.updateEmbed(this.videoUrl);
-                },
-                updateEmbed(url) {
-                    if (!url) { this.embedUrl = null; return; }
-                    const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
-                    if (yt) { this.embedUrl = 'https://www.youtube.com/embed/' + yt[1]; return; }
-                    const vm = url.match(/vimeo\.com\/(\d+)/);
-                    if (vm) { this.embedUrl = 'https://player.vimeo.com/video/' + vm[1]; return; }
-                    this.embedUrl = null;
-                },
-                questions: [{ text: '', correct: 0, options: [{ text: '' }, { text: '' }] }],
-                addQuestion() { this.questions.push({ text: '', correct: 0, options: [{ text: '' }, { text: '' }] }); },
-                removeQuestion(qi) { this.questions.splice(qi, 1); },
-                addOption(qi) { this.questions[qi].options.push({ text: '' }); },
-                removeOption(qi, oi) { this.questions[qi].options.splice(oi, 1); },
+    <div x-data="{
+        modules: [
+            {
+                id: null,
+                title: '',
+                description: '',
+                is_sequential: true,
+                showDescription: false,
+                lessons: [
+                    { id: null, title: '', type: 'video', video_url: '', duration_minutes: 0, content: '' }
+                ]
             }
+        ],
+        addModule() {
+            this.modules.push({
+                id: null, title: '', description: '', is_sequential: true, showDescription: false,
+                lessons: [{ id: null, title: '', type: 'video', video_url: '', duration_minutes: 0, content: '' }]
+            });
+        },
+        removeModule(i) {
+            if (this.modules.length > 1) this.modules.splice(i, 1);
+        },
+        moveModule(i, dir) {
+            const j = i + dir;
+            if (j < 0 || j >= this.modules.length) return;
+            [this.modules[i], this.modules[j]] = [this.modules[j], this.modules[i]];
+        },
+        addLesson(mi) {
+            this.modules[mi].lessons.push({ id: null, title: '', type: 'video', video_url: '', duration_minutes: 0, content: '' });
+        },
+        removeLesson(mi, li) {
+            if (this.modules[mi].lessons.length > 1) this.modules[mi].lessons.splice(li, 1);
+        },
+        moveLesson(mi, li, dir) {
+            const lessons = this.modules[mi].lessons;
+            const j = li + dir;
+            if (j < 0 || j >= lessons.length) return;
+            [lessons[li], lessons[j]] = [lessons[j], lessons[li]];
         }
-    </script>
+    }">
 
-    <div x-data="trainingForm()">
-
+        {{-- Header --}}
         <div class="flex items-center gap-3 mb-6">
             <a href="{{ route('trainings.index') }}"
                class="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 transition">
@@ -40,220 +53,256 @@
             <h2 class="text-lg font-bold text-gray-800">Novo Treinamento</h2>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <form method="POST" action="{{ route('trainings.store') }}" enctype="multipart/form-data" class="space-y-6">
+            @csrf
 
-            {{-- Coluna principal (2/3) --}}
-            <div class="lg:col-span-2 space-y-5">
+            @if($errors->any())
+                <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
+                    <ul class="list-disc list-inside space-y-0.5">
+                        @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
+                    </ul>
+                </div>
+            @endif
 
-                {{-- Dados principais --}}
-                <div class="bg-white rounded-xl shadow-sm p-6">
-                    <form method="POST" action="{{ route('trainings.store') }}" class="space-y-5" id="training-form">
-                        @csrf
-
-                        @if($errors->any())
-                            <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
-                                <ul class="list-disc list-inside space-y-0.5">
-                                    @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
-                                </ul>
-                            </div>
-                        @endif
-
-                        <div class="space-y-1">
-                            <label class="block text-sm font-medium text-gray-700">Título <span class="text-red-500">*</span></label>
-                            <input type="text" name="title" value="{{ old('title') }}" required
-                                   class="w-full rounded-lg border @error('title') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-                            @error('title')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
-                        </div>
-
-                        <div class="space-y-1">
-                            <label class="block text-sm font-medium text-gray-700">Descrição</label>
-                            <textarea name="description" rows="3"
-                                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">{{ old('description') }}</textarea>
-                        </div>
-
-                        <div class="space-y-1">
-                            <label class="block text-sm font-medium text-gray-700">URL do Vídeo <span class="text-red-500">*</span></label>
-                            <input type="url" name="video_url" x-model="videoUrl"
-                                   value="{{ old('video_url') }}" required
-                                   placeholder="https://www.youtube.com/watch?v=..."
-                                   class="w-full rounded-lg border @error('video_url') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-                            @error('video_url')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-1">
-                                <label class="block text-sm font-medium text-gray-700">Duração (minutos) <span class="text-red-500">*</span></label>
-                                <input type="number" name="duration_minutes" value="{{ old('duration_minutes') }}" required min="1"
-                                       class="w-full rounded-lg border @error('duration_minutes') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-                                @error('duration_minutes')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
-                            </div>
-                            <div class="flex flex-col justify-end pb-0.5 space-y-1">
-                                <label class="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
-                                    <input type="checkbox" name="active" value="1" checked
-                                           class="rounded border-gray-300 text-primary">
-                                    Treinamento ativo
-                                </label>
-                                <p class="text-xs text-gray-400">Visível para os colaboradores</p>
-                            </div>
-                        </div>
-                    </form>
+            {{-- Section 1: Training Basics --}}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center gap-3 mb-5">
+                    <div class="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-800">Dados do Treinamento</h3>
+                        <p class="text-xs text-gray-400">Informações gerais sobre o treinamento</p>
+                    </div>
                 </div>
 
-                {{-- Quiz --}}
-                <div class="bg-white rounded-xl shadow-sm p-6">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-semibold text-gray-800">Quiz de avaliação</h3>
-                            <p class="text-xs text-gray-400">Opcional — aplicado ao final do treinamento</p>
-                        </div>
-                        <label class="ml-auto flex items-center gap-2 cursor-pointer">
-                            <span class="text-xs text-gray-500">Ativar quiz</span>
-                            <div class="relative">
-                                <input type="checkbox" name="has_quiz" value="1" x-model="hasQuiz"
-                                       {{ old('has_quiz') ? 'checked' : '' }}
-                                       class="sr-only peer" form="training-form">
-                                <div class="w-10 h-5 bg-gray-200 peer-checked:bg-primary rounded-full transition"></div>
-                                <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition peer-checked:translate-x-5"></div>
-                            </div>
-                        </label>
+                <div class="space-y-5">
+                    <div class="space-y-1">
+                        <label class="block text-sm font-medium text-gray-700">Título <span class="text-red-500">*</span></label>
+                        <input type="text" name="title" value="{{ old('title') }}" required
+                               class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                               placeholder="Ex: Onboarding de novos colaboradores">
+                        @error('title')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                     </div>
 
-                    <div x-show="hasQuiz" x-cloak class="space-y-5">
+                    <div class="space-y-1">
+                        <label class="block text-sm font-medium text-gray-700">Descrição</label>
+                        <textarea name="description" rows="3"
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                            placeholder="Descreva o objetivo deste treinamento...">{{ old('description') }}</textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="space-y-1">
-                            <label class="block text-sm font-medium text-gray-700">Nota mínima de aprovação (%)</label>
-                            <input type="number" name="passing_score" form="training-form"
-                                   value="{{ old('passing_score', 70) }}" min="1" max="100"
-                                   class="w-32 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            <label class="block text-sm font-medium text-gray-700">Duração (minutos)</label>
+                            <input type="number" name="duration_minutes_override" value="{{ old('duration_minutes_override') }}" min="1"
+                                   class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                   placeholder="Calculado automaticamente">
+                            <p class="text-xs text-gray-400">Deixe vazio para calcular a partir das aulas</p>
+                        </div>
+                        <div class="flex flex-col justify-end pb-0.5 space-y-1">
+                            <label class="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
+                                <input type="checkbox" name="is_sequential" value="1"
+                                       {{ old('is_sequential') ? 'checked' : '' }}
+                                       class="rounded border-gray-300 text-primary focus:ring-primary">
+                                Módulos sequenciais
+                            </label>
+                            <p class="text-xs text-gray-400">Colaborador deve concluir os módulos na ordem</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Section 2: Module Builder --}}
+            <div class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-800">Módulos e Aulas</h3>
+                        <p class="text-xs text-gray-400">Organize o conteúdo do treinamento em módulos com suas aulas</p>
+                    </div>
+                </div>
+
+                <template x-for="(module, mi) in modules" :key="mi">
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        {{-- Module Header --}}
+                        <div class="bg-gray-50 px-6 py-4 border-b border-gray-100">
+                            <div class="flex items-center gap-3">
+                                <span class="w-7 h-7 rounded-lg bg-primary text-white text-xs font-bold flex items-center justify-center flex-shrink-0"
+                                      x-text="mi + 1"></span>
+                                <input type="text"
+                                       :name="'modules['+mi+'][title]'"
+                                       x-model="module.title"
+                                       placeholder="Título do módulo"
+                                       required
+                                       class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary">
+                                <div class="flex items-center gap-1">
+                                    <button type="button" @click="moveModule(mi, -1)" x-show="mi > 0"
+                                            class="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-400 transition" title="Mover para cima">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                                    </button>
+                                    <button type="button" @click="moveModule(mi, 1)" x-show="mi < modules.length - 1"
+                                            class="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-400 transition" title="Mover para baixo">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    </button>
+                                    <button type="button" @click="removeModule(mi)" x-show="modules.length > 1"
+                                            class="p-1.5 rounded-lg border border-red-200 hover:bg-red-50 text-red-400 hover:text-red-600 transition" title="Remover módulo">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {{-- Module options row --}}
+                            <div class="flex items-center gap-4 mt-3">
+                                <button type="button" @click="module.showDescription = !module.showDescription"
+                                        class="text-xs text-primary hover:text-secondary transition font-medium">
+                                    <span x-text="module.showDescription ? 'Ocultar descrição' : 'Adicionar descrição'"></span>
+                                </button>
+                                <label class="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+                                    <input type="checkbox"
+                                           :name="'modules['+mi+'][is_sequential]'"
+                                           value="1"
+                                           x-model="module.is_sequential"
+                                           class="rounded border-gray-300 text-primary focus:ring-primary">
+                                    Aulas sequenciais
+                                </label>
+                            </div>
+
+                            {{-- Module description --}}
+                            <div x-show="module.showDescription" x-cloak class="mt-3">
+                                <textarea :name="'modules['+mi+'][description]'"
+                                          x-model="module.description"
+                                          rows="2"
+                                          placeholder="Descrição do módulo (opcional)"
+                                          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                            </div>
                         </div>
 
-                        <div class="space-y-4">
-                            <template x-for="(q, qi) in questions" :key="qi">
-                                <div class="border border-gray-200 rounded-xl p-4 space-y-3 bg-gray-50">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide" x-text="'Questão ' + (qi + 1)"></span>
-                                        <button type="button" @click="removeQuestion(qi)" x-show="questions.length > 1"
-                                            class="text-xs text-red-500 hover:text-red-700 transition">Remover</button>
+                        {{-- Lessons --}}
+                        <div class="p-6 space-y-3">
+                            <template x-for="(lesson, li) in module.lessons" :key="li">
+                                <div class="bg-gray-50 rounded-xl border border-gray-100 p-4 space-y-3">
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-xs font-semibold text-gray-400 w-6 text-center flex-shrink-0"
+                                              x-text="(li + 1) + '.'"></span>
+
+                                        {{-- Lesson title --}}
+                                        <input type="text"
+                                               :name="'modules['+mi+'][lessons]['+li+'][title]'"
+                                               x-model="lesson.title"
+                                               placeholder="Título da aula"
+                                               required
+                                               class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white">
+
+                                        {{-- Lesson type --}}
+                                        <select :name="'modules['+mi+'][lessons]['+li+'][type]'"
+                                                x-model="lesson.type"
+                                                class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white w-32">
+                                            <option value="video">Vídeo</option>
+                                            <option value="document">Documento</option>
+                                            <option value="text">Texto</option>
+                                        </select>
+
+                                        {{-- Lesson actions --}}
+                                        <div class="flex items-center gap-1">
+                                            <button type="button" @click="moveLesson(mi, li, -1)" x-show="li > 0"
+                                                    class="p-1 rounded border border-gray-200 hover:bg-gray-100 text-gray-400 transition" title="Mover para cima">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                                            </button>
+                                            <button type="button" @click="moveLesson(mi, li, 1)" x-show="li < module.lessons.length - 1"
+                                                    class="p-1 rounded border border-gray-200 hover:bg-gray-100 text-gray-400 transition" title="Mover para baixo">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                            </button>
+                                            <button type="button" @click="removeLesson(mi, li)" x-show="module.lessons.length > 1"
+                                                    class="p-1 rounded border border-red-200 hover:bg-red-50 text-red-400 hover:text-red-600 transition" title="Remover aula">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                            </button>
+                                        </div>
                                     </div>
-                                    <input type="text" :name="'questions[' + qi + '][question]'"
-                                           x-model="q.text" placeholder="Digite a pergunta..."
-                                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary" form="training-form">
-                                    <div class="space-y-2">
-                                        <p class="text-xs font-medium text-gray-500">Opções <span class="text-gray-400 font-normal">(marque a correta)</span></p>
-                                        <template x-for="(opt, oi) in q.options" :key="oi">
-                                            <div class="flex items-center gap-2">
-                                                <input type="radio" :name="'questions[' + qi + '][correct]'" :value="oi"
-                                                       x-model="q.correct" class="text-primary border-gray-300" form="training-form">
-                                                <input type="text" :name="'questions[' + qi + '][options][' + oi + '][text]'"
-                                                       x-model="opt.text" placeholder="Opção..."
-                                                       class="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary" form="training-form">
-                                                <button type="button" @click="removeOption(qi, oi)" x-show="q.options.length > 2"
-                                                    class="text-gray-400 hover:text-red-500 transition">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        </template>
-                                        <button type="button" @click="addOption(qi)"
-                                            class="text-xs text-primary hover:text-secondary transition font-medium">+ Adicionar opção</button>
+
+                                    {{-- Conditional fields: Video --}}
+                                    <div x-show="lesson.type === 'video'" x-cloak class="flex gap-3 pl-9">
+                                        <div class="flex-1 space-y-1">
+                                            <label class="block text-xs font-medium text-gray-500">URL do vídeo</label>
+                                            <input type="url"
+                                                   :name="'modules['+mi+'][lessons]['+li+'][video_url]'"
+                                                   x-model="lesson.video_url"
+                                                   placeholder="https://www.youtube.com/watch?v=..."
+                                                   class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white">
+                                        </div>
+                                        <div class="w-32 space-y-1">
+                                            <label class="block text-xs font-medium text-gray-500">Duração (min)</label>
+                                            <input type="number"
+                                                   :name="'modules['+mi+'][lessons]['+li+'][duration_minutes]'"
+                                                   x-model="lesson.duration_minutes"
+                                                   min="0"
+                                                   placeholder="0"
+                                                   class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white">
+                                        </div>
+                                    </div>
+
+                                    {{-- Conditional fields: Document --}}
+                                    <div x-show="lesson.type === 'document'" x-cloak class="pl-9 space-y-1">
+                                        <label class="block text-xs font-medium text-gray-500">Arquivo</label>
+                                        <input type="file"
+                                               :name="'modules['+mi+'][lessons]['+li+'][file]'"
+                                               accept=".pdf,.pptx,.docx,application/pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
+                                        <p class="text-xs text-gray-400">PDF, PPTX ou DOCX</p>
+                                    </div>
+
+                                    {{-- Conditional fields: Text --}}
+                                    <div x-show="lesson.type === 'text'" x-cloak class="pl-9 space-y-1">
+                                        <label class="block text-xs font-medium text-gray-500">Conteúdo</label>
+                                        <textarea :name="'modules['+mi+'][lessons]['+li+'][content]'"
+                                                  x-model="lesson.content"
+                                                  rows="4"
+                                                  placeholder="Digite o conteúdo da aula..."
+                                                  class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white"></textarea>
                                     </div>
                                 </div>
                             </template>
+
+                            {{-- Add lesson button --}}
+                            <button type="button" @click="addLesson(mi)"
+                                    class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-secondary transition mt-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Adicionar aula
+                            </button>
                         </div>
-
-                        <button type="button" @click="addQuestion()"
-                            class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-secondary transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                            </svg>
-                            Adicionar questão
-                        </button>
                     </div>
-                </div>
+                </template>
 
-                {{-- Botões --}}
-                <div class="flex gap-3">
-                    <button type="submit" form="training-form"
-                            class="inline-flex items-center gap-2 bg-primary hover:bg-secondary text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        </svg>
-                        Criar treinamento
-                    </button>
-                    <a href="{{ route('trainings.index') }}"
-                       class="px-4 py-2.5 text-sm font-medium text-gray-500 hover:text-gray-700 transition">Cancelar</a>
-                </div>
+                {{-- Add module button --}}
+                <button type="button" @click="addModule()"
+                        class="w-full flex items-center justify-center gap-2 border-2 border-dashed border-gray-300 hover:border-primary rounded-xl py-4 text-sm font-medium text-gray-500 hover:text-primary transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Adicionar módulo
+                </button>
             </div>
 
-            {{-- Sidebar (1/3) --}}
-            <div class="space-y-4">
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden sticky top-6">
-                    <div class="px-5 py-4 border-b border-gray-100">
-                        <p class="text-sm font-semibold text-gray-700">Preview do vídeo</p>
-                        <p class="text-xs text-gray-400 mt-0.5">Atualiza ao digitar a URL</p>
-                    </div>
-                    <div class="aspect-video bg-gray-50 flex items-center justify-center" x-show="!embedUrl">
-                        <div class="text-center text-gray-300 p-6">
-                            <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <p class="text-xs">Cole uma URL do YouTube ou Vimeo</p>
-                        </div>
-                    </div>
-                    <div class="aspect-video" x-show="embedUrl">
-                        <iframe x-bind:src="embedUrl" class="w-full h-full" frameborder="0" allowfullscreen
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
-                        </iframe>
-                    </div>
-                    <div x-show="videoUrl && !embedUrl" class="px-4 py-3 bg-red-50 border-t border-red-100">
-                        <p class="text-xs text-red-600">URL não reconhecida. Use YouTube ou Vimeo.</p>
-                    </div>
-                </div>
-
-                {{-- Como funciona --}}
-                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                    <div class="flex items-center gap-2 mb-3">
-                        <div class="w-6 h-6 rounded-md bg-primary flex items-center justify-center flex-shrink-0">
-                            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <p class="text-sm font-semibold text-blue-900">Como funciona</p>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="flex gap-2.5">
-                            <span class="w-5 h-5 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
-                            <div>
-                                <p class="text-xs font-semibold text-secondary">Suba o vídeo</p>
-                                <p class="text-xs text-primary mt-0.5">No YouTube ou Vimeo. Pode ser público, não listado ou um vídeo existente.</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-2.5">
-                            <span class="w-5 h-5 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
-                            <div>
-                                <p class="text-xs font-semibold text-secondary">Copie o link</p>
-                                <p class="text-xs text-primary mt-0.5">Copie a URL da barra de endereço ou do botão "Compartilhar".</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-2.5">
-                            <span class="w-5 h-5 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
-                            <div>
-                                <p class="text-xs font-semibold text-secondary">Cole e visualize</p>
-                                <p class="text-xs text-primary mt-0.5">O preview aparece ao lado automaticamente antes de salvar.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-3 pt-3 border-t border-blue-200">
-                        <p class="text-xs text-blue-500">Recomendamos <strong>não listado</strong> para conteúdo exclusivo — só acessa quem tiver o link.</p>
-                    </div>
-                </div>
+            {{-- Section 3: Submit --}}
+            <div class="flex gap-3">
+                <button type="submit"
+                        class="inline-flex items-center gap-2 bg-primary hover:bg-secondary text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Criar Treinamento
+                </button>
+                <a href="{{ route('trainings.index') }}"
+                   class="px-4 py-2.5 text-sm font-medium text-gray-500 hover:text-gray-700 transition">Cancelar</a>
             </div>
-
-        </div>
+        </form>
     </div>
 </x-layout.app>
