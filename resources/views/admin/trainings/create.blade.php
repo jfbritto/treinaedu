@@ -315,14 +315,17 @@
                                                    placeholder="https://www.youtube.com/watch?v=..."
                                                    class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white">
                                         </div>
-                                        <div class="w-32 space-y-1">
-                                            <label class="block text-xs font-medium text-gray-500">Duração (min)</label>
-                                            <input type="number"
-                                                   :name="'modules['+mi+'][lessons]['+li+'][duration_minutes]'"
-                                                   x-model="lesson.duration_minutes"
-                                                   min="0"
-                                                   placeholder="0"
-                                                   class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white">
+                                        <div class="w-28 space-y-1">
+                                            <label class="block text-xs font-medium text-gray-500">Duração</label>
+                                            <div class="flex items-center gap-1">
+                                                <input type="number"
+                                                       :name="'modules['+mi+'][lessons]['+li+'][duration_minutes]'"
+                                                       x-model="lesson.duration_minutes"
+                                                       min="0"
+                                                       placeholder="—"
+                                                       class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white">
+                                                <span class="text-xs text-gray-400">min</span>
+                                            </div>
                                         </div>
                                     </div>
 
