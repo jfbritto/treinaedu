@@ -16,12 +16,24 @@ class StoreTrainingRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'video_url' => ['required', 'url', function ($attribute, $value, $fail) {
-                if (!str_contains($value, 'youtube.com') && !str_contains($value, 'youtu.be') && !str_contains($value, 'vimeo.com')) {
-                    $fail('A URL deve ser do YouTube ou Vimeo.');
-                }
-            }],
-            'duration_minutes' => 'required|integer|min:1',
+            'duration_minutes_override' => 'nullable|integer|min:1',
+            'is_sequential' => 'boolean',
+
+            // Modules
+            'modules' => 'required|array|min:1',
+            'modules.*.title' => 'required|string|max:255',
+            'modules.*.description' => 'nullable|string',
+            'modules.*.is_sequential' => 'boolean',
+
+            // Lessons within modules
+            'modules.*.lessons' => 'required|array|min:1',
+            'modules.*.lessons.*.title' => 'required|string|max:255',
+            'modules.*.lessons.*.type' => 'required|in:video,document,text',
+            'modules.*.lessons.*.video_url' => 'required_if:modules.*.lessons.*.type,video|nullable|url',
+            'modules.*.lessons.*.duration_minutes' => 'nullable|integer|min:0',
+            'modules.*.lessons.*.content' => 'required_if:modules.*.lessons.*.type,text|nullable|string',
+
+            // Quiz (training-level)
             'has_quiz' => 'boolean',
             'passing_score' => 'nullable|required_if:has_quiz,1|integer|min:1|max:100',
             'questions' => 'nullable|required_if:has_quiz,1|array|min:1',
