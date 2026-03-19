@@ -1,14 +1,15 @@
 @props(['training', 'currentLesson', 'lessonViews', 'unlockStates', 'trainingProgress'])
 
-<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+<div class="bg-white rounded-xl shadow-sm overflow-hidden" x-data="{ trainingPct: {{ $trainingProgress }} }"
+     @training-progress-updated.window="trainingPct = $event.detail.trainingProgress">
     {{-- Header with progress --}}
     <div class="p-4" style="border-bottom: 1px solid color-mix(in srgb, var(--primary) 15%, transparent)">
         <h3 class="text-sm font-bold text-gray-800 mb-2">{{ $training->title }}</h3>
         <div class="flex items-center gap-2">
             <div class="flex-1 bg-gray-100 rounded-full h-2">
-                <div class="bg-primary h-2 rounded-full transition-all" style="width: {{ $trainingProgress }}%"></div>
+                <div class="bg-primary h-2 rounded-full transition-all" :style="'width: ' + trainingPct + '%'"></div>
             </div>
-            <span class="text-xs font-semibold text-primary">{{ $trainingProgress }}%</span>
+            <span class="text-xs font-semibold text-primary" x-text="trainingPct + '%'"></span>
         </div>
     </div>
 

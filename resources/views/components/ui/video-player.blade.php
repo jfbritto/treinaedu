@@ -142,7 +142,11 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     },
                     body: JSON.stringify({ lesson_id: trainingId, progress_percent: pct })
-                });
+                }).then(r => r.ok ? r.json() : null).then(data => {
+                    if (data && data.training_progress !== undefined) {
+                        window.dispatchEvent(new CustomEvent('training-progress-updated', { detail: { trainingProgress: data.training_progress } }));
+                    }
+                }).catch(() => {});
             }
         }
     }
