@@ -13,7 +13,13 @@
 
 <div x-data="videoPlayer(@js($trainingId), @js($provider), @js($videoId), @js((int) $initialProgress), @js($nextLessonUrl))">
     @if($provider === 'youtube')
-        <div class="relative aspect-video rounded-xl overflow-hidden bg-black">
+        <style>
+            .yt-container iframe { pointer-events: auto; }
+            .yt-container .ytp-watermark,
+            .yt-container .ytp-youtube-button,
+            .yt-container .ytp-impression-link { display: none !important; }
+        </style>
+        <div class="relative aspect-video rounded-xl overflow-hidden bg-black yt-container">
             <div id="yt-player-{{ $trainingId }}" class="absolute inset-0 w-full h-full"></div>
         </div>
     @elseif($provider === 'vimeo')
@@ -71,7 +77,7 @@
                     videoId: videoId,
                     width: '100%',
                     height: '100%',
-                    playerVars: { autoplay: autoplay, rel: 0, modestbranding: 1 },
+                    playerVars: { autoplay: autoplay, rel: 0, modestbranding: 1, showinfo: 0, fs: 1 },
                     events: {
                         onStateChange(event) {
                             if (event.data === YT.PlayerState.PLAYING) {
