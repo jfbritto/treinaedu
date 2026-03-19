@@ -62,7 +62,7 @@
                         </a>
                         {{-- Disabled state --}}
                         <span x-show="!completed" x-cloak
-                              @click="alert('Assista a aula atual antes de avançar para a próxima.')"
+                              @click="Swal.fire({ icon: 'info', title: 'Aula em andamento', text: 'Assista a aula atual antes de avançar para a próxima.', confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() })"
                               class="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-lg text-gray-400 bg-gray-100 cursor-not-allowed">
                             Próxima
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
