@@ -31,6 +31,7 @@ Route::get('/', function () {
 
 Route::get('/termos-de-uso', fn () => view('pages.termos-de-uso'))->name('termos');
 Route::get('/politica-de-privacidade', fn () => view('pages.politica-de-privacidade'))->name('privacidade');
+Route::get('/og-image-preview', fn () => view('pages.og-image'))->name('og-image-preview');
 
 Route::get('/certificate/verify', [CertificateVerificationController::class, 'show'])
     ->name('certificate.verify');
