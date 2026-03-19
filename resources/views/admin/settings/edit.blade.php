@@ -117,6 +117,36 @@
                         </div>
                         <button type="button" @click="cancelCrop()" class="text-xs text-green-600 hover:text-green-800">Refazer</button>
                     </div>
+
+                    {{-- Cores extraídas da logo --}}
+                    <div x-show="extractedColors.length > 0" x-cloak class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                        <div class="flex items-center gap-2 mb-3">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+                            </svg>
+                            <p class="text-sm font-semibold text-blue-700">Cores detectadas na logo</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <template x-for="(color, index) in extractedColors" :key="index">
+                                <button type="button"
+                                    @click="selectedColorIndex = index"
+                                    class="w-10 h-10 rounded-lg border-2 transition-transform hover:scale-110 cursor-pointer"
+                                    :class="selectedColorIndex === index ? 'border-blue-500 ring-2 ring-blue-300' : 'border-gray-200'"
+                                    :style="'background-color:' + color">
+                                </button>
+                            </template>
+                        </div>
+                        <div x-show="selectedColorIndex !== null" class="flex gap-2">
+                            <button type="button" @click="applyColorAs('primary')"
+                                class="flex-1 text-xs font-medium px-3 py-2 rounded-lg bg-white border border-blue-200 text-blue-700 hover:bg-blue-100 transition">
+                                Usar como Cor do Menu
+                            </button>
+                            <button type="button" @click="applyColorAs('secondary')"
+                                class="flex-1 text-xs font-medium px-3 py-2 rounded-lg bg-white border border-blue-200 text-blue-700 hover:bg-blue-100 transition">
+                                Usar como Cor de Destaque
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 {{-- Cores --}}
@@ -275,12 +305,74 @@
             showCropper: false,
             croppedPreview: null,
             cropper: null,
+            extractedColors: [],
+            selectedColorIndex: null,
+
+            extractColors(imageSource) {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const size = 80;
+                    canvas.width = size;
+                    canvas.height = size;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, size, size);
+                    const data = ctx.getImageData(0, 0, size, size).data;
+
+                    const colorMap = {};
+                    for (let i = 0; i < data.length; i += 4) {
+                        const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+                        if (a < 128) continue;
+                        // Ignorar cores muito claras (branco/quase branco) e muito escuras (preto/quase preto)
+                        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+                        if (brightness > 240 || brightness < 15) continue;
+                        // Quantizar para reduzir variações
+                        const qr = Math.round(r / 32) * 32;
+                        const qg = Math.round(g / 32) * 32;
+                        const qb = Math.round(b / 32) * 32;
+                        const key = qr + ',' + qg + ',' + qb;
+                        if (!colorMap[key]) colorMap[key] = { r: qr, g: qg, b: qb, count: 0 };
+                        colorMap[key].count++;
+                    }
+
+                    const sorted = Object.values(colorMap).sort((a, b) => b.count - a.count);
+                    const result = [];
+                    for (const c of sorted) {
+                        if (result.length >= 6) break;
+                        // Evitar cores muito similares
+                        const isDuplicate = result.some(existing => {
+                            return Math.abs(existing.r - c.r) < 40 && Math.abs(existing.g - c.g) < 40 && Math.abs(existing.b - c.b) < 40;
+                        });
+                        if (!isDuplicate) {
+                            const hex = '#' + [c.r, c.g, c.b].map(v => Math.min(255, v).toString(16).padStart(2, '0')).join('');
+                            result.push({ r: c.r, g: c.g, b: c.b, hex });
+                        }
+                    }
+                    this.extractedColors = result.map(c => c.hex);
+                    this.selectedColorIndex = null;
+                };
+                img.src = imageSource;
+            },
+
+            applyColorAs(type) {
+                if (this.selectedColorIndex === null) return;
+                const color = this.extractedColors[this.selectedColorIndex];
+                const input = document.querySelector('input[name="' + type + '_color"]');
+                if (input) {
+                    input.value = color;
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+                window.dispatchEvent(new CustomEvent('preview-color', { detail: { [type]: color } }));
+            },
 
             onFileSelected(e) {
                 const file = e.target.files[0];
                 if (!file) return;
                 if (file.type === 'image/svg+xml') {
-                    this.croppedPreview = URL.createObjectURL(file);
+                    const url = URL.createObjectURL(file);
+                    this.croppedPreview = url;
+                    this.extractColors(url);
                     return;
                 }
                 const reader = new FileReader();
@@ -315,7 +407,9 @@
                     const dt = new DataTransfer();
                     dt.items.add(file);
                     this.$refs.fileInput.files = dt.files;
-                    this.croppedPreview = URL.createObjectURL(blob);
+                    const url = URL.createObjectURL(blob);
+                    this.croppedPreview = url;
+                    this.extractColors(url);
                     this.showCropper = false;
                     this.cropper.destroy();
                     this.cropper = null;
