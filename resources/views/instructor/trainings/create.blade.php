@@ -112,14 +112,12 @@
         {{-- Header --}}
         <div class="flex items-center gap-3 mb-6">
             <a href="{{ route('instructor.trainings.index') }}"
-               class="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 transition">
+               class="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 transition mb-6">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
-                Voltar
+                Voltar para treinamentos
             </a>
-            <h2 class="text-lg font-bold text-gray-800">Novo Treinamento</h2>
-        </div>
 
         <form method="POST" action="{{ route('instructor.trainings.store') }}" enctype="multipart/form-data" class="space-y-6">
             @csrf
@@ -315,14 +313,17 @@
                                                    placeholder="https://www.youtube.com/watch?v=..."
                                                    class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white">
                                         </div>
-                                        <div class="w-32 space-y-1">
-                                            <label class="block text-xs font-medium text-gray-500">Duração (min)</label>
-                                            <input type="number"
-                                                   :name="'modules['+mi+'][lessons]['+li+'][duration_minutes]'"
-                                                   x-model="lesson.duration_minutes"
-                                                   min="0"
-                                                   placeholder="0"
-                                                   class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white">
+                                        <div class="w-28 space-y-1">
+                                            <label class="block text-xs font-medium text-gray-500">Duração</label>
+                                            <div class="flex items-center gap-1">
+                                                <input type="number"
+                                                       :name="'modules['+mi+'][lessons]['+li+'][duration_minutes]'"
+                                                       x-model="lesson.duration_minutes"
+                                                       min="0"
+                                                       placeholder="—"
+                                                       class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white">
+                                                <span class="text-xs text-gray-400">min</span>
+                                            </div>
                                         </div>
                                     </div>
 
