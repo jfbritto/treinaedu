@@ -11,6 +11,13 @@ class StoreTrainingRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if (!$this->boolean('has_quiz')) {
+            $this->request->remove('questions');
+        }
+    }
+
     public function rules(): array
     {
         return [
