@@ -49,10 +49,17 @@
                     $allLessons = $training->modules->flatMap->lessons;
                     $currentIndex = $allLessons->search(fn($l) => $l->id === $currentLesson->id);
                     $nextLesson = $currentIndex !== false ? $allLessons->get($currentIndex + 1) : null;
+                    $prevLesson = $currentIndex !== false && $currentIndex > 0 ? $allLessons->get($currentIndex - 1) : null;
                     $nextUnlocked = $nextLesson && ($unlockStates['lessons'][$nextLesson->id] ?? false);
+                    $prevUnlocked = $prevLesson && ($unlockStates['lessons'][$prevLesson->id] ?? false);
                     $nextLessonUrl = $nextLesson
                         ? route('employee.trainings.show', ['training' => $training, 'lesson' => $nextLesson->id, 'autoplay' => 1])
                         : null;
+                    $prevLessonUrl = $prevLesson && $prevUnlocked
+                        ? route('employee.trainings.show', ['training' => $training, 'lesson' => $prevLesson->id])
+                        : null;
+                    $currentNum = $currentIndex !== false ? $currentIndex + 1 : 1;
+                    $totalLessons = $allLessons->count();
                 @endphp
 
                 <x-ui.lesson-player
@@ -60,19 +67,10 @@
                     :lesson-view="$lessonViews[$currentLesson->id] ?? null"
                     :training="$training"
                     :next-lesson-url="$nextLessonUrl"
+                    :prev-lesson-url="$prevLessonUrl"
+                    :current-num="$currentNum"
+                    :total-lessons="$totalLessons"
                 />
-
-                @if($nextLesson && $nextUnlocked)
-                    <div class="mt-2 flex justify-end">
-                        <a href="{{ route('employee.trainings.show', ['training' => $training, 'lesson' => $nextLesson->id]) }}"
-                            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-white transition shadow-sm" style="background-color: var(--primary)">
-                            Próxima aula
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                            </svg>
-                        </a>
-                    </div>
-                @endif
             @else
                 <div class="bg-white rounded-xl shadow-sm p-12 text-center">
                     <p class="text-gray-400">Nenhuma aula disponível neste treinamento.</p>
