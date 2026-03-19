@@ -49,38 +49,29 @@
         </div>
     </div>
 
-    {{-- Filters --}}
-    <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
-        <form method="GET" action="{{ route('users.index') }}" class="flex flex-wrap items-end gap-3">
-            <div class="flex-1 min-w-[200px]">
-                <label class="block text-xs font-medium text-gray-500 mb-1">Buscar</label>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Nome ou e-mail..."
-                       class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-            </div>
-            <div class="w-36">
-                <label class="block text-xs font-medium text-gray-500 mb-1">Perfil</label>
-                <select name="role" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-                    <option value="">Todos</option>
-                    <option value="employee" {{ request('role') === 'employee' ? 'selected' : '' }}>Colaborador</option>
-                    <option value="instructor" {{ request('role') === 'instructor' ? 'selected' : '' }}>Instrutor</option>
-                </select>
-            </div>
-            <div class="flex items-center gap-2">
-                <button type="submit" class="inline-flex items-center gap-1.5 bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    {{-- Table with reactive filters --}}
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden" x-data="{ search: '', role: '' }">
+        {{-- Filters --}}
+        <div class="px-6 py-4 border-b border-gray-100 flex flex-wrap items-center gap-3">
+            <div class="relative flex-1 min-w-[200px]">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
-                    Filtrar
-                </button>
-                @if(request()->hasAny(['search', 'role']))
-                    <a href="{{ route('users.index') }}" class="text-sm text-gray-500 hover:text-gray-700 transition">Limpar</a>
-                @endif
+                </div>
+                <input type="text" x-model="search" placeholder="Buscar por nome ou e-mail..."
+                       class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary">
             </div>
-        </form>
-    </div>
+            <select x-model="role" class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                <option value="">Todos os perfis</option>
+                <option value="employee">Colaborador</option>
+                <option value="instructor">Instrutor</option>
+            </select>
+            <span x-show="search || role" x-cloak @click="search = ''; role = ''" class="text-xs text-gray-500 hover:text-gray-700 cursor-pointer transition">Limpar</span>
+        </div>
 
-    {{-- Table --}}
-    <div class="bg-white rounded-xl shadow-sm overflow-hidden overflow-x-auto">
+        {{-- Table --}}
+        <div class="overflow-x-auto">
         @if($users->isEmpty())
             <div class="p-12 text-center">
                 <svg class="w-12 h-12 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,7 +93,9 @@
                 </thead>
                 <tbody class="divide-y divide-gray-50">
                     @foreach($users as $user)
-                        <tr class="hover:bg-gray-50 transition">
+                        <tr class="hover:bg-gray-50 transition"
+                            x-show="(!search || '{{ strtolower(addslashes($user->name)) }}'.includes(search.toLowerCase()) || '{{ strtolower($user->email) }}'.includes(search.toLowerCase())) && (!role || role === '{{ $user->role }}')"
+                            x-cloak>
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0
@@ -159,6 +152,7 @@
                 </div>
             @endif
         @endif
+        </div>
     </div>
 
 </x-layout.app>
