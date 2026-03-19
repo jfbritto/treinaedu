@@ -32,8 +32,7 @@
             {{-- Module header --}}
             <button
                 @click="openModules.includes({{ $module->id }}) ? openModules = openModules.filter(id => id !== {{ $module->id }}) : openModules.push({{ $module->id }})"
-                class="w-full flex items-center gap-2 px-4 py-2.5 text-left transition border-b border-gray-50 {{ $moduleUnlocked ? 'hover:bg-gray-50' : 'opacity-50' }}"
-                {{ !$moduleUnlocked ? 'disabled' : '' }}>
+                class="w-full flex items-center gap-2 px-4 py-2.5 text-left transition border-b border-gray-50 hover:bg-gray-50">
 
                 <svg class="w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200 {{ $moduleUnlocked ? 'text-gray-500' : 'text-gray-300' }}"
                      :class="openModules.includes({{ $module->id }}) ? 'rotate-90' : ''"
