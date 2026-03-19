@@ -15,17 +15,27 @@ use Illuminate\Support\Facades\Storage;
 
 class TrainingController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $trainings = Training::withCount([
+        $query = Training::withCount([
                 'views',
                 'views as completed_count' => fn ($q) => $q->whereNotNull('completed_at'),
                 'assignments',
-            ])
-            ->latest()
-            ->paginate(15);
+            ]);
 
-        return view('admin.trainings.index', compact('trainings'));
+        if ($request->filled('search')) {
+            $query->where('title', 'like', "%{$request->search}%");
+        }
+
+        $trainings = $query->latest()->paginate(15)->withQueryString();
+
+        // Global stats
+        $totalActive = Training::where('active', true)->count();
+        $totalWithQuiz = Training::where('has_quiz', true)->count();
+        $allTrainings = Training::withCount(['views', 'views as completed_count' => fn ($q) => $q->whereNotNull('completed_at')])->get();
+        $avgRate = $allTrainings->count() > 0 ? round($allTrainings->avg(fn ($t) => $t->views_count > 0 ? ($t->completed_count / $t->views_count) * 100 : 0)) : 0;
+
+        return view('admin.trainings.index', compact('trainings', 'totalActive', 'totalWithQuiz', 'avgRate'));
     }
 
     public function create()
