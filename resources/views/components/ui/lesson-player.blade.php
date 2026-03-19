@@ -16,7 +16,8 @@
         />
 
         {{-- Control bar --}}
-        <div class="bg-white rounded-b-xl shadow-sm px-4 py-3" x-data="{ pct: {{ $progress }} }" @video-progress.window="pct = $event.detail.percent">
+        <div class="bg-white rounded-b-xl shadow-sm px-4 py-3" x-data="{ pct: {{ $progress }}, completed: {{ $progress >= 90 ? 'true' : 'false' }} }"
+             @video-progress.window="pct = $event.detail.percent; if (pct >= 90) completed = true">
             {{-- Progress bar --}}
             <div class="w-full bg-gray-100 rounded-full h-1.5 mb-3">
                 <div class="h-1.5 rounded-full transition-all" :style="'width: ' + pct + '%; background-color: var(--secondary)'"></div>
@@ -52,12 +53,22 @@
                 {{-- Next button --}}
                 <div class="w-32 text-right">
                     @if($nextLessonUrl)
-                        <a href="{{ $nextLessonUrl }}" class="inline-flex items-center gap-1.5 text-sm font-semibold transition px-3 py-1.5 rounded-lg text-white" style="background-color: var(--primary)">
+                        {{-- Enabled state --}}
+                        <a x-show="completed" href="{{ $nextLessonUrl }}" class="inline-flex items-center gap-1.5 text-sm font-semibold transition px-3 py-1.5 rounded-lg text-white" style="background-color: var(--primary)">
                             Próxima
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                             </svg>
                         </a>
+                        {{-- Disabled state --}}
+                        <span x-show="!completed" x-cloak
+                              @click="alert('Assista a aula atual antes de avançar para a próxima.')"
+                              class="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-lg text-gray-400 bg-gray-100 cursor-not-allowed">
+                            Próxima
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </span>
                     @endif
                 </div>
             </div>
