@@ -21,7 +21,7 @@
         </div>
         <div class="flex gap-4 sm:flex-col sm:text-right">
             <div>
-                <p class="text-xl font-bold text-yellow-500">{{ $pending->count() }}</p>
+                <p class="text-xl font-bold text-primary">{{ $pending->count() }}</p>
                 <p class="text-xs text-gray-400">Pendente{{ $pending->count() !== 1 ? 's' : '' }}</p>
             </div>
             <div>

@@ -44,7 +44,7 @@
             @if($stats)
                 <div class="grid grid-cols-3 gap-4 pt-4 border-t border-gray-100">
                     <div class="text-center">
-                        <p class="text-2xl font-bold text-yellow-500">{{ $stats['pending'] }}</p>
+                        <p class="text-2xl font-bold text-primary">{{ $stats['pending'] }}</p>
                         <p class="text-xs text-gray-400 mt-0.5">Pendente{{ $stats['pending'] !== 1 ? 's' : '' }}</p>
                     </div>
                     <div class="text-center border-x border-gray-100">
@@ -138,7 +138,7 @@
         <div class="space-y-6">
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <div class="flex items-center gap-3 mb-5">
-                    <div class="w-8 h-8 rounded-lg bg-yellow-50 flex items-center justify-center flex-shrink-0">
+                    <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                         </svg>
