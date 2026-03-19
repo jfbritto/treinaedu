@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Training;
 use App\Models\TrainingAssignment;
 use App\Models\TrainingView;
-use App\Services\VideoProgressService;
 
 class TrainingController extends Controller
 {
@@ -48,62 +47,181 @@ class TrainingController extends Controller
     {
         $user = auth()->user();
 
-        // Verify user has access (is in an assigned group)
-        $hasAccess = $user->groups()
-            ->whereHas('assignments', fn ($q) => $q->where('training_id', $training->id))
-            ->exists();
-
-        if (!$hasAccess) {
+        // Check user has access via group assignment
+        $assignedTrainingIds = $user->assignedTrainings()->pluck('trainings.id');
+        if (!$assignedTrainingIds->contains($training->id)) {
             abort(403);
         }
 
-        $view = TrainingView::firstOrCreate(
-            ['training_id' => $training->id, 'user_id' => $user->id],
-            ['company_id' => $user->company_id, 'started_at' => now()]
-        );
+        // Load modules with lessons
+        $training->load([
+            'modules.lessons',
+            'modules.quiz',
+            'trainingQuiz',
+        ]);
 
-        $canComplete = $view->progress_percent >= 90 && !$view->completed_at;
-        $isCompleted = (bool) $view->completed_at;
+        $lessonIds = $training->lessons->pluck('id');
 
-        $quizPassed = false;
-        if ($training->has_quiz && $isCompleted) {
-            $quizPassed = $user->quizAttempts()
-                ->where('quiz_id', $training->quiz?->id)
-                ->where('passed', true)
-                ->exists();
+        $lessonViews = \App\Models\LessonView::withoutGlobalScope('company')
+            ->where('user_id', $user->id)
+            ->whereIn('lesson_id', $lessonIds)
+            ->get()
+            ->keyBy('lesson_id');
+
+        // Determine current lesson (from query param or first incomplete)
+        $currentLessonId = request('lesson');
+        $currentLesson = null;
+
+        if ($currentLessonId) {
+            $currentLesson = \App\Models\TrainingLesson::find($currentLessonId);
         }
 
-        $canGenerateCertificate = $isCompleted && (!$training->has_quiz || $quizPassed);
-        $existingCertificate = $user->certificates()
-            ->where('training_id', $training->id)
+        if (!$currentLesson) {
+            // Find first incomplete lesson
+            foreach ($training->modules as $module) {
+                foreach ($module->lessons as $lesson) {
+                    $view = $lessonViews[$lesson->id] ?? null;
+                    if (!$view || !$view->completed_at) {
+                        $currentLesson = $lesson;
+                        break 2;
+                    }
+                }
+            }
+            // If all complete, show last lesson
+            if (!$currentLesson) {
+                $currentLesson = $training->lessons->last();
+            }
+        }
+
+        // Create/update lesson view for current lesson
+        if ($currentLesson) {
+            \App\Models\LessonView::withoutGlobalScope('company')->firstOrCreate(
+                ['lesson_id' => $currentLesson->id, 'user_id' => $user->id],
+                ['company_id' => $user->company_id, 'started_at' => now()]
+            );
+            // Refresh to include newly created
+            $lessonViews = \App\Models\LessonView::withoutGlobalScope('company')
+                ->where('user_id', $user->id)
+                ->whereIn('lesson_id', $lessonIds)
+                ->get()
+                ->keyBy('lesson_id');
+        }
+
+        // Calculate unlock states
+        $unlockStates = $this->calculateUnlockStates($training, $lessonViews, $user);
+
+        // Training view
+        $trainingView = \App\Models\TrainingView::where('training_id', $training->id)
+            ->where('user_id', $user->id)
             ->first();
 
-        $groupIds = $user->groups()->pluck('groups.id');
-        $assignments = TrainingAssignment::where('training_id', $training->id)
-            ->whereIn('group_id', $groupIds)
-            ->get();
-        $isMandatory    = $assignments->contains('mandatory', true);
-        $effectiveDue   = $assignments->whereNotNull('due_date')->sortBy('due_date')->first()?->due_date;
+        // Overall progress
+        $trainingProgress = $trainingView?->progress_percent ?? 0;
+
+        // Check completion conditions
+        $allLessonsComplete = $lessonIds->every(fn($id) => isset($lessonViews[$id]) && $lessonViews[$id]->completed_at);
+
+        // Module quiz states
+        $allModuleQuizzesPassed = true;
+        foreach ($training->modules as $module) {
+            if ($module->quiz) {
+                $passed = $user->quizAttempts()
+                    ->where('quiz_id', $module->quiz->id)
+                    ->where('passed', true)->exists();
+                if (!$passed) $allModuleQuizzesPassed = false;
+            }
+        }
+
+        // Training quiz state
+        $trainingQuizPassed = true;
+        if ($training->trainingQuiz) {
+            $trainingQuizPassed = $user->quizAttempts()
+                ->where('quiz_id', $training->trainingQuiz->id)
+                ->where('passed', true)->exists();
+        }
+
+        $isCompleted = $trainingView?->completed_at !== null;
+        $canComplete = $allLessonsComplete && $allModuleQuizzesPassed && $trainingQuizPassed && !$isCompleted;
+
+        $canGenerateCertificate = $isCompleted && $allModuleQuizzesPassed && $trainingQuizPassed;
+
+        // Get assignment info for due date
+        $assignment = $training->assignments()
+            ->whereIn('group_id', $user->groups()->pluck('groups.id'))
+            ->first();
 
         return view('employee.trainings.show', compact(
-            'training', 'view', 'canComplete', 'isCompleted',
-            'quizPassed', 'canGenerateCertificate', 'existingCertificate',
-            'isMandatory', 'effectiveDue'
+            'training', 'currentLesson', 'lessonViews', 'unlockStates',
+            'trainingView', 'trainingProgress', 'canComplete', 'isCompleted',
+            'canGenerateCertificate', 'assignment'
         ));
     }
 
-    public function complete(Training $training, VideoProgressService $service)
+    public function complete(Training $training)
     {
-        $result = $service->markCompleted($training->id, auth()->id());
+        $user = auth()->user();
 
-        if (!$result) {
-            return back()->with('error', 'Você precisa assistir pelo menos 90% do vídeo.');
+        // Verify all lessons completed
+        $lessonIds = $training->lessons()->pluck('training_lessons.id');
+        $completedCount = \App\Models\LessonView::withoutGlobalScope('company')
+            ->where('user_id', $user->id)
+            ->whereIn('lesson_id', $lessonIds)
+            ->whereNotNull('completed_at')
+            ->count();
+
+        if ($completedCount < $lessonIds->count()) {
+            return back()->with('error', 'Complete todas as aulas antes de finalizar o treinamento.');
         }
 
-        if ($training->has_quiz) {
-            return redirect()->route('employee.quiz.show', $training);
+        // Verify all quizzes passed
+        $quizzes = $training->quizzes;
+        foreach ($quizzes as $quiz) {
+            $passed = $user->quizAttempts()->where('quiz_id', $quiz->id)->where('passed', true)->exists();
+            if (!$passed) {
+                return back()->with('error', 'Complete todos os quizzes antes de finalizar.');
+            }
         }
 
-        return back()->with('success', 'Treinamento concluído!');
+        $trainingView = \App\Models\TrainingView::where('training_id', $training->id)
+            ->where('user_id', $user->id)->first();
+
+        if ($trainingView && !$trainingView->completed_at) {
+            $trainingView->update(['completed_at' => now(), 'progress_percent' => 100]);
+        }
+
+        return redirect()->route('employee.trainings.show', $training)
+            ->with('success', 'Treinamento concluído com sucesso!');
+    }
+
+    private function calculateUnlockStates(Training $training, $lessonViews, $user): array
+    {
+        $states = ['modules' => [], 'lessons' => []];
+        $prevModuleComplete = true;
+
+        foreach ($training->modules as $module) {
+            $moduleUnlocked = !$training->is_sequential || $prevModuleComplete;
+            $states['modules'][$module->id] = $moduleUnlocked;
+
+            $prevLessonComplete = true;
+            $allLessonsComplete = true;
+
+            foreach ($module->lessons as $lesson) {
+                $view = $lessonViews[$lesson->id] ?? null;
+                $lessonComplete = $view && $view->completed_at;
+
+                $lessonUnlocked = $moduleUnlocked && (!$module->is_sequential || $prevLessonComplete);
+                $states['lessons'][$lesson->id] = $lessonUnlocked;
+
+                if (!$lessonComplete) $allLessonsComplete = false;
+                $prevLessonComplete = $lessonComplete;
+            }
+
+            $quizPassed = !$module->quiz || $user->quizAttempts()
+                ->where('quiz_id', $module->quiz->id)
+                ->where('passed', true)->exists();
+            $prevModuleComplete = $allLessonsComplete && $quizPassed;
+        }
+
+        return $states;
     }
 }
