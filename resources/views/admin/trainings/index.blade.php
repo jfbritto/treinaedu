@@ -21,51 +21,53 @@
             <a href="{{ route('trainings.create') }}" class="inline-block mt-3 text-sm text-primary hover:underline">Criar primeiro treinamento →</a>
         </div>
     @else
-        @php
-            $withQuiz   = $trainings->getCollection()->where('has_quiz', true)->count();
-            $activeCount = $trainings->getCollection()->where('active', true)->count();
-            $avgRate     = $trainings->getCollection()->avg(fn ($t) => $t->completionRate());
-        @endphp
-
         {{-- Stats --}}
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             <div class="bg-white rounded-xl shadow-sm p-4 flex items-center gap-4">
                 <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+                    <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>
                 </div>
                 <div>
-                    <p class="text-2xl font-bold text-gray-800">{{ $activeCount }}</p>
-                    <p class="text-xs text-gray-400">Ativos (nesta página)</p>
+                    <p class="text-2xl font-bold text-gray-800">{{ $totalActive }}</p>
+                    <p class="text-xs text-gray-400">Ativos</p>
                 </div>
             </div>
             <div class="bg-white rounded-xl shadow-sm p-4 flex items-center gap-4">
                 <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                    </svg>
+                    <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V7.875L14.25 1.5H5.625zM7.5 15a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 017.5 15zm.75 2.25a.75.75 0 000 1.5H12a.75.75 0 000-1.5H8.25z" clip-rule="evenodd"/><path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z"/></svg>
                 </div>
                 <div>
-                    <p class="text-2xl font-bold text-gray-800">{{ $withQuiz }}</p>
-                    <p class="text-xs text-gray-400">Com quiz (nesta página)</p>
+                    <p class="text-2xl font-bold text-gray-800">{{ $totalWithQuiz }}</p>
+                    <p class="text-xs text-gray-400">Com quiz</p>
                 </div>
             </div>
             <div class="bg-white rounded-xl shadow-sm p-4 flex items-center gap-4">
                 <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                    </svg>
+                    <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z"/></svg>
                 </div>
                 <div>
-                    <p class="text-2xl font-bold text-gray-800">{{ round($avgRate) }}%</p>
+                    <p class="text-2xl font-bold text-gray-800">{{ $avgRate }}%</p>
                     <p class="text-xs text-gray-400">Conclusão média</p>
                 </div>
             </div>
         </div>
 
-        {{-- Table --}}
-        <div class="bg-white rounded-xl shadow-sm overflow-hidden overflow-x-auto">
+        {{-- Table with reactive filter --}}
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden" x-data="{ search: '' }">
+            {{-- Search --}}
+            <div class="px-6 py-4 border-b border-gray-100">
+                <div class="relative max-w-md">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <input type="text" x-model="search" placeholder="Buscar treinamento..."
+                           class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
             <table class="w-full">
                 <thead>
                     <tr class="border-b border-gray-100">
@@ -81,7 +83,9 @@
                 <tbody class="divide-y divide-gray-50">
                     @foreach($trainings as $training)
                         @php $rate = $training->completionRate(); @endphp
-                        <tr class="hover:bg-gray-50 transition">
+                        <tr class="hover:bg-gray-50 transition"
+                            x-show="!search || '{{ strtolower(addslashes($training->title)) }}'.includes(search.toLowerCase())"
+                            x-cloak>
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -163,6 +167,7 @@
                     {{ $trainings->links() }}
                 </div>
             @endif
+            </div>
         </div>
     @endif
 
