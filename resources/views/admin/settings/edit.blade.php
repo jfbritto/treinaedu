@@ -214,12 +214,7 @@
                         {{-- Mini sidebar --}}
                         <div class="w-28 flex flex-col py-2.5 px-2 gap-0.5 flex-shrink-0 text-white"
                              :style="'background-color:' + primary">
-                            <div class="flex items-center gap-1.5 px-1 pb-2 mb-1"
-                                 style="border-bottom:1px solid rgba(255,255,255,0.12)">
-                                <div class="w-5 h-5 rounded flex-shrink-0 flex items-center justify-center"
-                                     :style="'background:linear-gradient(135deg,' + secondary + ',#6366f1)'">
-                                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13"/></svg>
-                                </div>
+                            <div class="px-1 pb-2 mb-1" style="border-bottom:1px solid rgba(255,255,255,0.12)">
                                 <span class="font-bold text-white truncate" style="font-size:9px">TreinaEdu</span>
                             </div>
                             <div class="flex items-center gap-1.5 px-1.5 py-1 rounded"
