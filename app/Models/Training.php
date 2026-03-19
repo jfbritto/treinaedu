@@ -5,6 +5,9 @@ namespace App\Models;
 use App\Models\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Training extends Model
@@ -15,6 +18,7 @@ class Training extends Model
         'company_id', 'created_by', 'title', 'description',
         'video_url', 'video_provider', 'duration_minutes',
         'passing_score', 'has_quiz', 'active',
+        'duration_minutes_override', 'is_sequential',
     ];
 
     protected function casts(): array
@@ -22,6 +26,7 @@ class Training extends Model
         return [
             'has_quiz' => 'boolean',
             'active' => 'boolean',
+            'is_sequential' => 'boolean',
         ];
     }
 
@@ -30,9 +35,40 @@ class Training extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function quiz()
+    public function quiz(): HasOne
     {
-        return $this->hasOne(Quiz::class);
+        return $this->hasOne(Quiz::class)->whereNull('module_id');
+    }
+
+    public function trainingQuiz(): HasOne
+    {
+        return $this->hasOne(Quiz::class)->whereNull('module_id');
+    }
+
+    public function quizzes(): HasMany
+    {
+        return $this->hasMany(Quiz::class);
+    }
+
+    public function modules(): HasMany
+    {
+        return $this->hasMany(TrainingModule::class)->orderBy('sort_order');
+    }
+
+    public function lessons(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            TrainingLesson::class,
+            TrainingModule::class,
+            'training_id',
+            'module_id',
+        );
+    }
+
+    public function calculatedDuration(): int
+    {
+        return $this->duration_minutes_override
+            ?? $this->lessons()->sum('duration_minutes');
     }
 
     public function views()
