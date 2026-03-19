@@ -106,8 +106,7 @@
                 const duration = this.player.getDuration();
                 const current  = this.player.getCurrentTime();
                 if (duration > 0) {
-                    let pct = Math.floor((current / duration) * 100);
-                    if (pct >= 97) pct = 100;
+                    const pct = Math.floor((current / duration) * 100);
                     if (pct > this.progress) {
                         this.updateProgress(pct);
                     }
