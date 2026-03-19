@@ -51,14 +51,13 @@
         removeModule(i) {
             if (this.modules.length > 1) this.modules.splice(i, 1);
         },
+        flashItem: null,
         moveModule(i, dir) {
             const j = i + dir;
             if (j < 0 || j >= this.modules.length) return;
             [this.modules[i], this.modules[j]] = [this.modules[j], this.modules[i]];
-            this.$nextTick(() => {
-                const cards = this.$el.querySelectorAll('[data-module-card]');
-                if (cards[j]) { cards[j].classList.remove('flash-move'); void cards[j].offsetWidth; cards[j].classList.add('flash-move'); }
-            });
+            this.flashItem = 'm' + j;
+            setTimeout(() => this.flashItem = null, 700);
         },
         addLesson(mi) {
             this.modules[mi].lessons.push({ id: null, title: '', type: 'video', video_url: '', duration_minutes: 0, content: '', hasQuiz: false, questions: [{ text: '', options: [{ text: '' }, { text: '' }], correct: 0 }] });
@@ -71,13 +70,8 @@
             const j = li + dir;
             if (j < 0 || j >= lessons.length) return;
             [lessons[li], lessons[j]] = [lessons[j], lessons[li]];
-            this.$nextTick(() => {
-                const cards = this.$el.querySelectorAll('[data-module-card]');
-                if (cards[mi]) {
-                    const lessonCards = cards[mi].querySelectorAll('[data-lesson-card]');
-                    if (lessonCards[j]) { lessonCards[j].classList.remove('flash-move'); void lessonCards[j].offsetWidth; lessonCards[j].classList.add('flash-move'); }
-                }
-            });
+            this.flashItem = 'l' + mi + '_' + j;
+            setTimeout(() => this.flashItem = null, 700);
         },
         getEmbedUrl(url) {
             if (!url) return '';
@@ -204,7 +198,7 @@
                 </div>
 
                 <template x-for="(module, mi) in modules" :key="mi">
-                    <div class="bg-white rounded-xl shadow-sm transition-shadow" data-module-card>
+                    <div class="bg-white rounded-xl shadow-sm" :class="flashItem === 'm' + mi ? 'flash-move' : ''">
                         {{-- Module Header --}}
                         <div class="bg-gray-50 px-6 py-4 border-b border-gray-100">
                             <div class="flex items-center gap-3">
@@ -261,7 +255,7 @@
                         {{-- Lessons --}}
                         <div class="p-6 space-y-3">
                             <template x-for="(lesson, li) in module.lessons" :key="li">
-                                <div class="bg-gray-50 rounded-xl border border-gray-100 p-4 space-y-3 transition-shadow" data-lesson-card>
+                                <div class="bg-gray-50 rounded-xl border border-gray-100 p-4 space-y-3" :class="flashItem === 'l' + mi + '_' + li ? 'flash-move' : ''">
                                     <div class="flex items-center gap-3">
                                         <span class="text-xs font-semibold text-gray-400 w-6 text-center flex-shrink-0"
                                               x-text="(li + 1) + '.'"></span>
