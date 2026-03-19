@@ -136,6 +136,11 @@ class TrainingController extends Controller
     {
         $this->authorizeCompany($training);
 
+        // Remove quiz data if quiz is disabled to avoid validation errors
+        if (!$request->boolean('has_quiz')) {
+            $request->request->remove('questions');
+        }
+
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -157,11 +162,11 @@ class TrainingController extends Controller
 
             'active' => 'boolean',
             'has_quiz' => 'boolean',
-            'passing_score' => 'nullable|required_if:has_quiz,1|integer|min:1|max:100',
-            'questions' => 'nullable|required_if:has_quiz,1|array|min:1',
+            'passing_score' => 'nullable|integer|min:1|max:100',
+            'questions' => 'exclude_unless:has_quiz,1|array|min:1',
             'questions.*.question' => 'required_with:questions|string',
             'questions.*.options' => 'required_with:questions|array|min:2',
-            'questions.*.options.*.text' => 'required|string|max:500',
+            'questions.*.options.*.text' => 'required_with:questions|string|max:500',
             'questions.*.correct' => 'required_with:questions|integer|min:0',
         ]);
 
