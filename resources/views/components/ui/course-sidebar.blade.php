@@ -67,8 +67,8 @@
                     @endphp
                     @if($lessonUnlocked)
                         <a href="{{ route('employee.trainings.show', ['training' => $training, 'lesson' => $lesson->id]) }}"
-                            class="flex items-center gap-2.5 pl-9 pr-4 py-2 text-sm transition {{ $isCurrent ? 'border-l-3 bg-primary/5' : 'hover:bg-gray-50' }}"
-                            @if($isCurrent) style="border-left: 3px solid var(--primary)" @endif>
+                            class="flex items-center gap-2.5 pl-9 pr-4 py-2 text-sm transition {{ $isCurrent ? 'bg-primary/5' : 'hover:bg-gray-50' }}"
+                            @if($isCurrent) style="box-shadow: inset 3px 0 0 var(--primary)" @endif>
 
                             {{-- Status dot --}}
                             @if($lessonComplete)
