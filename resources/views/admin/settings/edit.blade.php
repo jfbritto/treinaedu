@@ -198,6 +198,25 @@
                             </div>
                             @error('secondary_color') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
                         </div>
+
+                        {{-- Restaurar cores padrão --}}
+                        <div class="sm:col-span-2 pt-3 border-t border-gray-100">
+                            <button type="button"
+                                @click="
+                                    primary = '#1e293b';
+                                    secondary = '#3B82F6';
+                                    document.querySelector('input[name=primary_color]').value = '#1e293b';
+                                    document.querySelector('input[name=secondary_color]').value = '#3B82F6';
+                                    window.dispatchEvent(new CustomEvent('preview-color', {detail: {primary: '#1e293b', secondary: '#3B82F6'}}));
+                                "
+                                class="inline-flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-gray-700 transition px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                </svg>
+                                Restaurar cores padrão do sistema
+                            </button>
+                            <p class="text-xs text-gray-400 mt-1">Menu: #1e293b (escuro) · Destaque: #3B82F6 (azul)</p>
+                        </div>
                     </div>
                 </div>
 
