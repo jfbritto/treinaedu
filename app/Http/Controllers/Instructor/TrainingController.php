@@ -62,6 +62,7 @@ class TrainingController extends Controller
             $training = Training::create([
                 'title' => $request->title,
                 'description' => $request->description,
+                'duration_minutes' => 0,
                 'duration_minutes_override' => $request->duration_minutes_override,
                 'is_sequential' => $request->boolean('is_sequential'),
                 'has_quiz' => $request->boolean('has_quiz'),
