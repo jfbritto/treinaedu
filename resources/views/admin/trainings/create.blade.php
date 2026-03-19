@@ -112,14 +112,12 @@
         {{-- Header --}}
         <div class="flex items-center gap-3 mb-6">
             <a href="{{ route('trainings.index') }}"
-               class="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 transition">
+               class="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 transition mb-6">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
-                Voltar
+                Voltar para treinamentos
             </a>
-            <h2 class="text-lg font-bold text-gray-800">Novo Treinamento</h2>
-        </div>
 
         <form method="POST" action="{{ route('trainings.store') }}" enctype="multipart/form-data" class="space-y-6">
             @csrf
