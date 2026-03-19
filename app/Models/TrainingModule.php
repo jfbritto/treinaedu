@@ -32,6 +32,6 @@ class TrainingModule extends Model
 
     public function quiz(): HasOne
     {
-        return $this->hasOne(Quiz::class, 'module_id');
+        return $this->hasOne(Quiz::class, 'module_id')->whereNull('lesson_id');
     }
 }

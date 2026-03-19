@@ -7,6 +7,7 @@ use App\Models\LessonView;
 use App\Models\Quiz;
 use App\Models\QuizAttempt;
 use App\Models\Training;
+use App\Models\TrainingLesson;
 use App\Models\TrainingModule;
 use Illuminate\Http\Request;
 
@@ -16,8 +17,15 @@ class QuizController extends Controller
     {
         $user = auth()->user();
         $moduleId = $request->query('module');
+        $lessonId = $request->query('lesson');
 
-        if ($moduleId) {
+        if ($lessonId) {
+            // Lesson-level quiz
+            $lesson = TrainingLesson::whereHas('module', fn ($q) => $q->where('training_id', $training->id))
+                ->where('id', $lessonId)->firstOrFail();
+            $this->ensureLessonCompleted($user, $lesson);
+            $quiz = $lesson->quiz()->with('questions.options')->firstOrFail();
+        } elseif ($moduleId) {
             // Module-level quiz
             $module = $training->modules()->where('id', $moduleId)->firstOrFail();
             $this->ensureModuleLessonsCompleted($user, $module);
@@ -35,8 +43,14 @@ class QuizController extends Controller
     {
         $user = auth()->user();
         $moduleId = $request->query('module');
+        $lessonId = $request->query('lesson');
 
-        if ($moduleId) {
+        if ($lessonId) {
+            $lesson = TrainingLesson::whereHas('module', fn ($q) => $q->where('training_id', $training->id))
+                ->where('id', $lessonId)->firstOrFail();
+            $this->ensureLessonCompleted($user, $lesson);
+            $quiz = $lesson->quiz()->with('questions.options')->firstOrFail();
+        } elseif ($moduleId) {
             $module = $training->modules()->where('id', $moduleId)->firstOrFail();
             $this->ensureModuleLessonsCompleted($user, $module);
             $quiz = $module->quiz()->with('questions.options')->firstOrFail();
@@ -66,6 +80,7 @@ class QuizController extends Controller
             return redirect()->route('employee.quiz.show', array_filter([
                 'training' => $training->id,
                 'module' => $moduleId,
+                'lesson' => $lessonId,
             ]))->with('info', 'Você já foi aprovado neste quiz.');
         }
 
@@ -96,6 +111,22 @@ class QuizController extends Controller
     }
 
     /**
+     * Ensure a lesson is completed (progress meets threshold).
+     */
+    private function ensureLessonCompleted($user, TrainingLesson $lesson): void
+    {
+        $view = LessonView::withoutGlobalScope('company')
+            ->where('user_id', $user->id)
+            ->where('lesson_id', $lesson->id)
+            ->whereNotNull('completed_at')
+            ->first();
+
+        if (!$view) {
+            abort(403, 'Você precisa concluir a aula antes de fazer o quiz.');
+        }
+    }
+
+    /**
      * Ensure all lessons in the module are completed.
      */
     private function ensureModuleLessonsCompleted($user, TrainingModule $module): void
@@ -122,7 +153,7 @@ class QuizController extends Controller
      */
     private function ensureTrainingCompleted($user, Training $training): void
     {
-        $modules = $training->modules()->with(['lessons', 'quiz'])->get();
+        $modules = $training->modules()->with(['lessons.quiz', 'quiz'])->get();
 
         foreach ($modules as $module) {
             // Check all lessons completed
@@ -136,6 +167,20 @@ class QuizController extends Controller
 
                 if ($completedCount < $lessonIds->count()) {
                     abort(403, 'Você precisa concluir todos os módulos antes de fazer o quiz final.');
+                }
+            }
+
+            // Check lesson quizzes passed (if any)
+            foreach ($module->lessons as $lesson) {
+                if ($lesson->quiz) {
+                    $passed = $user->quizAttempts()
+                        ->where('quiz_id', $lesson->quiz->id)
+                        ->where('passed', true)
+                        ->exists();
+
+                    if (!$passed) {
+                        abort(403, 'Você precisa ser aprovado em todos os quizzes de aula antes de fazer o quiz final.');
+                    }
                 }
             }
 

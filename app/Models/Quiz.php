@@ -9,7 +9,7 @@ class Quiz extends Model
 {
     use BelongsToCompany;
 
-    protected $fillable = ['training_id', 'company_id', 'module_id'];
+    protected $fillable = ['training_id', 'company_id', 'module_id', 'lesson_id'];
 
     public function training()
     {
@@ -19,6 +19,11 @@ class Quiz extends Model
     public function module()
     {
         return $this->belongsTo(TrainingModule::class, 'module_id');
+    }
+
+    public function lesson()
+    {
+        return $this->belongsTo(TrainingLesson::class, 'lesson_id');
     }
 
     public function questions()

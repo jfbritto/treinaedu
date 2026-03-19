@@ -37,12 +37,12 @@ class Training extends Model
 
     public function quiz(): HasOne
     {
-        return $this->hasOne(Quiz::class)->whereNull('module_id');
+        return $this->hasOne(Quiz::class)->whereNull('module_id')->whereNull('lesson_id');
     }
 
     public function trainingQuiz(): HasOne
     {
-        return $this->hasOne(Quiz::class)->whereNull('module_id');
+        return $this->hasOne(Quiz::class)->whereNull('module_id')->whereNull('lesson_id');
     }
 
     public function quizzes(): HasMany
