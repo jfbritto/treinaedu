@@ -89,12 +89,8 @@
                         <canvas id="confetti-canvas" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 1"></canvas>
 
                         <div class="relative" style="z-index: 2">
-                            {{-- Trophy icon --}}
-                            <div class="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-6">
-                                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-4.5A3.375 3.375 0 0019.875 11l1.5-.75M7.5 18.75v-4.5A3.375 3.375 0 004.125 11l-1.5-.75M12 2.25l.75 3m-.75-3-.75 3m.75-3V1.5m3 3.75L14.25 3m.75 2.25L16.5 3M9 5.25L9.75 3M9 5.25 7.5 3"/>
-                                </svg>
-                            </div>
+                            {{-- Star icon --}}
+                            <div class="text-6xl mb-6">🎉</div>
 
                             <h2 class="text-3xl font-bold text-white mb-3">Parabéns!</h2>
                             <p class="text-white/80 text-lg mb-2">Você concluiu todas as aulas de</p>
