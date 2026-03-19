@@ -16,19 +16,9 @@
 
                 {{-- Nome --}}
                 <div class="bg-white rounded-xl shadow-sm p-6">
-                    <div class="flex items-center gap-3 mb-5">
-                        <div class="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0">
-                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-semibold text-gray-800">Dados da Empresa</h3>
-                            <p class="text-xs text-gray-400">Nome exibido no sistema para todos os usuários</p>
-                        </div>
-                    </div>
+                    <h3 class="text-sm font-semibold text-gray-800 mb-4">Nome da Empresa</h3>
                     <div class="space-y-1">
-                        <label for="name" class="block text-sm font-medium text-gray-700">Nome da empresa <span class="text-red-500">*</span></label>
+                        <label for="name" class="block text-sm font-medium text-gray-700">Nome exibido no sistema <span class="text-red-500">*</span></label>
                         <input type="text" id="name" name="name"
                             value="{{ old('name', $company->name) }}" required
                             class="w-full rounded-lg border @error('name') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
@@ -38,17 +28,7 @@
 
                 {{-- Logo com Cropper --}}
                 <div class="bg-white rounded-xl shadow-sm p-6" x-data="logoUploader()">
-                    <div class="flex items-center gap-3 mb-5">
-                        <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-semibold text-gray-800">Logo da Empresa</h3>
-                            <p class="text-xs text-gray-400">Exibida no topo do menu lateral para todos os usuários</p>
-                        </div>
-                    </div>
+                    <h3 class="text-sm font-semibold text-gray-800 mb-4">Logo</h3>
 
                     @if($company->logo_path)
                         <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100 mb-4">
@@ -148,25 +128,14 @@
 
                 {{-- Cores --}}
                 <div class="bg-white rounded-xl shadow-sm p-6">
-                    <div class="flex items-center gap-3 mb-5">
-                        <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-semibold text-gray-800">Identidade Visual</h3>
-                            <p class="text-xs text-gray-400">Cores aplicadas no menu lateral e nos destaques da interface</p>
-                        </div>
-                    </div>
+                    <h3 class="text-sm font-semibold text-gray-800 mb-4">Cores</h3>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6" x-data="{
                         primary: '{{ old('primary_color', $company->primary_color ?? '#1e293b') }}',
                         secondary: '{{ old('secondary_color', $company->secondary_color ?? '#3B82F6') }}'
                     }">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-0.5">Cor do Menu Lateral</label>
-                            <p class="text-xs text-gray-400 mb-3">Fundo do sidebar — prefira tons escuros</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Menu lateral</label>
                             <div class="flex items-center gap-3">
                                 <input type="color" name="primary_color"
                                        x-model="primary"
@@ -174,15 +143,14 @@
                                        class="h-10 w-14 cursor-pointer rounded-lg border border-gray-200 p-1">
                                 <div>
                                     <p class="text-sm font-mono font-medium text-gray-700" x-text="primary"></p>
-                                    <p class="text-xs text-gray-400">Sidebar background</p>
+                                    <p class="text-xs text-gray-400">Fundo do menu</p>
                                 </div>
                             </div>
                             @error('primary_color') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-0.5">Cor de Destaque</label>
-                            <p class="text-xs text-gray-400 mb-3">Botões e ícones de ação</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Destaque</label>
                             <div class="flex items-center gap-3">
                                 <input type="color" name="secondary_color"
                                        x-model="secondary"
@@ -190,7 +158,7 @@
                                        class="h-10 w-14 cursor-pointer rounded-lg border border-gray-200 p-1">
                                 <div>
                                     <p class="text-sm font-mono font-medium text-gray-700" x-text="secondary"></p>
-                                    <p class="text-xs text-gray-400">Buttons &amp; accents</p>
+                                    <p class="text-xs text-gray-400">Botões e ícones</p>
                                 </div>
                             </div>
                             @error('secondary_color') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
