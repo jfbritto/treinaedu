@@ -127,7 +127,7 @@ class TrainingController extends Controller
     public function edit(Training $training)
     {
         $this->authorizeCompany($training);
-        $training->load(['modules.lessons', 'quiz.questions.options']);
+        $training->load(['modules.lessons.quiz.questions.options', 'quiz.questions.options']);
 
         return view('admin.trainings.edit', compact('training'));
     }

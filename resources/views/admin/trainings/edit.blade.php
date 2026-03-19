@@ -15,12 +15,18 @@
                 'duration_minutes' => $l->duration_minutes ?? 0,
                 'content' => $l->content ?? '',
                 'file_path' => $l->file_path,
+                'hasQuiz' => $l->quiz !== null,
+                'questions' => $l->quiz ? $l->quiz->questions->map(fn($q) => [
+                    'text' => $q->question,
+                    'options' => $q->options->map(fn($o) => ['text' => $o->option_text])->values()->toArray(),
+                    'correct' => $q->options->search(fn($o) => $o->is_correct) ?? 0,
+                ])->values()->toArray() : [['text' => '', 'options' => [['text' => ''], ['text' => '']], 'correct' => 0]],
             ])->values()->toArray(),
         ])->values()->toArray()),
         addModule() {
             this.modules.push({
                 id: null, title: '', description: '', is_sequential: true, showDescription: false,
-                lessons: [{ id: null, title: '', type: 'video', video_url: '', duration_minutes: 0, content: '' }]
+                lessons: [{ id: null, title: '', type: 'video', video_url: '', duration_minutes: 0, content: '', hasQuiz: false, questions: [{ text: '', options: [{ text: '' }, { text: '' }], correct: 0 }] }]
             });
         },
         removeModule(i) {
@@ -32,7 +38,7 @@
             [this.modules[i], this.modules[j]] = [this.modules[j], this.modules[i]];
         },
         addLesson(mi) {
-            this.modules[mi].lessons.push({ id: null, title: '', type: 'video', video_url: '', duration_minutes: 0, content: '' });
+            this.modules[mi].lessons.push({ id: null, title: '', type: 'video', video_url: '', duration_minutes: 0, content: '', hasQuiz: false, questions: [{ text: '', options: [{ text: '' }, { text: '' }], correct: 0 }] });
         },
         removeLesson(mi, li) {
             if (this.modules[mi].lessons.length > 1) this.modules[mi].lessons.splice(li, 1);
@@ -42,6 +48,26 @@
             const j = li + dir;
             if (j < 0 || j >= lessons.length) return;
             [lessons[li], lessons[j]] = [lessons[j], lessons[li]];
+        },
+        getEmbedUrl(url) {
+            if (!url) return '';
+            let match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+            if (match) return 'https://www.youtube.com/embed/' + match[1];
+            match = url.match(/vimeo\.com\/(\d+)/);
+            if (match) return 'https://player.vimeo.com/video/' + match[1];
+            return '';
+        },
+        addLessonQuestion(mi, li) {
+            this.modules[mi].lessons[li].questions.push({ text: '', options: [{ text: '' }, { text: '' }], correct: 0 });
+        },
+        removeLessonQuestion(mi, li, qi) {
+            if (this.modules[mi].lessons[li].questions.length > 1) this.modules[mi].lessons[li].questions.splice(qi, 1);
+        },
+        addLessonOption(mi, li, qi) {
+            this.modules[mi].lessons[li].questions[qi].options.push({ text: '' });
+        },
+        removeLessonOption(mi, li, qi, oi) {
+            if (this.modules[mi].lessons[li].questions[qi].options.length > 2) this.modules[mi].lessons[li].questions[qi].options.splice(oi, 1);
         },
         hasQuiz: {{ $training->has_quiz ? 'true' : 'false' }},
         questions: @js($training->quiz ? $training->quiz->questions->map(fn($q) => [
@@ -317,6 +343,60 @@
                                                   rows="4"
                                                   placeholder="Digite o conteúdo da aula..."
                                                   class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white"></textarea>
+                                    </div>
+
+                                    {{-- Video preview --}}
+                                    <div x-show="lesson.type === 'video' && getEmbedUrl(lesson.video_url)" x-cloak class="pl-9">
+                                        <div class="aspect-video rounded-lg overflow-hidden bg-black border border-gray-200">
+                                            <iframe :src="getEmbedUrl(lesson.video_url)" class="w-full h-full" frameborder="0" allowfullscreen
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+                                        </div>
+                                    </div>
+
+                                    {{-- Lesson quiz toggle --}}
+                                    <div class="pl-9 pt-2 border-t border-gray-100 mt-2">
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox"
+                                                   :name="'modules['+mi+'][lessons]['+li+'][has_quiz]'"
+                                                   value="1"
+                                                   x-model="lesson.hasQuiz"
+                                                   class="rounded border-gray-300 text-primary focus:ring-primary">
+                                            <span class="text-xs font-medium text-gray-600">Quiz desta aula</span>
+                                        </label>
+
+                                        <div x-show="lesson.hasQuiz" x-cloak class="mt-3 space-y-3">
+                                            <template x-for="(q, qi) in lesson.questions" :key="qi">
+                                                <div class="border border-gray-200 rounded-lg p-3 space-y-2 bg-white">
+                                                    <div class="flex items-center justify-between">
+                                                        <span class="text-xs font-semibold text-gray-500" x-text="'Questão ' + (qi + 1)"></span>
+                                                        <button type="button" @click="removeLessonQuestion(mi, li, qi)" x-show="lesson.questions.length > 1"
+                                                            class="text-xs text-red-500 hover:text-red-700">Remover</button>
+                                                    </div>
+                                                    <input type="text" :name="'modules['+mi+'][lessons]['+li+'][questions]['+qi+'][question]'"
+                                                           x-model="q.text" placeholder="Pergunta..."
+                                                           class="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                                    <div class="space-y-1.5">
+                                                        <template x-for="(opt, oi) in q.options" :key="oi">
+                                                            <div class="flex items-center gap-2">
+                                                                <input type="radio" :name="'modules['+mi+'][lessons]['+li+'][questions]['+qi+'][correct]'" :value="oi"
+                                                                       x-model="q.correct" class="text-primary border-gray-300">
+                                                                <input type="text" :name="'modules['+mi+'][lessons]['+li+'][questions]['+qi+'][options]['+oi+'][text]'"
+                                                                       x-model="opt.text" placeholder="Opção..."
+                                                                       class="flex-1 rounded-lg border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                                                <button type="button" @click="removeLessonOption(mi, li, qi, oi)" x-show="q.options.length > 2"
+                                                                    class="text-gray-400 hover:text-red-500">
+                                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                                </button>
+                                                            </div>
+                                                        </template>
+                                                        <button type="button" @click="addLessonOption(mi, li, qi)"
+                                                            class="text-xs text-primary hover:text-secondary font-medium">+ Opção</button>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            <button type="button" @click="addLessonQuestion(mi, li)"
+                                                class="text-xs text-primary hover:text-secondary font-medium">+ Questão</button>
+                                        </div>
                                     </div>
                                 </div>
                             </template>
