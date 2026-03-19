@@ -24,14 +24,16 @@ Three new database tables (`training_modules`, `training_lessons`, `lesson_views
 | Column | Type | Description |
 |--------|------|-------------|
 | id | bigIncrements | PK |
-| training_id | foreignId → trainings | cascade on delete |
+| training_id | foreignId → trainings | on delete cascade (via model event, not DB — Training uses SoftDeletes) |
 | title | string | Module name |
 | description | text, nullable | Module description |
-| order | unsignedInteger | Display order (1-based) |
+| sort_order | unsignedInteger | Display order (1-based) |
 | is_sequential | boolean, default: true | Whether lessons must be completed in order |
 | timestamps | | |
 
-**Index:** `[training_id, order]`
+**Index:** `[training_id, sort_order]`
+
+**Note:** No `company_id` column. Multi-tenant isolation is enforced through the Training relationship (Training has `company_id` + `BelongsToCompany` trait). All module queries must go through `$training->modules()`.
 
 ### 1.2 New Table: `training_lessons`
 
@@ -44,12 +46,14 @@ Three new database tables (`training_modules`, `training_lessons`, `lesson_views
 | video_url | string(500), nullable | Video URL (when type=video) |
 | video_provider | enum: 'youtube','vimeo', nullable | Provider (when type=video) |
 | content | text, nullable | Rich text content (when type=text) |
-| file_path | string, nullable | Uploaded file path (when type=document) |
+| file_path | string, nullable | Uploaded file path in `public` disk (when type=document) |
 | duration_minutes | unsignedInteger, default: 0 | Lesson duration |
-| order | unsignedInteger | Order within module (1-based) |
+| sort_order | unsignedInteger | Order within module (1-based) |
 | timestamps | | |
 
-**Index:** `[module_id, order]`
+**Index:** `[module_id, sort_order]`
+
+**Note:** No `company_id`. Isolation via TrainingModule → Training chain. Document uploads stored on `Storage::disk('public')` under `lessons/{company_id}/`. When a lesson is deleted, its file is cleaned up via model `deleting` event.
 
 ### 1.3 New Table: `lesson_views`
 
@@ -67,6 +71,8 @@ Three new database tables (`training_modules`, `training_lessons`, `lesson_views
 **Unique:** `[lesson_id, user_id]`
 **Index:** `[company_id, user_id]`
 
+**Note:** Uses `BelongsToCompany` trait for multi-tenant global scope.
+
 ### 1.4 Alterations to Existing Tables
 
 **`trainings`** — add columns:
@@ -77,18 +83,22 @@ Three new database tables (`training_modules`, `training_lessons`, `lesson_views
 - `video_url` → nullable (new trainings use lessons)
 - `video_provider` → nullable
 
-**`quizzes`** — add column:
-- `module_id` (foreignId → training_modules, nullable) — when null: quiz applies to entire training; when set: quiz applies to that module only
+**`quizzes`** — changes:
+- Add `module_id` (foreignId → training_modules, nullable) — when null: quiz applies to entire training; when set: quiz applies to that module only
+- **Remove** the existing `UNIQUE` constraint on `training_id` — a training can now have multiple quizzes (one per module + one training-level)
+- Add composite unique: `[training_id, module_id]` where module_id is nullable (ensures max one quiz per module and one training-level quiz)
 
 ### 1.5 Relationships
 
 ```
-Training hasMany TrainingModule (ordered by `order`)
-Training hasOne Quiz (where module_id is null) — training-level quiz
+Training hasMany TrainingModule (ordered by `sort_order`)
+Training hasMany Quiz — all quizzes (module-level + training-level)
+Training hasOne Quiz (scope: where module_id is null) — via trainingQuiz() method
 Training hasMany Certificate
+Training hasManyThrough TrainingLesson (via TrainingModule) — via lessons() method
 
 TrainingModule belongsTo Training
-TrainingModule hasMany TrainingLesson (ordered by `order`)
+TrainingModule hasMany TrainingLesson (ordered by `sort_order`)
 TrainingModule hasOne Quiz (where module_id = this.id)
 
 TrainingLesson belongsTo TrainingModule
@@ -97,33 +107,67 @@ TrainingLesson hasMany LessonView
 LessonView belongsTo TrainingLesson
 LessonView belongsTo User
 
+Quiz belongsTo Training
 Quiz optionally belongsTo TrainingModule (nullable)
 ```
+
+**Changes to Training model:**
+- `hasOne Quiz` → `hasMany Quiz` (renamed to `quizzes()`)
+- New `trainingQuiz()` → `hasOne(Quiz::class)->whereNull('module_id')` for the training-level quiz
+- The `has_quiz` boolean on `trainings` table is **kept** but its meaning changes to: "this training has at least one quiz (module or training level)". Updated automatically when quizzes are added/removed.
 
 ### 1.6 Duration Calculation
 
 ```php
-// In Training model
+// In Training model — uses hasManyThrough for efficient query
 public function calculatedDuration(): int
 {
     return $this->duration_minutes_override
-        ?? $this->modules()->with('lessons')->get()
-            ->flatMap->lessons->sum('duration_minutes');
+        ?? $this->lessons()->sum('duration_minutes');
+}
+
+// hasManyThrough relationship
+public function lessons(): HasManyThrough
+{
+    return $this->hasManyThrough(TrainingLesson::class, TrainingModule::class, 'training_id', 'module_id');
 }
 ```
+
+### 1.7 Soft Delete Handling
+
+Training uses `SoftDeletes`. Since DB-level `CASCADE ON DELETE` doesn't fire on soft deletes, the following approach is used:
+
+```php
+// In Training model — boot method or observer
+protected static function booted()
+{
+    static::deleting(function (Training $training) {
+        if ($training->isForceDeleting()) {
+            // Hard delete: DB cascade handles it
+            return;
+        }
+        // Soft delete: manually delete children
+        // Modules, lessons, lesson_views cascade via DB when modules are force-deleted
+        // But since we soft-delete training, we just leave modules/lessons intact
+        // They become inaccessible because Training scope filters them out
+    });
+}
+```
+
+Since `training_modules` and `training_lessons` don't have `SoftDeletes` and are only accessed through `$training->modules()`, a soft-deleted Training naturally hides all its modules and lessons. No additional handling needed.
 
 ---
 
 ## 2. Data Migration (Backward Compatibility)
 
-A data migration converts every existing training (that has `video_url`) into the new structure:
+A data migration converts every existing training into the new structure:
 
 ```
-For each Training where video_url is not null:
+For each Training (all have video_url since column was NOT NULL):
   1. Create TrainingModule:
      - training_id = training.id
      - title = training.title
-     - order = 1
+     - sort_order = 1
      - is_sequential = true
   2. Create TrainingLesson:
      - module_id = new module's id
@@ -132,7 +176,7 @@ For each Training where video_url is not null:
      - video_url = training.video_url
      - video_provider = training.video_provider
      - duration_minutes = training.duration_minutes
-     - order = 1
+     - sort_order = 1
   3. For each TrainingView of this training:
      Create LessonView:
      - lesson_id = new lesson's id
@@ -141,11 +185,13 @@ For each Training where video_url is not null:
      - progress_percent = training_view.progress_percent
      - started_at = training_view.started_at
      - completed_at = training_view.completed_at
-  4. If training has a Quiz (where module_id is null):
-     - Keep as-is (training-level quiz, unchanged)
+  4. If training has a Quiz:
+     - Keep as-is (training-level quiz with module_id = null)
 ```
 
 This migration is **non-destructive** — original columns (`video_url`, `video_provider`, `duration_minutes`) remain but become unused for migrated trainings. New trainings will leave them null.
+
+**UX transition:** After migration, ALL trainings use the module builder UI when editing. There is no "legacy mode" — the migrated 1-module/1-lesson structure appears in the builder and can be expanded by the admin.
 
 ---
 
@@ -173,9 +219,25 @@ module_completed = all lessons completed + module quiz passed (if exists)
 
 ### 3.4 Training Progress
 
-`training_views.progress_percent` is updated whenever a `lesson_view` changes:
-```
-training_progress = average(module_progress for each module)
+`training_views.progress_percent` is updated by `LessonProgressService` whenever a `lesson_view` changes:
+
+```php
+// In LessonProgressService, after updating a lesson_view:
+public function recalculateTrainingProgress(Training $training, User $user): void
+{
+    $lessons = $training->lessons; // hasManyThrough
+    $lessonViews = LessonView::where('user_id', $user->id)
+        ->whereIn('lesson_id', $lessons->pluck('id'))
+        ->get()
+        ->keyBy('lesson_id');
+
+    $totalProgress = $lessons->avg(fn ($lesson) => $lessonViews[$lesson->id]->progress_percent ?? 0);
+
+    TrainingView::updateOrCreate(
+        ['training_id' => $training->id, 'user_id' => $user->id],
+        ['progress_percent' => (int) round($totalProgress), 'company_id' => $user->company_id]
+    );
+}
 ```
 
 `training_views.completed_at` is set when:
@@ -204,6 +266,21 @@ Response: { "progress_percent": 75, "lesson_completed": false, "module_progress"
 
 **Existing endpoint** `POST /api/training-progress` — deprecated but still functional for backward compatibility during transition.
 
+### 3.7 Data Loading for Course Player
+
+The course player page (`employee/trainings/show`) is **server-rendered via Blade**. The controller loads all data in a single query and passes it to the view:
+
+```php
+$training->load([
+    'modules.lessons',
+    'modules.quiz',
+    'trainingQuiz',
+    'modules.lessons.lessonViews' => fn($q) => $q->where('user_id', auth()->id()),
+]);
+```
+
+No additional API endpoint needed for listing modules/lessons — all state is embedded in the Blade template and managed by Alpine.js for interactivity (accordion, navigation, progress updates).
+
 ---
 
 ## 4. Admin Flow
@@ -223,13 +300,13 @@ The current single-form becomes a multi-section builder:
   - Module title, description (collapsible)
   - Sequential lessons toggle
   - "Add Lesson" button
-  - Lesson list (draggable or up/down arrows for reorder):
+  - Lesson list (up/down arrows for reorder):
     - Lesson title
     - Type selector (Video | Document | Text)
     - Type-specific fields (URL, file upload, or text editor)
     - Duration field
   - "Add Quiz to this Module" toggle → quiz builder (same as today)
-- Modules are reorderable (drag or arrows)
+- Modules are reorderable (up/down arrows)
 
 **Section 3: Training-level quiz** (optional)
 - Same quiz builder as today
@@ -257,6 +334,10 @@ modules[0][lessons][0][duration_minutes] = 10
 ```
 
 Server processes in a transaction: create/update modules → create/update lessons → handle quiz changes.
+
+### 4.4 Instructor Support
+
+The `InstructorTrainingController` follows the same module builder pattern as the admin. Instructors can create/edit trainings with modules and lessons within their scope. The views are shared (same Blade components).
 
 ---
 
@@ -302,8 +383,8 @@ Progress: 45% [========-------]
 
 ### 5.2 Navigation
 
-- Clicking a lesson in sidebar loads it in the content area (SPA-like with Alpine.js, or page reload — simpler)
-- Locked lessons show tooltip: "Complete the previous lesson first"
+- Clicking a lesson in sidebar loads the page with `?lesson={id}` query param (full page reload for simplicity)
+- Locked lessons show tooltip: "Complete a aula anterior primeiro"
 - Completed lessons show green checkmark
 
 ### 5.3 Completion Flow
@@ -316,6 +397,13 @@ Progress: 45% [========-------]
 5. Click → training_views.completed_at = now()
 6. Certificate generation unlocked
 ```
+
+### 5.4 Quiz Access Changes
+
+The `QuizController` is updated to handle module-level quizzes:
+- **Module quiz:** accessible when all lessons in that module are completed
+- **Training quiz:** accessible when all modules are completed (all lessons + all module quizzes passed)
+- Route changes: `GET /employee/trainings/{training}/quiz?module={module_id}` for module quizzes, existing route for training quiz
 
 ---
 
@@ -340,18 +428,22 @@ Same addition — list modules below the certificate visual.
 
 ### 6.3 Generation Logic
 
-No conceptual change:
+Updated to check module quizzes:
 ```php
 canGenerate(User $user, Training $training): bool
 {
     // Training must be completed
-    $completed = training_views.completed_at is not null;
+    $completed = TrainingView where completed_at is not null;
 
-    // All module quizzes must be passed
-    $moduleQuizzesPassed = every module quiz has a passed attempt;
+    // All module quizzes must be passed (if any exist)
+    $moduleQuizzes = Quiz::where('training_id', $training->id)->whereNotNull('module_id')->get();
+    $moduleQuizzesPassed = $moduleQuizzes->every(fn($quiz) =>
+        $user->quizAttempts()->where('quiz_id', $quiz->id)->where('passed', true)->exists()
+    );
 
-    // Training quiz must be passed (if exists)
-    $trainingQuizPassed = !has_quiz || quiz_attempt.passed;
+    // Training-level quiz must be passed (if exists)
+    $trainingQuiz = Quiz::where('training_id', $training->id)->whereNull('module_id')->first();
+    $trainingQuizPassed = !$trainingQuiz || $user->quizAttempts()->where('quiz_id', $trainingQuiz->id)->where('passed', true)->exists();
 
     return $completed && $moduleQuizzesPassed && $trainingQuizPassed;
 }
@@ -366,11 +458,11 @@ canGenerate(User $user, Training $training): bool
 - `database/migrations/xxxx_create_training_lessons_table.php`
 - `database/migrations/xxxx_create_lesson_views_table.php`
 - `database/migrations/xxxx_add_module_support_to_trainings.php`
-- `database/migrations/xxxx_add_module_id_to_quizzes.php`
+- `database/migrations/xxxx_modify_quizzes_for_modules.php` (add module_id, drop unique on training_id, add composite unique)
 - `database/migrations/xxxx_migrate_existing_trainings_to_modules.php`
 - `app/Models/TrainingModule.php`
 - `app/Models/TrainingLesson.php`
-- `app/Models/LessonView.php`
+- `app/Models/LessonView.php` (with `BelongsToCompany` trait)
 - `app/Services/LessonProgressService.php`
 - `app/Http/Controllers/Api/LessonProgressController.php`
 - `resources/views/employee/trainings/show.blade.php` (major rewrite)
@@ -380,23 +472,36 @@ canGenerate(User $user, Training $training): bool
 - `resources/views/components/ui/course-sidebar.blade.php`
 
 ### Modified Files
-- `app/Models/Training.php` — new relationships, calculatedDuration()
-- `app/Models/Quiz.php` — add module relationship
-- `app/Services/VideoProgressService.php` — adapt or deprecate
-- `app/Services/CertificateService.php` — update canGenerate, add module data to PDF
-- `app/Http/Controllers/Admin/TrainingController.php` — rewrite store/update for modules
-- `app/Http/Controllers/Employee/TrainingController.php` — rewrite show, complete
+- `app/Models/Training.php` — new relationships (modules, lessons, quizzes, trainingQuiz), calculatedDuration(), hasManyThrough
+- `app/Models/Quiz.php` — add module_id to fillable, add module() relationship
+- `app/Services/VideoProgressService.php` — deprecate, replaced by LessonProgressService
+- `app/Services/CertificateService.php` — update canGenerate for module quizzes, pass module data to PDF
+- `app/Http/Controllers/Admin/TrainingController.php` — rewrite store/update for modules/lessons
+- `app/Http/Controllers/Instructor/TrainingController.php` — same module builder support
+- `app/Http/Controllers/Employee/TrainingController.php` — rewrite show (course player), complete
+- `app/Http/Controllers/Employee/QuizController.php` — handle module-level quiz access
 - `resources/views/certificates/template.blade.php` — add module listing
 - `resources/views/certificates/show.blade.php` — add module listing
-- `routes/web.php` or `routes/api.php` — new lesson-progress route
+- `routes/web.php` — quiz route changes
+- `routes/api.php` — new lesson-progress route
 
 ---
 
-## 8. Out of Scope
+## 8. Reports Impact
+
+The existing `ReportController` shows training completion data. With the new structure:
+- Training-level reports remain the same (completion rate, progress)
+- No per-module/per-lesson reporting in this iteration
+- Future enhancement: drill-down into module/lesson completion rates
+
+---
+
+## 9. Out of Scope
 
 - SCORM/xAPI integration
 - Video hosting (continues using YouTube/Vimeo)
 - Live/synchronous lessons
 - Discussion forums per lesson
 - Gamification (badges, points)
-- Instructor-specific views for module management (uses admin views)
+- Per-module/per-lesson reporting (future enhancement)
+- Drag & drop reorder (uses up/down arrows for simplicity)
