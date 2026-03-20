@@ -223,6 +223,53 @@
                         return;
                     }
 
+                    // Render chart
+                    setTimeout(() => {
+                        const canvas = document.getElementById('groupChart');
+                        if (canvas) {
+                            const labels = data.map(row => row.group_name);
+                            const completedData = data.map(row => row.completed || 0);
+                            const pendingData = data.map(row => row.pending || 0);
+
+                            if (window.groupChartInstance) {
+                                window.groupChartInstance.destroy();
+                            }
+
+                            window.groupChartInstance = new Chart(canvas, {
+                                type: 'bar',
+                                data: {
+                                    labels: labels,
+                                    datasets: [
+                                        {
+                                            label: 'Concluídos',
+                                            data: completedData,
+                                            backgroundColor: '#10b981',
+                                        },
+                                        {
+                                            label: 'Pendentes',
+                                            data: pendingData,
+                                            backgroundColor: '#f59e0b',
+                                        }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            position: 'bottom',
+                                        }
+                                    },
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }, 100);
+
                     let html = `
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm">
@@ -267,6 +314,46 @@
                         return;
                     }
 
+                    // Render chart
+                    setTimeout(() => {
+                        const canvas = document.getElementById('instructorChart');
+                        if (canvas) {
+                            const labels = data.map(row => row.instructor_name);
+                            const completedData = data.map(row => row.completed || 0);
+                            const pendingData = data.map(row => row.pending || 0);
+
+                            if (window.instructorChartInstance) {
+                                window.instructorChartInstance.destroy();
+                            }
+
+                            window.instructorChartInstance = new Chart(canvas, {
+                                type: 'doughnut',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        data: data.map(row => row.total || 0),
+                                        backgroundColor: [
+                                            '#3b82f6',
+                                            '#10b981',
+                                            '#f59e0b',
+                                            '#ef4444',
+                                            '#8b5cf6'
+                                        ]
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            position: 'bottom',
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }, 100);
+
                     let html = `
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm">
@@ -302,6 +389,48 @@
                         this.periodTableHtml = '<p class="p-4 text-gray-500">Nenhum dado disponível</p>';
                         return;
                     }
+
+                    // Render chart
+                    setTimeout(() => {
+                        const canvas = document.getElementById('periodChart');
+                        if (canvas) {
+                            const labels = data.map(row => row.period);
+                            const completedData = data.map(row => row.completed || 0);
+
+                            if (window.periodChartInstance) {
+                                window.periodChartInstance.destroy();
+                            }
+
+                            window.periodChartInstance = new Chart(canvas, {
+                                type: 'line',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Concluídos',
+                                        data: completedData,
+                                        borderColor: '#8b5cf6',
+                                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                                        tension: 0.4,
+                                        fill: true
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            position: 'bottom',
+                                        }
+                                    },
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }, 100);
 
                     let html = `
                         <div class="overflow-x-auto">
