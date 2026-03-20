@@ -82,9 +82,7 @@
                                 <p class="text-3xl font-bold {{ $training->has_quiz ? 'text-primary' : 'text-gray-800' }} mt-2">{{ $training->has_quiz ? 'Sim' : 'Não' }}</p>
                             </div>
                             <div class="w-14 h-14 rounded-lg {{ $training->has_quiz ? 'bg-primary/15' : 'bg-gray-200/50' }} flex items-center justify-center flex-shrink-0">
-                                <svg class="w-7 h-7 {{ $training->has_quiz ? 'text-primary' : 'text-gray-600' }}" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                                </svg>
+                                <span class="text-xl font-bold {{ $training->has_quiz ? 'text-primary' : 'text-gray-600' }}">?</span>
                             </div>
                         </div>
                     </div>
