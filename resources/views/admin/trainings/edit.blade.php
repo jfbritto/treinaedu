@@ -484,7 +484,10 @@
                         <span class="text-xs text-gray-500">Ativar quiz</span>
                         <div class="relative">
                             <input type="hidden" name="has_quiz" value="0">
-                            <input type="checkbox" name="has_quiz" value="1" x-model="hasQuiz" class="sr-only peer">
+                            <input type="checkbox" name="has_quiz" value="1"
+                                   @change="hasQuiz = $event.target.checked"
+                                   :checked="hasQuiz"
+                                   class="sr-only peer">
                             <div class="w-10 h-5 bg-gray-200 peer-checked:bg-primary rounded-full transition"></div>
                             <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition peer-checked:translate-x-5"></div>
                         </div>
