@@ -510,7 +510,8 @@
                                         class="text-xs text-red-500 hover:text-red-700 transition">Remover</button>
                                 </div>
                                 <input type="text" :name="'questions[' + qi + '][question]'"
-                                       x-model="q.text" placeholder="Digite a pergunta..."
+                                       :value="q.text" @input="q.text = $event.target.value"
+                                       placeholder="Digite a pergunta..."
                                        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary">
                                 <div class="space-y-2">
                                     <p class="text-xs font-medium text-gray-500">Opções <span class="text-gray-400 font-normal">(marque a correta)</span></p>
@@ -519,7 +520,8 @@
                                             <input type="radio" :name="'questions[' + qi + '][correct]'" :value="oi"
                                                    x-model="q.correct" class="text-primary border-gray-300">
                                             <input type="text" :name="'questions[' + qi + '][options][' + oi + '][text]'"
-                                                   x-model="opt.text" placeholder="Opção..."
+                                                   :value="opt.text" @input="opt.text = $event.target.value"
+                                                   placeholder="Opção..."
                                                    class="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary">
                                             <button type="button" @click="removeOption(qi, oi)" x-show="q.options.length > 2"
                                                 class="text-gray-400 hover:text-red-500 transition">
