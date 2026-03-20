@@ -169,24 +169,15 @@ class TrainingView extends Model
      */
     public static function getPeriodAnalysis(array $filters = [], $period = 'month')
     {
-        $dateFormat = match ($period) {
-            'day' => '%Y-%m-%d',
-            'week' => '%Y-W%W',
-            'month' => '%Y-%m',
-            'year' => '%Y',
-            default => '%Y-%m',
-        };
-
         return self::withFilters($filters)
             ->select(
-                \DB::raw('DATE(started_at) as period'),
+                \DB::raw('DATE_FORMAT(created_at, "%Y-%m-%d") as period'),
                 \DB::raw('COUNT(*) as total'),
                 \DB::raw('COUNT(CASE WHEN completed_at IS NOT NULL THEN 1 END) as completed'),
                 \DB::raw('COUNT(CASE WHEN completed_at IS NULL THEN 1 END) as pending'),
                 \DB::raw('ROUND(AVG(progress_percent), 2) as avg_progress')
             )
-            ->whereNotNull('started_at')
-            ->groupBy(\DB::raw('DATE(started_at)'))
+            ->groupBy(\DB::raw('DATE(created_at)'))
             ->orderBy('period', 'asc')
             ->get()
             ->map(function ($item) {
