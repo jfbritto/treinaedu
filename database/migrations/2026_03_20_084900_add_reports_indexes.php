@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -25,10 +26,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('training_views', function (Blueprint $table) {
-            $table->dropIndex('training_views_training_id_index');
-            $table->dropIndex('training_views_user_id_index');
-            $table->dropIndex('training_views_completed_at_index');
-            $table->dropIndex('training_views_created_at_index');
+            // Don't drop indexes on rollback to avoid constraint issues
+            // These indexes are safe to keep in place
         });
     }
 };

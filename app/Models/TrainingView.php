@@ -103,23 +103,26 @@ class TrainingView extends Model
     /**
      * Get analysis aggregated by group
      */
-    public function scopeGroupAnalysis($query, array $filters = [])
+    public static function getGroupAnalysis(array $filters = [])
     {
         return self::withFilters($filters)
             ->select(
-                'users_groups.group_id',
+                'group_id',
+                \DB::raw('groups.name as group_name'),
                 \DB::raw('COUNT(*) as total'),
                 \DB::raw('COUNT(CASE WHEN completed_at IS NOT NULL THEN 1 END) as completed'),
                 \DB::raw('COUNT(CASE WHEN completed_at IS NULL THEN 1 END) as pending'),
                 \DB::raw('ROUND(AVG(progress_percent), 2) as avg_progress')
             )
             ->join('users', 'training_views.user_id', '=', 'users.id')
-            ->join('users_groups', 'users.id', '=', 'users_groups.user_id')
-            ->groupBy('users_groups.group_id')
+            ->join('group_user', 'users.id', '=', 'group_user.user_id')
+            ->join('groups', 'group_user.group_id', '=', 'groups.id')
+            ->groupBy('group_user.group_id')
             ->get()
             ->map(function ($item) {
                 return [
                     'group_id' => $item->group_id,
+                    'group_name' => $item->group_name ?? 'Unknown',
                     'total' => $item->total,
                     'completed' => $item->completed,
                     'pending' => $item->pending,
@@ -137,18 +140,20 @@ class TrainingView extends Model
     {
         return self::withFilters($filters)
             ->select(
-                'trainings.instructor_id',
+                'trainings.created_by as instructor_id',
                 \DB::raw('COUNT(*) as total'),
                 \DB::raw('COUNT(CASE WHEN completed_at IS NOT NULL THEN 1 END) as completed'),
                 \DB::raw('COUNT(CASE WHEN completed_at IS NULL THEN 1 END) as pending'),
                 \DB::raw('ROUND(AVG(progress_percent), 2) as avg_progress')
             )
             ->join('trainings', 'training_views.training_id', '=', 'trainings.id')
-            ->groupBy('trainings.instructor_id')
+            ->groupBy('trainings.created_by')
             ->get()
             ->map(function ($item) {
+                $instructor = \App\Models\User::find($item->instructor_id);
                 return [
                     'instructor_id' => $item->instructor_id,
+                    'instructor_name' => $instructor?->name ?? 'Unknown',
                     'total' => $item->total,
                     'completed' => $item->completed,
                     'pending' => $item->pending,

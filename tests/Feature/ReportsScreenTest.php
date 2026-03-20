@@ -54,6 +54,7 @@ class ReportsScreenTest extends TestCase
             'password' => bcrypt('password'),
             'role' => 'admin',
             'company_id' => $this->company->id,
+            'active' => true,
         ]);
 
         // Create training
@@ -78,6 +79,7 @@ class ReportsScreenTest extends TestCase
             'password' => bcrypt('password'),
             'role' => 'employee',
             'company_id' => $this->company->id,
+            'active' => true,
         ]);
 
         // Create training views (multiple records)
@@ -89,13 +91,17 @@ class ReportsScreenTest extends TestCase
                 'password' => bcrypt('password'),
                 'role' => 'employee',
                 'company_id' => $this->company->id,
+                'active' => true,
             ]);
+
+            // Add employee to group
+            $this->group->users()->attach($emp->id);
 
             TrainingView::create([
                 'company_id' => $this->company->id,
                 'user_id' => $emp->id,
                 'training_id' => $this->training->id,
-                'progress' => 50 + ($i * 10),
+                'progress_percent' => 50 + ($i * 10),
                 'completed_at' => $i < 2 ? now() : null,
             ]);
         }
@@ -123,9 +129,9 @@ class ReportsScreenTest extends TestCase
         $content = $response->getContent();
 
         // Check for filter components
-        $this->assertStringContainsString('TREINAMENTO', $content);
-        $this->assertStringContainsString('GRUPO', $content);
-        $this->assertStringContainsString('STATUS', $content);
+        $this->assertStringContainsString('Treinamento', $content);
+        $this->assertStringContainsString('Grupo', $content);
+        $this->assertStringContainsString('Status', $content);
 
         // Check for tabs
         $this->assertStringContainsString('Geral', $content);

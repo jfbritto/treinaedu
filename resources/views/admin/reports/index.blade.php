@@ -104,8 +104,25 @@
 
                 applyFilters() {
                     console.log('▶ reportsContent.applyFilters() called');
-                    const filterForm = document.querySelector('[x-data="filterForm()"]')?.__x;
-                    console.log('filterForm element found:', !!filterForm);
+
+                    // Try multiple selectors
+                    let filterForm = document.querySelector('[x-data="filterForm()"]')?.__x;
+                    console.log('Selector 1 [x-data="filterForm()"]:', !!filterForm);
+
+                    if (!filterForm) {
+                        filterForm = document.querySelector('[x-data*="filterForm"]')?.__x;
+                        console.log('Selector 2 [x-data*="filterForm"]:', !!filterForm);
+                    }
+
+                    if (!filterForm) {
+                        // Log what elements with x-data exist
+                        const allXData = document.querySelectorAll('[x-data]');
+                        console.log('Total [x-data] elements:', allXData.length);
+                        allXData.forEach((el, i) => {
+                            console.log(`  [${i}]`, el.getAttribute('x-data'), el.tagName);
+                        });
+                    }
+
                     if (filterForm && filterForm.$data) {
                         console.log('✓ Calling filterForm.applyFilters()...');
                         filterForm.$data.applyFilters();
