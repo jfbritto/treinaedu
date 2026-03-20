@@ -1,46 +1,93 @@
-<x-layout.app title="Editar Usuário">
-
+<x-layout.app title="Editar Usuário: {{ $user->name }}">
     @php
         $initials = collect(explode(' ', $user->name))
             ->filter()->map(fn ($w) => strtoupper($w[0]))->take(2)->implode('');
         $roleLabel = match($user->role) {
+            'admin'      => 'Administrador',
             'instructor' => 'Instrutor',
             'employee'   => 'Colaborador',
             default      => ucfirst($user->role),
         };
-        $roleColor = $user->role === 'instructor' ? 'bg-purple-100 text-purple-700' : 'bg-primary/15 text-primary';
-        $avatarBg  = $user->role === 'instructor' ? 'bg-purple-600' : 'bg-primary';
+        $roleColor = match($user->role) {
+            'admin'      => 'bg-purple-100 text-purple-700',
+            'instructor' => 'bg-purple-100 text-purple-700',
+            'employee'   => 'bg-primary/15 text-primary',
+            default      => 'bg-gray-100 text-gray-700',
+        };
     @endphp
 
-    <div class="mb-5">
-        <a href="{{ route('users.index') }}"
-           class="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    {{-- Botões de ação --}}
+    <div class="flex items-center justify-between mb-6">
+        <a href="{{ route('users.index') }}" class="inline-flex items-center gap-2 text-gray-600 hover:text-gray-800 transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
-            Usuários
+            <span class="text-sm font-medium">Voltar</span>
         </a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('users.show', $user) }}"
+               class="inline-flex items-center gap-2 bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+                Visualizar
+            </a>
+            <form method="POST" action="{{ route('users.destroy', $user) }}" data-confirm="Remover este usuário?" style="display: inline;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="inline-flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    Deletar
+                </button>
+            </form>
+        </div>
     </div>
 
-    {{-- Cabeçalho do usuário --}}
+    {{-- Cabeçalho: banner + avatar --}}
     <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
-        <div class="h-24 bg-gradient-to-r from-gray-700 to-gray-600 relative"></div>
-        <div class="px-6 pb-5 pt-0 relative">
-            <div class="absolute -top-10 left-6">
-                <div class="w-20 h-20 rounded-full {{ $avatarBg }} border-4 border-white flex items-center justify-center shadow">
+        {{-- Banner --}}
+        <div class="h-28 relative" style="background: linear-gradient(to right, var(--secondary), var(--primary))">
+            <div class="absolute -bottom-10 left-6">
+                <div class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center shadow" style="background-color: var(--primary)">
                     <span class="text-white text-2xl font-bold">{{ $initials }}</span>
                 </div>
             </div>
-            <div class="pt-14">
+        </div>
+
+        {{-- Info do usuário --}}
+        <div class="px-6 pb-5 pt-14">
+            <div class="mb-4">
                 <h2 class="text-lg font-bold text-gray-800 leading-tight">{{ $user->name }}</h2>
                 <div class="flex items-center gap-2 mt-1">
                     <span class="text-xs font-medium px-2 py-0.5 rounded-full {{ $roleColor }}">{{ $roleLabel }}</span>
-                    <span class="text-xs text-gray-400">{{ $user->email }}</span>
-                    @if(!$user->active)
-                        <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-red-100 text-red-600">Inativo</span>
-                    @endif
+                    <span class="inline-flex items-center gap-1.5 text-xs font-medium {{ $user->active ? 'text-green-700' : 'text-red-500' }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ $user->active ? 'bg-green-500' : 'bg-red-400' }}"></span>
+                        {{ $user->active ? 'Ativo' : 'Inativo' }}
+                    </span>
                 </div>
+                <p class="text-xs text-gray-400 mt-2">{{ $user->email }}</p>
             </div>
+
+            {{-- Stats (3 colunas) --}}
+            @if($user->isEmployee())
+                <div class="grid grid-cols-3 gap-4 pt-4 border-t border-gray-100">
+                    <div class="text-center">
+                        <p class="text-2xl font-bold text-primary">{{ $user->trainingViews->count() }}</p>
+                        <p class="text-xs text-gray-400 mt-0.5">Treinamentos</p>
+                    </div>
+                    <div class="text-center border-x border-gray-100">
+                        <p class="text-2xl font-bold text-green-500">{{ $user->trainingViews->where('completed_at', '!=', null)->count() }}</p>
+                        <p class="text-xs text-gray-400 mt-0.5">Concluídos</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-2xl font-bold" style="color: var(--primary)">{{ $user->trainingViews->count() > 0 ? round(($user->trainingViews->where('completed_at', '!=', null)->count() / $user->trainingViews->count()) * 100) : 0 }}%</p>
+                        <p class="text-xs text-gray-400 mt-0.5">Taxa</p>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 
@@ -54,16 +101,16 @@
                 <div class="flex items-center gap-3 mb-5">
                     <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-sm font-semibold text-gray-800">Informações básicas</h3>
-                        <p class="text-xs text-gray-400">Nome, e-mail e perfil de acesso</p>
+                        <h3 class="text-sm font-semibold text-gray-800">Informações gerais</h3>
+                        <p class="text-xs text-gray-400">Edite os dados do usuário</p>
                     </div>
                 </div>
 
-                <form method="POST" action="{{ route('users.update', $user) }}" class="space-y-4" id="info-form">
+                <form method="POST" action="{{ route('users.update', $user) }}" class="space-y-4">
                     @csrf
                     @method('PUT')
 

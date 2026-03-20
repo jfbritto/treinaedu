@@ -3,13 +3,13 @@
      x-data="filterForm()"
      @submit.prevent="applyFilters()">
     <div class="px-6 py-4">
-        <form @change="debounceFilter()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <form @change="debounceFilter()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div>
                 <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">
                     Treinamento
                 </label>
                 <select name="training_id" x-model="filters.training_id"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm bg-white hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
                     <option value="">Todos</option>
                     @foreach($trainings as $training)
                         <option value="{{ $training->id }}">{{ $training->title }}</option>
@@ -22,7 +22,7 @@
                     Grupo
                 </label>
                 <select name="group_id" x-model="filters.group_id"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm bg-white hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
                     <option value="">Todos</option>
                     @foreach($groups as $group)
                         <option value="{{ $group->id }}">{{ $group->name }}</option>
@@ -35,31 +35,15 @@
                     Status
                 </label>
                 <select name="status" x-model="filters.status"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm bg-white hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
                     <option value="">Todos</option>
                     <option value="completed">Concluído</option>
                     <option value="pending">Pendente</option>
                 </select>
             </div>
-
-            <div>
-                <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">
-                    Data início
-                </label>
-                <input type="date" name="date_from" x-model="filters.date_from"
-                       class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm bg-white hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
-            </div>
-
-            <div>
-                <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">
-                    Data fim
-                </label>
-                <input type="date" name="date_to" x-model="filters.date_to"
-                       class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm bg-white hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
-            </div>
         </form>
 
-        <div class="mt-4 flex items-center gap-3">
+        <div class="mt-3 flex items-center gap-3">
             <button type="button" @click="clearFilters()"
                     class="inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

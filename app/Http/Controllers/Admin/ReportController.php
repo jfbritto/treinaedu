@@ -42,14 +42,6 @@ class ReportController extends Controller
             }
         }
 
-        if ($request->filled('date_from')) {
-            $query->where('created_at', '>=', $request->date_from);
-        }
-
-        if ($request->filled('date_to')) {
-            $query->where('created_at', '<=', $request->date_to);
-        }
-
         $views = $query->paginate(15);
 
         return view('admin.reports.index', compact('views', 'trainings', 'groups', 'stats'));
@@ -61,8 +53,6 @@ class ReportController extends Controller
             'training_id' => 'nullable|exists:trainings,id',
             'group_id' => 'nullable|exists:groups,id',
             'status' => 'nullable|in:completed,pending',
-            'date_from' => 'nullable|date',
-            'date_to' => 'nullable|date',
             'tab' => 'nullable|in:general,group,instructor,period',
         ]);
 
@@ -113,12 +103,6 @@ class ReportController extends Controller
             $request->status === 'completed'
                 ? $query->whereNotNull('completed_at')
                 : $query->whereNull('completed_at');
-        }
-        if ($request->filled('date_from')) {
-            $query->where('created_at', '>=', $request->date_from);
-        }
-        if ($request->filled('date_to')) {
-            $query->where('created_at', '<=', $request->date_to);
         }
 
         $views = $query->get();

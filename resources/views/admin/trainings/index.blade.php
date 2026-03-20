@@ -88,7 +88,7 @@
                 <tbody class="divide-y divide-gray-50">
                     @foreach($trainings as $training)
                         @php $rate = $training->completionRate(); @endphp
-                        <tr class="hover:bg-gray-50 transition">
+                        <tr class="hover:bg-gray-50 transition cursor-pointer" onclick="window.location.href='{{ route('trainings.show', $training) }}'">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -97,10 +97,7 @@
                                         </svg>
                                     </div>
                                     <div>
-                                        <a href="{{ route('trainings.show', $training) }}"
-                                           class="text-sm font-semibold text-gray-800 hover:text-primary transition">
-                                            {{ $training->title }}
-                                        </a>
+                                        <p class="text-sm font-semibold text-gray-800">{{ $training->title }}</p>
                                     </div>
                                 </div>
                             </td>
@@ -114,14 +111,12 @@
                             </td>
                             <td class="px-6 py-4 hidden md:table-cell">
                                 @if($training->assignments_count > 0)
-                                    <a href="{{ route('trainings.show', $training) }}"
-                                       class="inline-flex items-center gap-1 text-xs text-primary hover:underline">
+                                    <span class="inline-flex items-center gap-1 text-xs text-primary">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                                         {{ $training->assignments_count }} grupo{{ $training->assignments_count !== 1 ? 's' : '' }}
-                                    </a>
+                                    </span>
                                 @else
-                                    <a href="{{ route('trainings.show', $training) }}"
-                                       class="text-xs text-gray-400 hover:text-primary transition">Atribuir →</a>
+                                    <span class="text-xs text-gray-400">—</span>
                                 @endif
                             </td>
                             <td class="px-6 py-4 hidden md:table-cell">
@@ -152,13 +147,11 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4">
-                                <div class="flex items-center justify-end gap-3">
-                                    <a href="{{ route('trainings.edit', $training) }}"
-                                       class="text-xs font-medium text-primary hover:text-secondary transition">Editar</a>
-                                    <form method="POST" action="{{ route('trainings.destroy', $training) }}" data-confirm="Remover este treinamento?">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="text-xs font-medium text-red-500 hover:text-red-700 transition">Remover</button>
-                                    </form>
+                                <div class="flex items-center justify-end">
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
                                 </div>
                             </td>
                         </tr>

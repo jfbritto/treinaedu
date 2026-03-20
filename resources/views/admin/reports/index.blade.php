@@ -12,8 +12,6 @@
                     training_id: new URLSearchParams(window.location.search).get('training_id') || '',
                     group_id: new URLSearchParams(window.location.search).get('group_id') || '',
                     status: new URLSearchParams(window.location.search).get('status') || '',
-                    date_from: new URLSearchParams(window.location.search).get('date_from') || '',
-                    date_to: new URLSearchParams(window.location.search).get('date_to') || '',
                 },
                 isLoading: false,
                 debounceTimer: null,
@@ -77,8 +75,6 @@
                         training_id: '',
                         group_id: '',
                         status: '',
-                        date_from: '',
-                        date_to: '',
                     };
                     this.applyFilters();
                 }
@@ -94,7 +90,6 @@
             const reportsContentData = {
                 activeTab: 'general',
                 isLoading: false,
-                generalTableHtml: '<p class="p-4 text-gray-500">Carregando dados...</p>',
                 groupTableHtml: '',
                 groupChart: null,
                 instructorTableHtml: '',
@@ -105,7 +100,14 @@
                 setTab(tab) {
                     console.log('📑 setTab called:', tab);
                     this.activeTab = tab;
-                    this.applyFilters();
+
+                    // For general tab, reload page to apply filters server-side with pagination
+                    if (tab === 'general') {
+                        const params = new URLSearchParams(window.__filterFormData.filters);
+                        window.location.search = params.toString();
+                    } else {
+                        this.applyFilters();
+                    }
                 },
 
                 applyFilters() {
@@ -137,10 +139,7 @@
                 handleDataUpdate(responseData, tab) {
                     console.log(`📥 Handling ${tab} tab data:`, responseData);
 
-                    if (tab === 'general') {
-                        // General tab returns {data: Paginated, total, ...}
-                        this.renderGeneralTable(responseData);
-                    } else if (tab === 'group') {
+                    if (tab === 'group') {
                         // Group analysis returns array directly
                         this.renderGroupAnalysis(responseData);
                     } else if (tab === 'instructor') {
@@ -150,70 +149,6 @@
                         // Period analysis returns array directly
                         this.renderPeriodAnalysis(responseData);
                     }
-                },
-
-                renderGeneralTable(data) {
-                    console.log('📊 renderGeneralTable called with data:', data);
-
-                    if (!data || !data.data || !Array.isArray(data.data)) {
-                        this.generalTableHtml = '<p class="p-4 text-gray-500">Nenhum dado disponível</p>';
-                        return;
-                    }
-
-                    let html = `
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm">
-                                <thead class="bg-gray-50 border-b border-gray-200">
-                                    <tr>
-                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Funcionário</th>
-                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Treinamento</th>
-                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Progresso</th>
-                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Data Início</th>
-                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                    `;
-
-                    data.data.forEach(row => {
-                        const progress = row.progress_percent || 0;
-                        const status = row.completed_at ? 'Concluído' : 'Pendente';
-                        const statusBg = row.completed_at ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-700';
-                        const startDate = row.started_at ? new Date(row.started_at).toLocaleDateString('pt-BR') : '-';
-
-                        html += `
-                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
-                                <td class="px-4 py-3 text-gray-900">${row.user?.name || 'N/A'}</td>
-                                <td class="px-4 py-3 text-gray-900">${row.training?.title || 'N/A'}</td>
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-20 bg-gray-200 rounded-full h-2">
-                                            <div class="bg-blue-600 h-2 rounded-full" style="width:${progress}%"></div>
-                                        </div>
-                                        <span class="text-xs font-medium text-gray-600">${progress}%</span>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-3 text-gray-600 text-xs">${startDate}</td>
-                                <td class="px-4 py-3">
-                                    <span class="px-3 py-1 rounded-full text-xs font-medium ${statusBg}">
-                                        ${status}
-                                    </span>
-                                </td>
-                            </tr>
-                        `;
-                    });
-
-                    html += `
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="px-4 py-3 border-t border-gray-200 text-xs text-gray-500">
-                            Exibindo ${data.data.length} de ${data.total} registros
-                        </div>
-                    `;
-
-                    this.generalTableHtml = html;
-                    console.log('✓ Table HTML rendered successfully');
                 },
 
                 renderGroupAnalysis(data) {
@@ -485,36 +420,34 @@
     @endpush
 
     {{-- Header --}}
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+    <div class="mb-6">
         <p class="text-sm text-gray-500">Acompanhe o progresso e conclusões da equipe</p>
-        <div class="flex flex-wrap gap-2">
-            <a href="{{ route('reports.export.pdf', request()->query()) }}"
-               class="inline-flex items-center gap-2 bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                </svg>
-                Exportar PDF
-            </a>
-            <a href="{{ route('reports.export.excel', request()->query()) }}"
-               class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg text-sm font-semibold transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                </svg>
-                Exportar Excel
-            </a>
-        </div>
     </div>
 
     {{-- Sticky Filters --}}
     <x-reports.filter-sticky :trainings="$trainings" :groups="$groups" />
 
-    {{-- KPI Cards --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 relative z-30"
-         id="statsContainer"
-         x-data="{
-            stats: { total: '-', completed: '-', pending: '-', avg_progress: '-' }
+    {{-- KPI Section with Toggle --}}
+    <div x-data="{
+            stats: { total: '-', completed: '-', pending: '-', avg_progress: '-' },
+            showStats: true
          }"
          @filter-updated.window="stats = $event.detail.stats">
+
+        {{-- KPI Toggle --}}
+        <div class="flex items-center gap-2 mb-4 mt-6">
+            <button @click="showStats = !showStats"
+                    class="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-800 transition">
+                <svg :class="showStats ? 'rotate-90' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+                <span x-text="showStats ? 'Ocultar KPIs' : 'Mostrar KPIs'"></span>
+            </button>
+        </div>
+
+        {{-- KPI Cards --}}
+        <div x-show="showStats" x-transition class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 relative z-30"
+             id="statsContainer">
 
         <x-reports.kpi-card key="total" label="Registros totais">
             <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z"/></svg>
@@ -531,13 +464,14 @@
         <x-reports.kpi-card key="avg_progress" label="Progresso médio">
             <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z"/></svg>
         </x-reports.kpi-card>
+        </div>
     </div>
 
     {{-- Tabs and Content --}}
     <div x-data="reportsContent()" id="reportsContent" class="mb-6">
         {{-- Tabs Navigation --}}
-        <div class="mb-6">
-            <div class="flex gap-1 border-b border-gray-200">
+        <div class="mb-4 mt-4">
+            <div class="flex gap-2 border-b border-gray-200">
                 <button @click="setTab('general')"
                         :class="activeTab === 'general' ? 'border-b-2 border-primary text-primary' : 'text-gray-600 hover:text-gray-800'"
                         class="px-4 py-3 font-medium text-sm transition">
@@ -565,20 +499,61 @@
         {{-- General Tab --}}
         <x-reports.tab-panel name="general">
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div id="generalLoading" class="p-12 text-center" x-show="isLoading">
-                    <div class="inline-block animate-spin">
-                        <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                @if($views->isEmpty())
+                    <div class="p-12 text-center">
+                        <svg class="w-12 h-12 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .984.292 1.9.585 2.332m5.216 0a2.25 2.25 0 01.25.4m0 0h.007v.015h-.007m0 0v-.015"/>
                         </svg>
+                        <p class="text-gray-400 text-sm font-medium">Nenhum registro encontrado.</p>
                     </div>
-                </div>
-                <div id="generalContent" x-html="generalTableHtml"></div>
+                @else
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50 border-b border-gray-200">
+                                <tr>
+                                    <th class="text-left px-4 py-3 font-semibold text-gray-700">Funcionário</th>
+                                    <th class="text-left px-4 py-3 font-semibold text-gray-700">Treinamento</th>
+                                    <th class="text-left px-4 py-3 font-semibold text-gray-700">Progresso</th>
+                                    <th class="text-left px-4 py-3 font-semibold text-gray-700">Data Início</th>
+                                    <th class="text-left px-4 py-3 font-semibold text-gray-700">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($views as $view)
+                                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                                        <td class="px-4 py-3 text-gray-900">{{ $view->user?->name ?? 'N/A' }}</td>
+                                        <td class="px-4 py-3 text-gray-900">{{ $view->training?->title ?? 'N/A' }}</td>
+                                        <td class="px-4 py-3">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-20 bg-gray-200 rounded-full h-2">
+                                                    <div class="bg-primary h-2 rounded-full" style="width:{{ $view->progress_percent ?? 0 }}%"></div>
+                                                </div>
+                                                <span class="text-xs font-medium text-gray-600">{{ $view->progress_percent ?? 0 }}%</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 text-gray-600 text-xs">{{ $view->started_at ? $view->started_at->format('d/m/Y') : '-' }}</td>
+                                        <td class="px-4 py-3">
+                                            <span class="px-3 py-1 rounded-full text-xs font-medium {{ $view->completed_at ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-700' }}">
+                                                {{ $view->completed_at ? 'Concluído' : 'Pendente' }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @if($views->hasPages())
+                        <div class="px-4 py-4 border-t border-gray-100">
+                            {{ $views->links() }}
+                        </div>
+                    @endif
+                @endif
             </div>
         </x-reports.tab-panel>
 
         {{-- Group Tab --}}
         <x-reports.tab-panel name="group">
-            <x-reports.chart-container chart-id="groupChart" title="Progresso por Grupo" height="350px" />
+            <x-reports.chart-container chart-id="groupChart" title="Progresso por Grupo" description="Visualize a taxa de conclusão e treinamentos pendentes em cada grupo. Use para identificar quais grupos precisam de mais apoio ou recursos." height="350px" />
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                 <div id="groupContent" x-html="groupTableHtml"></div>
             </div>
@@ -586,7 +561,7 @@
 
         {{-- Instructor Tab --}}
         <x-reports.tab-panel name="instructor">
-            <x-reports.chart-container chart-id="instructorChart" title="Performance dos Instrutores" height="350px" />
+            <x-reports.chart-container chart-id="instructorChart" title="Performance dos Instrutores" description="Compare o número de treinamentos e taxas de conclusão por instrutor. Identifique os melhores desempenhos e áreas que precisam de melhoria." height="350px" />
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                 <div id="instructorContent" x-html="instructorTableHtml"></div>
             </div>
@@ -594,7 +569,7 @@
 
         {{-- Period Tab --}}
         <x-reports.tab-panel name="period">
-            <x-reports.chart-container chart-id="periodChart" title="Progressão ao Longo do Tempo" height="350px" />
+            <x-reports.chart-container chart-id="periodChart" title="Progressão ao Longo do Tempo" description="Acompanhe as tendências de conclusão de treinamentos ao longo do tempo. Visualize padrões sazonais e melhorias na taxa de conclusão." height="350px" />
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                 <div id="periodContent" x-html="periodTableHtml"></div>
             </div>

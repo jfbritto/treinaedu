@@ -91,7 +91,7 @@ class TrainingController extends Controller
     public function show(Training $training)
     {
         $this->authorizeCompany($training);
-        $training->load(['assignments.group']);
+        $training->load(['assignments.group', 'modules.lessons']);
 
         $assignedGroupIds = $training->assignments->pluck('group_id');
         $availableGroups  = Group::whereNotIn('id', $assignedGroupIds)->get();
@@ -124,7 +124,15 @@ class TrainingController extends Controller
         ->sortByDesc('last_accessed')
         ->values();
 
-        return view('admin.trainings.show', compact('training', 'availableGroups', 'assignedUsers'));
+        // Content statistics
+        $totalLessons = $training->modules->sum(fn ($m) => $m->lessons->count());
+        $contentTypes = $training->modules
+            ->flatMap(fn ($m) => $m->lessons)
+            ->groupBy('type')
+            ->map(fn ($items) => $items->count())
+            ->toArray();
+
+        return view('admin.trainings.show', compact('training', 'availableGroups', 'assignedUsers', 'totalLessons', 'contentTypes'));
     }
 
     public function storeAssignment(Request $request, Training $training)

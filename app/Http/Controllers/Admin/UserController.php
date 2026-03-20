@@ -71,6 +71,53 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'Usuário criado com sucesso.');
     }
 
+    public function show(User $user)
+    {
+        $this->authorizeCompany($user);
+
+        // Get assigned trainings with progress
+        $assignedTrainings = $user->assignedTrainings()
+            ->get()
+            ->map(function ($training) use ($user) {
+                $views = $user->trainingViews()->where('training_id', $training->id)->get();
+                $completed = $views->where('completed_at', '!=', null)->count();
+                $total = $views->count();
+                $latestView = $views->sortByDesc('created_at')->first();
+
+                return [
+                    'id' => $training->id,
+                    'title' => $training->title,
+                    'description' => $training->description,
+                    'duration_minutes' => $training->calculatedDuration(),
+                    'total_views' => $total,
+                    'completed' => $completed > 0,
+                    'completion_rate' => $total > 0 ? round(($completed / $total) * 100, 2) : 0,
+                    'progress_percent' => $latestView ? $latestView->progress_percent : 0,
+                    'last_accessed' => $latestView ? $latestView->created_at : null,
+                    'completed_at' => $views->where('completed_at', '!=', null)->first()?->completed_at,
+                    'due_date' => $training->assignments->first()?->due_date,
+                    'mandatory' => $training->assignments->first()?->mandatory ?? false,
+                ];
+            })
+            ->sortByDesc('last_accessed')
+            ->values();
+
+        // Stats
+        $totalAssigned = $assignedTrainings->count();
+        $totalCompleted = $assignedTrainings->where('completed', true)->count();
+        $completionRate = $totalAssigned > 0 ? round(($totalCompleted / $totalAssigned) * 100, 2) : 0;
+        $avgProgress = $totalAssigned > 0 ? round($assignedTrainings->avg('progress_percent'), 2) : 0;
+
+        return view('admin.users.show', compact(
+            'user',
+            'assignedTrainings',
+            'totalAssigned',
+            'totalCompleted',
+            'completionRate',
+            'avgProgress'
+        ));
+    }
+
     public function edit(User $user)
     {
         if ($user->is(auth()->user())) {
@@ -100,7 +147,7 @@ class UserController extends Controller
             $user->groups()->sync($request->groups);
         }
 
-        return redirect()->route('users.index')->with('success', 'Usuário atualizado.');
+        return redirect()->route('users.show', $user)->with('success', 'Usuário atualizado.');
     }
 
     public function destroy(User $user)

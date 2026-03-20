@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\GroupController;
 use App\Http\Controllers\Admin\TrainingController as AdminTrainingController;
 use App\Http\Controllers\Admin\CertificateController as AdminCertificateController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\EngagementController;
 use App\Http\Controllers\Admin\CompanySettingsController;
 use App\Http\Controllers\Instructor\TrainingController as InstructorTrainingController;
 use App\Http\Controllers\Employee\TrainingController as EmployeeTrainingController;
@@ -65,7 +66,7 @@ Route::middleware(['auth', 'theme'])->group(function () {
 
         // Admin routes
         Route::middleware('role:admin')->group(function () {
-            Route::resource('users', UserController::class)->except('show');
+            Route::resource('users', UserController::class);
             Route::resource('groups', GroupController::class);
             Route::resource('trainings', AdminTrainingController::class);
             Route::post('trainings/{training}/assignments', [AdminTrainingController::class, 'storeAssignment'])
@@ -80,6 +81,8 @@ Route::middleware(['auth', 'theme'])->group(function () {
                 ->name('reports.export.pdf');
             Route::get('reports/export/excel', [ReportController::class, 'exportExcel'])
                 ->name('reports.export.excel');
+            Route::get('engagement', [EngagementController::class, 'index'])
+                ->name('engagement.index');
             Route::get('subscription', [SubscriptionController::class, 'show'])
                 ->name('subscription.show');
             Route::get('company/settings', [CompanySettingsController::class, 'edit'])

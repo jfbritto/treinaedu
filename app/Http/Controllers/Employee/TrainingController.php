@@ -192,8 +192,13 @@ class TrainingController extends Controller
     {
         $user = auth()->user();
 
-        // Verify all lessons completed
+        // Verify training has lessons
         $lessonIds = $training->lessons()->pluck('training_lessons.id');
+        if ($lessonIds->count() === 0) {
+            return back()->with('error', 'Este treinamento não possui aulas disponíveis.');
+        }
+
+        // Verify all lessons completed
         $completedCount = \App\Models\LessonView::withoutGlobalScope('company')
             ->where('user_id', $user->id)
             ->whereIn('lesson_id', $lessonIds)
