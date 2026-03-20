@@ -171,7 +171,7 @@ class TrainingView extends Model
     {
         return self::withFilters($filters)
             ->select(
-                \DB::raw('DATE_FORMAT(created_at, "%Y-%m-%d") as period'),
+                \DB::raw('DATE(created_at) as period'),
                 \DB::raw('COUNT(*) as total'),
                 \DB::raw('COUNT(CASE WHEN completed_at IS NOT NULL THEN 1 END) as completed'),
                 \DB::raw('COUNT(CASE WHEN completed_at IS NULL THEN 1 END) as pending'),
