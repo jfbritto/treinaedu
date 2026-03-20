@@ -51,6 +51,38 @@ class ReportController extends Controller
         return view('admin.reports.index', compact('views', 'trainings', 'groups'));
     }
 
+    public function filter(Request $request)
+    {
+        $filters = $request->validate([
+            'training_id' => 'nullable|exists:trainings,id',
+            'group_id' => 'nullable|exists:groups,id',
+            'status' => 'nullable|in:completed,pending',
+            'date_from' => 'nullable|date',
+            'date_to' => 'nullable|date',
+            'tab' => 'nullable|in:general,group,instructor,period',
+        ]);
+
+        $tab = $filters['tab'] ?? 'general';
+        unset($filters['tab']);
+
+        // Get global stats (always)
+        $stats = TrainingView::getGlobalStats($filters);
+
+        // Get tab-specific data
+        $data = match($tab) {
+            'group' => TrainingView::getGroupAnalysis($filters),
+            'instructor' => TrainingView::getInstructorAnalysis($filters),
+            'period' => TrainingView::getPeriodAnalysis($filters),
+            default => TrainingView::withFilters($filters)->paginate(15),
+        };
+
+        return response()->json([
+            'stats' => $stats,
+            'data' => $data,
+            'tab' => $tab,
+        ]);
+    }
+
     public function exportPdf(Request $request)
     {
         $companyId = auth()->user()->company_id;

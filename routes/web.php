@@ -75,6 +75,7 @@ Route::middleware(['auth', 'theme'])->group(function () {
             Route::get('certificates', [AdminCertificateController::class, 'index'])
                 ->name('admin.certificates.index');
             Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+            Route::get('reports/filter', [ReportController::class, 'filter'])->name('reports.filter');
             Route::get('reports/export/pdf', [ReportController::class, 'exportPdf'])
                 ->name('reports.export.pdf');
             Route::get('reports/export/excel', [ReportController::class, 'exportExcel'])
