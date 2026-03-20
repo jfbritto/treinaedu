@@ -181,7 +181,7 @@
                     Quiz aprovado
                 </span>
             @elseif($lessonMeetsThreshold)
-                <a href="{{ route('employee.quiz.show', ['training' => $training->id, 'lesson' => $lesson->id]) }}"
+                <a href="{{ route('employee.quiz.show', ['training' => $training, 'lesson' => $lesson->id]) }}"
                     class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition"
                     style="background-color: var(--primary)">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
