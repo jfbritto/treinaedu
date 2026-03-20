@@ -121,9 +121,11 @@
                         this.handleDataUpdate(e.detail.data, e.detail.tab);
                     });
 
-                    // Load initial data immediately
-                    console.log('⏳ Calling applyFilters...');
-                    this.applyFilters();
+                    // Load initial data after a small delay to ensure DOM is ready
+                    setTimeout(() => {
+                        console.log('⏳ Calling applyFilters...');
+                        this.applyFilters();
+                    }, 100);
                 },
 
                 handleDataUpdate(data, tab) {
