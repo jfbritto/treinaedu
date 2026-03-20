@@ -390,11 +390,18 @@
                         return;
                     }
 
+                    // Helper to format date to Brazilian format
+                    const formatDateBR = (dateStr) => {
+                        if (!dateStr) return 'N/A';
+                        const [year, month, day] = dateStr.split('-');
+                        return `${day}/${month}/${year}`;
+                    };
+
                     // Render chart
                     setTimeout(() => {
                         const canvas = document.getElementById('periodChart');
                         if (canvas) {
-                            const labels = data.map(row => row.period);
+                            const labels = data.map(row => formatDateBR(row.period));
                             const completedData = data.map(row => row.completed || 0);
 
                             if (window.periodChartInstance) {
@@ -450,7 +457,7 @@
                         const completion = Math.round((row.completed || 0) / (row.total || 1) * 100);
                         html += `
                             <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
-                                <td class="px-4 py-3 text-gray-900 font-medium">${row.period || 'N/A'}</td>
+                                <td class="px-4 py-3 text-gray-900 font-medium">${formatDateBR(row.period)}</td>
                                 <td class="px-4 py-3 text-gray-600">${row.total || 0}</td>
                                 <td class="px-4 py-3 text-gray-600">${row.completed || 0}</td>
                                 <td class="px-4 py-3">
