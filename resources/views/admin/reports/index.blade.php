@@ -50,6 +50,9 @@
     </div>
 
     {{-- Tabs and Content --}}
+    {{-- Load reports-specific JavaScript before Alpine initializes --}}
+    <script src="{{ \Illuminate\Support\Facades\Vite::asset('resources/js/pages/reports.js') }}" type="module"></script>
+
     <div x-data="reportsContent()" id="reportsContent" class="mb-6">
         {{-- Tabs Navigation --}}
         <div class="mb-6">
@@ -116,8 +119,6 @@
             </div>
         </x-reports.tab-panel>
     </div>
-
-    @vite('resources/js/pages/reports.js')
 
     <script>
         // Load initial data when page loads
