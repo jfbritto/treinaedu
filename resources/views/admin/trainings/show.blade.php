@@ -126,8 +126,8 @@
                                 </div>
                                 <div class="w-14 h-14 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
                                     <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M12 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10"/>
-                                        <polyline points="14 2 14 8 20 8"/>
+                                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                        <path d="M3 9h18M9 3v18"/>
                                     </svg>
                                 </div>
                             </div>
@@ -142,7 +142,7 @@
                                 <div class="w-14 h-14 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
                                     <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                                        <path d="M6.5 2H20a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6.5a2.5 2.5 0 0 1-2.5-2.5v-12a2.5 2.5 0 0 1 2.5-2.5z"/>
+                                        <path d="M6.5 2H20v12H6.5a2.5 2.5 0 0 1-2.5-2.5V4.5A2.5 2.5 0 0 1 6.5 2z"/>
                                     </svg>
                                 </div>
                             </div>
