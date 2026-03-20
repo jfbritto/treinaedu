@@ -182,6 +182,13 @@ class TrainingController extends Controller
     {
         $this->authorizeCompany($training);
 
+        // Debug: Check what's being sent
+        \Log::info('Training update request', [
+            'has_quiz' => $request->boolean('has_quiz'),
+            'has_questions' => $request->has('questions'),
+            'questions' => $request->input('questions'),
+        ]);
+
         // Remove quiz data if quiz is disabled to avoid validation errors
         if (!$request->boolean('has_quiz')) {
             $request->request->remove('questions');
