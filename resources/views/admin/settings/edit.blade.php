@@ -135,8 +135,8 @@
                     <h3 class="text-sm font-semibold text-gray-800 mb-4">Cores</h3>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6" x-data="{
-                        primary: '{{ old('primary_color', $company->primary_color ?? '#1e293b') }}',
-                        secondary: '{{ old('secondary_color', $company->secondary_color ?? '#3B82F6') }}'
+                        primary: '{{ old('primary_color', $company->primary_color ?? '#3B82F6') }}',
+                        secondary: '{{ old('secondary_color', $company->secondary_color ?? '#1E40AF') }}'
                     }">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Menu lateral</label>
@@ -172,11 +172,11 @@
                         <div class="sm:col-span-2 pt-3 border-t border-gray-100">
                             <button type="button"
                                 @click="
-                                    primary = '#1e293b';
-                                    secondary = '#3B82F6';
-                                    document.querySelector('input[name=primary_color]').value = '#1e293b';
-                                    document.querySelector('input[name=secondary_color]').value = '#3B82F6';
-                                    window.dispatchEvent(new CustomEvent('preview-color', {detail: {primary: '#1e293b', secondary: '#3B82F6'}}));
+                                    primary = '#3B82F6';
+                                    secondary = '#1E40AF';
+                                    document.querySelector('input[name=primary_color]').value = '#3B82F6';
+                                    document.querySelector('input[name=secondary_color]').value = '#1E40AF';
+                                    window.dispatchEvent(new CustomEvent('preview-color', {detail: {primary: '#3B82F6', secondary: '#1E40AF'}}));
                                 "
                                 class="inline-flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-gray-700 transition px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -184,7 +184,7 @@
                                 </svg>
                                 Restaurar cores padrão do sistema
                             </button>
-                            <p class="text-xs text-gray-400 mt-1">Menu: #1e293b (escuro) · Destaque: #3B82F6 (azul)</p>
+                            <p class="text-xs text-gray-400 mt-1">Menu: #3B82F6 (azul) · Destaque: #1E40AF (azul escuro)</p>
                         </div>
                     </div>
                 </div>
@@ -203,8 +203,8 @@
 
         {{-- Preview ao vivo (1/3) --}}
         <div x-data="{
-            primary: '{{ $company->primary_color ?? '#1e293b' }}',
-            secondary: '{{ $company->secondary_color ?? '#3B82F6' }}'
+            primary: '{{ $company->primary_color ?? '#3B82F6' }}',
+            secondary: '{{ $company->secondary_color ?? '#1E40AF' }}'
         }"
         @preview-color.window="
             if ($event.detail.primary !== undefined) primary = $event.detail.primary;
