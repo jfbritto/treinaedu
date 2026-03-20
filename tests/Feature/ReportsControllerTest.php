@@ -4,9 +4,11 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use App\Models\{Training, Group, User, TrainingView};
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ReportsControllerTest extends TestCase
 {
+    use RefreshDatabase;
     public function test_reports_page_loads()
     {
         $this->actingAs(User::factory()->admin()->create())
