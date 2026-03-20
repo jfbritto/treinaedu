@@ -69,85 +69,147 @@
                 <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                     <div class="flex items-center gap-2">
                         <div class="w-2 h-2 rounded-full bg-primary"></div>
-                        <h3 class="text-sm font-semibold text-gray-700">Conteúdo</h3>
+                        <h3 class="text-sm font-semibold text-gray-700">Estrutura do Conteúdo</h3>
                     </div>
                 </div>
 
-                {{-- Stats de conteúdo --}}
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-6">
-                    <div class="bg-gray-50 rounded-lg p-3 text-center">
-                        <p class="text-lg font-bold text-gray-800">{{ $training->modules->count() }}</p>
-                        <p class="text-xs text-gray-400 mt-1">módulo{{ $training->modules->count() !== 1 ? 's' : '' }}</p>
-                    </div>
-                    <div class="bg-gray-50 rounded-lg p-3 text-center">
-                        <p class="text-lg font-bold text-gray-800">{{ $totalLessons }}</p>
-                        <p class="text-xs text-gray-400 mt-1">aula{{ $totalLessons !== 1 ? 's' : '' }}</p>
-                    </div>
-                    @if(isset($contentTypes['video']) && $contentTypes['video'] > 0)
-                        <div class="bg-gray-50 rounded-lg p-3 text-center">
-                            <p class="text-lg font-bold text-blue-600">{{ $contentTypes['video'] }}</p>
-                            <p class="text-xs text-gray-400 mt-1">vídeo{{ $contentTypes['video'] !== 1 ? 's' : '' }}</p>
-                        </div>
-                    @endif
-                    @if(isset($contentTypes['document']) && $contentTypes['document'] > 0)
-                        <div class="bg-gray-50 rounded-lg p-3 text-center">
-                            <p class="text-lg font-bold text-amber-600">{{ $contentTypes['document'] }}</p>
-                            <p class="text-xs text-gray-400 mt-1">doc{{ $contentTypes['document'] !== 1 ? 's' : '' }}</p>
-                        </div>
-                    @endif
-                    @if(isset($contentTypes['text']) && $contentTypes['text'] > 0)
-                        <div class="bg-gray-50 rounded-lg p-3 text-center">
-                            <p class="text-lg font-bold text-green-600">{{ $contentTypes['text'] }}</p>
-                            <p class="text-xs text-gray-400 mt-1">texto{{ $contentTypes['text'] !== 1 ? 's' : '' }}</p>
-                        </div>
-                    @endif
-                </div>
-
-                {{-- Estrutura de módulos --}}
-                @if($training->modules->isNotEmpty())
-                    <div class="border-t border-gray-100 p-6 space-y-4">
-                        @foreach($training->modules as $module)
-                            <div class="border border-gray-200 rounded-lg p-4">
-                                <div class="flex items-start justify-between mb-3">
-                                    <div>
-                                        <h4 class="text-sm font-semibold text-gray-800">{{ $module->title }}</h4>
-                                        @if($module->description)
-                                            <p class="text-xs text-gray-500 mt-0.5">{{ $module->description }}</p>
-                                        @endif
-                                    </div>
-                                    @if($module->is_sequential)
-                                        <span class="inline-block px-2 py-0.5 rounded text-xs bg-blue-100 text-blue-700 font-medium flex-shrink-0">Sequencial</span>
-                                    @endif
+                <div class="p-6">
+                    {{-- Stats compactas --}}
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
+                        <div class="relative overflow-hidden rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 p-4 border border-primary/20">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-2xl font-bold text-primary">{{ $training->modules->count() }}</p>
+                                    <p class="text-xs text-gray-600 mt-1 font-medium">Módulo{{ $training->modules->count() !== 1 ? 's' : '' }}</p>
                                 </div>
-                                <div class="space-y-2">
-                                    @foreach($module->lessons as $lesson)
-                                        <div class="flex items-center gap-2 text-sm text-gray-600">
-                                            @if($lesson->type === 'video')
-                                                <svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm13.5-1a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
-                                                </svg>
-                                                <span>{{ $lesson->title }}</span>
-                                                @if($lesson->duration_minutes)
-                                                    <span class="text-xs text-gray-400">({{ $lesson->duration_minutes }}min)</span>
-                                                @endif
-                                            @elseif($lesson->type === 'document')
-                                                <svg class="w-4 h-4 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0113 2.586L15.414 5A2 2 0 0116 6.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H7a1 1 0 01-1-1v-6z" clip-rule="evenodd"/>
-                                                </svg>
-                                                <span>{{ $lesson->title }}</span>
-                                            @elseif($lesson->type === 'text')
-                                                <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-8.5a.75.75 0 00-.75-.75h-8.5zm12-1.5a2.25 2.25 0 00-2.25 2.25v8.5a2.25 2.25 0 002.25 2.25h3.75a.75.75 0 00.75-.75v-2.5a.75.75 0 00-.75-.75h-3v-2h2.25a.75.75 0 00.75-.75v-2.5a.75.75 0 00-.75-.75h-2.25v-2h3v-1.5a2.25 2.25 0 00-2.25-2.25h-3.75z" clip-rule="evenodd"/>
-                                                </svg>
-                                                <span>{{ $lesson->title }}</span>
-                                            @endif
-                                        </div>
-                                    @endforeach
+                                <svg class="w-8 h-8 text-primary/20" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v4a1 1 0 11-2 0V4H4v10h4a1 1 0 110 2H4a2 2 0 01-2-2V4z"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="relative overflow-hidden rounded-lg bg-gradient-to-br from-blue-500/10 to-blue-500/5 p-4 border border-blue-500/20">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-2xl font-bold text-blue-600">{{ $totalLessons }}</p>
+                                    <p class="text-xs text-gray-600 mt-1 font-medium">Aula{{ $totalLessons !== 1 ? 's' : '' }}</p>
+                                </div>
+                                <svg class="w-8 h-8 text-blue-500/20" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 1 1 0 000 2h10a1 1 0 000-2 2 2 0 00-2 2v10a2 2 0 002 2 1 1 0 100-2h-10a1 1 0 100 2 2 2 0 002-2V5z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        @if(isset($contentTypes['video']) && $contentTypes['video'] > 0)
+                            <div class="relative overflow-hidden rounded-lg bg-gradient-to-br from-red-500/10 to-red-500/5 p-4 border border-red-500/20">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-2xl font-bold text-red-600">{{ $contentTypes['video'] }}</p>
+                                        <p class="text-xs text-gray-600 mt-1 font-medium">Vídeo{{ $contentTypes['video'] !== 1 ? 's' : '' }}</p>
+                                    </div>
+                                    <svg class="w-8 h-8 text-red-500/20" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm13.5-1a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
+                                    </svg>
                                 </div>
                             </div>
-                        @endforeach
+                        @endif
+
+                        @if(isset($contentTypes['document']) && $contentTypes['document'] > 0)
+                            <div class="relative overflow-hidden rounded-lg bg-gradient-to-br from-amber-500/10 to-amber-500/5 p-4 border border-amber-500/20">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-2xl font-bold text-amber-600">{{ $contentTypes['document'] }}</p>
+                                        <p class="text-xs text-gray-600 mt-1 font-medium">Doc{{ $contentTypes['document'] !== 1 ? 's' : '' }}</p>
+                                    </div>
+                                    <svg class="w-8 h-8 text-amber-500/20" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0113 2.586L15.414 5A2 2 0 0116 6.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H7a1 1 0 01-1-1v-6z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        @endif
+
+                        @if(isset($contentTypes['text']) && $contentTypes['text'] > 0)
+                            <div class="relative overflow-hidden rounded-lg bg-gradient-to-br from-green-500/10 to-green-500/5 p-4 border border-green-500/20">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-2xl font-bold text-green-600">{{ $contentTypes['text'] }}</p>
+                                        <p class="text-xs text-gray-600 mt-1 font-medium">Texto{{ $contentTypes['text'] !== 1 ? 's' : '' }}</p>
+                                    </div>
+                                    <svg class="w-8 h-8 text-green-500/20" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-8.5a.75.75 0 00-.75-.75h-8.5zm12-1.5a2.25 2.25 0 00-2.25 2.25v8.5a2.25 2.25 0 002.25 2.25h3.75a.75.75 0 00.75-.75v-2.5a.75.75 0 00-.75-.75h-3v-2h2.25a.75.75 0 00.75-.75v-2.5a.75.75 0 00-.75-.75h-2.25v-2h3v-1.5a2.25 2.25 0 00-2.25-2.25h-3.75z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        @endif
                     </div>
-                @endif
+
+                    {{-- Estrutura de módulos --}}
+                    @if($training->modules->isNotEmpty())
+                        <div class="space-y-3">
+                            @foreach($training->modules as $index => $module)
+                                @php
+                                    $moduleLessons = $module->lessons->count();
+                                    $moduleQuizzes = $module->quiz ? 1 : 0;
+                                @endphp
+                                <div class="border border-gray-200 rounded-lg overflow-hidden hover:border-primary/30 transition">
+                                    {{-- Cabeçalho do módulo --}}
+                                    <div class="bg-gradient-to-r from-gray-50 to-white px-4 py-3 flex items-center justify-between">
+                                        <div class="flex items-center gap-3 flex-1">
+                                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 text-sm font-semibold text-primary">
+                                                {{ $index + 1 }}
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <h4 class="text-sm font-semibold text-gray-800">{{ $module->title }}</h4>
+                                                @if($module->description)
+                                                    <p class="text-xs text-gray-500 mt-0.5 line-clamp-1">{{ $module->description }}</p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-2 ml-3">
+                                            @if($module->is_sequential)
+                                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-700 font-medium flex-shrink-0">
+                                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 011 1v4a1 1 0 11-2 0v-3H7v3a1 1 0 11-2 0v-4zm0-5a1 1 0 011-1h8a1 1 0 011 1v1a1 1 0 11-2 0V5H7v1a1 1 0 11-2 0V5z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                    Sequencial
+                                                </span>
+                                            @endif
+                                            <span class="text-xs font-medium text-gray-500 px-2 py-1 bg-gray-100 rounded-full flex-shrink-0">
+                                                {{ $moduleLessons }} aula{{ $moduleLessons !== 1 ? 's' : '' }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {{-- Aulas do módulo --}}
+                                    <div class="border-t border-gray-100 px-4 py-2 space-y-1 bg-gray-50/50">
+                                        @foreach($module->lessons as $lesson)
+                                            <div class="flex items-center gap-2.5 py-2 text-sm text-gray-700">
+                                                @if($lesson->type === 'video')
+                                                    <svg class="w-4 h-4 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm13.5-1a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
+                                                    </svg>
+                                                @elseif($lesson->type === 'document')
+                                                    <svg class="w-4 h-4 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0113 2.586L15.414 5A2 2 0 0116 6.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H7a1 1 0 01-1-1v-6z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                @elseif($lesson->type === 'text')
+                                                    <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-8.5a.75.75 0 00-.75-.75h-8.5zm12-1.5a2.25 2.25 0 00-2.25 2.25v8.5a2.25 2.25 0 002.25 2.25h3.75a.75.75 0 00.75-.75v-2.5a.75.75 0 00-.75-.75h-3v-2h2.25a.75.75 0 00.75-.75v-2.5a.75.75 0 00-.75-.75h-2.25v-2h3v-1.5a2.25 2.25 0 00-2.25-2.25h-3.75z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                @endif
+                                                <span class="flex-1">{{ $lesson->title }}</span>
+                                                @if($lesson->duration_minutes)
+                                                    <span class="text-xs text-gray-500 flex-shrink-0">{{ $lesson->duration_minutes }}m</span>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
             </div>
 
             {{-- Grupos atribuídos --}}
