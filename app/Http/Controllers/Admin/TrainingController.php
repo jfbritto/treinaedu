@@ -96,7 +96,35 @@ class TrainingController extends Controller
         $assignedGroupIds = $training->assignments->pluck('group_id');
         $availableGroups  = Group::whereNotIn('id', $assignedGroupIds)->get();
 
-        return view('admin.trainings.show', compact('training', 'availableGroups'));
+        // Get users linked to this training through group assignments
+        $assignedUsers = \App\Models\User::whereIn('id', function ($q) use ($assignedGroupIds) {
+            $q->select('user_id')
+              ->from('group_user')
+              ->whereIn('group_id', $assignedGroupIds)
+              ->where('users.role', 'employee');
+        })
+        ->with(['trainingViews' => function ($q) use ($training) {
+            $q->where('training_id', $training->id);
+        }])
+        ->get()
+        ->map(function ($user) use ($training) {
+            $view = $user->trainingViews->first();
+            $completed = $view && $view->completed_at !== null;
+
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'progress_percent' => $view?->progress_percent ?? 0,
+                'completed' => $completed,
+                'completed_at' => $view?->completed_at,
+                'last_accessed' => $view?->created_at,
+            ];
+        })
+        ->sortByDesc('last_accessed')
+        ->values();
+
+        return view('admin.trainings.show', compact('training', 'availableGroups', 'assignedUsers'));
     }
 
     public function storeAssignment(Request $request, Training $training)
@@ -264,7 +292,7 @@ class TrainingController extends Controller
             $training->update(['has_quiz' => $hasAnyQuiz]);
         });
 
-        return redirect()->route('trainings.index')->with('success', 'Treinamento atualizado.');
+        return redirect()->route('trainings.show', $training)->with('success', 'Treinamento atualizado.');
     }
 
     public function destroy(Training $training)
