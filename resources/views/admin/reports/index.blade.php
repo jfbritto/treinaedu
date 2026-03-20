@@ -39,9 +39,12 @@
                         const params = new URLSearchParams(this.filters);
                         params.append('tab', activeTab);
 
+                        console.log('Fetching /reports/filter with params:', params.toString());
                         const response = await fetch(`/reports/filter?${params}`);
-                        if (!response.ok) throw new Error('API error');
+                        if (!response.ok) throw new Error(`API error: ${response.status}`);
                         const json = await response.json();
+
+                        console.log('Received response:', json);
 
                         // Update stats globally
                         window.dispatchEvent(new CustomEvent('filter-updated', {
@@ -53,10 +56,13 @@
                             detail: { data: json.data, tab: json.tab }
                         }));
 
+                        console.log('Events dispatched, data should be updating');
+
                         // Update URL
                         window.history.replaceState({}, '', `?${params}`);
                     } catch (error) {
                         console.error('Filter error:', error);
+                        this.isLoading = false;
                     } finally {
                         this.isLoading = false;
                     }
