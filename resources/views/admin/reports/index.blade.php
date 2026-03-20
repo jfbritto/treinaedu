@@ -103,9 +103,14 @@
                 },
 
                 applyFilters() {
+                    console.log('▶ reportsContent.applyFilters() called');
                     const filterForm = document.querySelector('[x-data*="filterForm"]')?.__x;
+                    console.log('filterForm element found:', !!filterForm);
                     if (filterForm && filterForm.$data) {
+                        console.log('✓ Calling filterForm.applyFilters()...');
                         filterForm.$data.applyFilters();
+                    } else {
+                        console.warn('⚠ filterForm not found or not initialized');
                     }
                 },
 
