@@ -7,7 +7,7 @@
 
         window.filterForm = function() {
             console.log('✓ filterForm() initialized');
-            return {
+            const filterFormData = {
                 filters: {
                     training_id: new URLSearchParams(window.location.search).get('training_id') || '',
                     group_id: new URLSearchParams(window.location.search).get('group_id') || '',
@@ -82,11 +82,15 @@
                     this.applyFilters();
                 }
             };
+
+            // Register globally so reportsContent can access it
+            window.__filterFormData = filterFormData;
+            return filterFormData;
         };
 
         window.reportsContent = function() {
             console.log('✓ reportsContent() initialized');
-            return {
+            const reportsContentData = {
                 activeTab: 'general',
                 isLoading: false,
                 generalTableHtml: '<p class="p-4 text-gray-500">Carregando dados...</p>',
@@ -105,29 +109,12 @@
                 applyFilters() {
                     console.log('▶ reportsContent.applyFilters() called');
 
-                    // Try multiple selectors
-                    let filterForm = document.querySelector('[x-data="filterForm()"]')?.__x;
-                    console.log('Selector 1 [x-data="filterForm()"]:', !!filterForm);
-
-                    if (!filterForm) {
-                        filterForm = document.querySelector('[x-data*="filterForm"]')?.__x;
-                        console.log('Selector 2 [x-data*="filterForm"]:', !!filterForm);
-                    }
-
-                    if (!filterForm) {
-                        // Log what elements with x-data exist
-                        const allXData = document.querySelectorAll('[x-data]');
-                        console.log('Total [x-data] elements:', allXData.length);
-                        allXData.forEach((el, i) => {
-                            console.log(`  [${i}]`, el.getAttribute('x-data'), el.tagName);
-                        });
-                    }
-
-                    if (filterForm && filterForm.$data) {
-                        console.log('✓ Calling filterForm.applyFilters()...');
-                        filterForm.$data.applyFilters();
+                    // Use window reference to get filterForm instance
+                    if (window.__filterFormData) {
+                        console.log('✓ Calling filterForm.applyFilters() via window...');
+                        window.__filterFormData.applyFilters();
                     } else {
-                        console.warn('⚠ filterForm not found or not initialized');
+                        console.warn('⚠ filterForm not found in window reference');
                     }
                 },
 
@@ -196,6 +183,10 @@
                     this.periodTableHtml = '<p class="p-4 text-gray-500">Dados de período disponíveis</p>';
                 }
             };
+
+            // Register globally so it can be accessed from filterForm
+            window.__reportsContentData = reportsContentData;
+            return reportsContentData;
         };
     </script>
     @endpush
