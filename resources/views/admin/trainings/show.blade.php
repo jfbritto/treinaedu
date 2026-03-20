@@ -124,9 +124,9 @@
                                     <p class="text-3xl font-bold text-gray-800">{{ $training->modules->count() }}</p>
                                     <p class="text-xs text-gray-700 mt-1 font-semibold">Módulo{{ $training->modules->count() !== 1 ? 's' : '' }}</p>
                                 </div>
-                                <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                    <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v4a1 1 0 11-2 0V4H4v10h4a1 1 0 110 2H4a2 2 0 01-2-2V4z"/>
+                                <div class="w-14 h-14 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                                     </svg>
                                 </div>
                             </div>
@@ -138,10 +138,9 @@
                                     <p class="text-3xl font-bold text-gray-800">{{ $totalLessons }}</p>
                                     <p class="text-xs text-gray-700 mt-1 font-semibold">Aula{{ $totalLessons !== 1 ? 's' : '' }}</p>
                                 </div>
-                                <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                    <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
-                                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 1 1 0 000 2h10a1 1 0 000-2 2 2 0 00-2 2v10a2 2 0 002 2 1 1 0 100-2h-10a1 1 0 100 2 2 2 0 002-2V5z" clip-rule="evenodd"/>
+                                <div class="w-14 h-14 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C6.248 6.253 2 10.501 2 15.5 2 20.499 6.248 24.747 12 24.747c5.752 0 10-4.248 10-9.247S17.752 6.253 12 6.253z"/>
                                     </svg>
                                 </div>
                             </div>
@@ -154,9 +153,9 @@
                                         <p class="text-3xl font-bold text-gray-800">{{ $contentTypes['video'] }}</p>
                                         <p class="text-xs text-gray-700 mt-1 font-semibold">Vídeo{{ $contentTypes['video'] !== 1 ? 's' : '' }}</p>
                                     </div>
-                                    <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                        <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm13.5-1a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
+                                    <div class="w-14 h-14 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                         </svg>
                                     </div>
                                 </div>
@@ -170,9 +169,9 @@
                                         <p class="text-3xl font-bold text-gray-800">{{ $contentTypes['document'] }}</p>
                                         <p class="text-xs text-gray-700 mt-1 font-semibold">Doc{{ $contentTypes['document'] !== 1 ? 's' : '' }}</p>
                                     </div>
-                                    <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                        <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0113 2.586L15.414 5A2 2 0 0116 6.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H7a1 1 0 01-1-1v-6z" clip-rule="evenodd"/>
+                                    <div class="w-14 h-14 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                         </svg>
                                     </div>
                                 </div>
@@ -186,9 +185,9 @@
                                         <p class="text-3xl font-bold text-gray-800">{{ $contentTypes['text'] }}</p>
                                         <p class="text-xs text-gray-700 mt-1 font-semibold">Texto{{ $contentTypes['text'] !== 1 ? 's' : '' }}</p>
                                     </div>
-                                    <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                        <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-8.5a.75.75 0 00-.75-.75h-8.5zm12-1.5a2.25 2.25 0 00-2.25 2.25v8.5a2.25 2.25 0 002.25 2.25h3.75a.75.75 0 00.75-.75v-2.5a.75.75 0 00-.75-.75h-3v-2h2.25a.75.75 0 00.75-.75v-2.5a.75.75 0 00-.75-.75h-2.25v-2h3v-1.5a2.25 2.25 0 00-2.25-2.25h-3.75z" clip-rule="evenodd"/>
+                                    <div class="w-14 h-14 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                         </svg>
                                     </div>
                                 </div>
