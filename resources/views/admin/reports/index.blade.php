@@ -145,7 +145,9 @@
                 },
 
                 renderGeneralTable(data) {
-                    if (!data.data || !Array.isArray(data.data)) {
+                    console.log('📊 renderGeneralTable called with data:', data);
+
+                    if (!data || !data.data || !Array.isArray(data.data)) {
                         this.generalTableHtml = '<p class="p-4 text-gray-500">Nenhum dado disponível</p>';
                         return;
                     }
@@ -153,14 +155,15 @@
                     let html = '<table class="w-full text-sm"><thead><tr class="border-b"><th class="text-left p-3">Funcionário</th><th class="text-left p-3">Treinamento</th><th class="text-left p-3">Progresso</th><th class="text-left p-3">Status</th></tr></thead><tbody>';
 
                     data.data.forEach(row => {
-                        const progress = row.progress || 0;
+                        const progress = row.progress_percent || 0;
                         const status = row.completed_at ? 'Concluído' : 'Pendente';
                         const statusColor = row.completed_at ? 'text-green-600' : 'text-yellow-600';
-                        html += `<tr class="border-b"><td class="p-3">${row.user_name || 'N/A'}</td><td class="p-3">${row.training_name || 'N/A'}</td><td class="p-3"><div class="bg-gray-200 rounded h-2"><div class="bg-green-600 h-2 rounded" style="width:${progress}%"></div></div></td><td class="p-3"><span class="${statusColor}">${status}</span></td></tr>`;
+                        html += `<tr class="border-b"><td class="p-3">${row.user?.name || 'N/A'}</td><td class="p-3">${row.training?.title || 'N/A'}</td><td class="p-3"><div class="bg-gray-200 rounded h-2"><div class="bg-green-600 h-2 rounded" style="width:${progress}%"></div></div></td><td class="p-3"><span class="${statusColor}">${status}</span></td></tr>`;
                     });
 
                     html += '</tbody></table>';
                     this.generalTableHtml = html;
+                    console.log('✓ Table HTML set:', this.generalTableHtml.substring(0, 100));
                 },
 
                 renderGroupAnalysis(data) {
@@ -272,14 +275,14 @@
         {{-- General Tab --}}
         <x-reports.tab-panel name="general">
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div id="generalLoading" class="p-12 text-center">
+                <div id="generalLoading" class="p-12 text-center" x-show="isLoading">
                     <div class="inline-block animate-spin">
                         <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                         </svg>
                     </div>
                 </div>
-                <div id="generalContent"></div>
+                <div id="generalContent" x-html="generalTableHtml"></div>
             </div>
         </x-reports.tab-panel>
 
@@ -287,7 +290,7 @@
         <x-reports.tab-panel name="group">
             <x-reports.chart-container chart-id="groupChart" title="Progresso por Grupo" height="350px" />
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div id="groupContent"></div>
+                <div id="groupContent" x-html="groupTableHtml"></div>
             </div>
         </x-reports.tab-panel>
 
@@ -295,7 +298,7 @@
         <x-reports.tab-panel name="instructor">
             <x-reports.chart-container chart-id="instructorChart" title="Performance dos Instrutores" height="350px" />
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div id="instructorContent"></div>
+                <div id="instructorContent" x-html="instructorTableHtml"></div>
             </div>
         </x-reports.tab-panel>
 
@@ -303,7 +306,7 @@
         <x-reports.tab-panel name="period">
             <x-reports.chart-container chart-id="periodChart" title="Progressão ao Longo do Tempo" height="350px" />
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div id="periodContent"></div>
+                <div id="periodContent" x-html="periodTableHtml"></div>
             </div>
         </x-reports.tab-panel>
     </div>
