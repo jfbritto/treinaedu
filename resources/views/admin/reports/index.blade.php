@@ -102,6 +102,7 @@
                 periodChart: null,
 
                 setTab(tab) {
+                    console.log('📑 setTab called:', tab);
                     this.activeTab = tab;
                     this.applyFilters();
                 },
@@ -132,15 +133,21 @@
                     }, 100);
                 },
 
-                handleDataUpdate(data, tab) {
+                handleDataUpdate(responseData, tab) {
+                    console.log(`📥 Handling ${tab} tab data:`, responseData);
+
                     if (tab === 'general') {
-                        this.renderGeneralTable(data);
+                        // General tab returns {data: Paginated, total, ...}
+                        this.renderGeneralTable(responseData);
                     } else if (tab === 'group') {
-                        this.renderGroupAnalysis(data);
+                        // Group analysis returns array directly
+                        this.renderGroupAnalysis(responseData);
                     } else if (tab === 'instructor') {
-                        this.renderInstructorAnalysis(data);
+                        // Instructor analysis returns array directly
+                        this.renderInstructorAnalysis(responseData);
                     } else if (tab === 'period') {
-                        this.renderPeriodAnalysis(data);
+                        // Period analysis returns array directly
+                        this.renderPeriodAnalysis(responseData);
                     }
                 },
 
@@ -209,6 +216,7 @@
                 },
 
                 renderGroupAnalysis(data) {
+                    console.log('📊 renderGroupAnalysis called with:', data);
                     if (!data || !Array.isArray(data) || data.length === 0) {
                         this.groupTableHtml = '<p class="p-4 text-gray-500">Nenhum dado disponível</p>';
                         return;
@@ -252,6 +260,7 @@
                 },
 
                 renderInstructorAnalysis(data) {
+                    console.log('📊 renderInstructorAnalysis called with:', data);
                     if (!data || !Array.isArray(data) || data.length === 0) {
                         this.instructorTableHtml = '<p class="p-4 text-gray-500">Nenhum dado disponível</p>';
                         return;
@@ -287,6 +296,7 @@
                 },
 
                 renderPeriodAnalysis(data) {
+                    console.log('📊 renderPeriodAnalysis called with:', data);
                     if (!data || !Array.isArray(data) || data.length === 0) {
                         this.periodTableHtml = '<p class="p-4 text-gray-500">Nenhum dado disponível</p>';
                         return;
