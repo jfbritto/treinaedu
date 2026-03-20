@@ -301,9 +301,9 @@ class TrainingController extends Controller
                 $training->quiz->delete();
             }
 
-            // Update has_quiz flag based on any quiz existence (training-level or module-level)
-            $hasAnyQuiz = $training->quizzes()->exists();
-            $training->update(['has_quiz' => $hasAnyQuiz]);
+            // Update has_quiz flag based on training-level quiz existence only
+            $hasTrainingLevelQuiz = $training->quizzes()->whereNull('module_id')->whereNull('lesson_id')->exists();
+            $training->update(['has_quiz' => $hasTrainingLevelQuiz]);
         });
 
         return redirect()->route('trainings.show', $training)->with('success', 'Treinamento atualizado.');
