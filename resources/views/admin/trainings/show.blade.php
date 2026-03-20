@@ -36,30 +36,60 @@
 
             {{-- Detalhes do treinamento --}}
             <div class="bg-white rounded-xl shadow-sm p-6">
-                <div class="mb-4">
-                    <h2 class="text-lg font-bold text-gray-800">{{ $training->title }}</h2>
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-gray-900">{{ $training->title }}</h1>
                     @if($training->description)
-                        <p class="text-sm text-gray-500 mt-1">{{ $training->description }}</p>
+                        <p class="text-gray-600 mt-2">{{ $training->description }}</p>
                     @endif
                 </div>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <div class="bg-gray-50 rounded-lg p-3 text-center">
-                        <p class="text-lg font-bold text-gray-800">{{ $training->duration_minutes }}</p>
-                        <p class="text-xs text-gray-400">minutos</p>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="relative overflow-hidden rounded-lg bg-gradient-to-br from-blue-50 to-blue-100/50 p-4 border border-blue-200/50">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-blue-600 font-medium uppercase tracking-wide">Duração</p>
+                                <p class="text-2xl font-bold text-blue-900 mt-1">{{ $training->duration_minutes }}</p>
+                                <p class="text-xs text-blue-700">minutos</p>
+                            </div>
+                            <svg class="w-8 h-8 text-blue-200" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00-.293.707l-2.414 2.414a1 1 0 101.414 1.414L9 11.414V6z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
                     </div>
-                    <div class="bg-gray-50 rounded-lg p-3 text-center">
-                        <p class="text-lg font-bold {{ $training->active ? 'text-green-600' : 'text-red-500' }}">
-                            {{ $training->active ? 'Ativo' : 'Inativo' }}
-                        </p>
-                        <p class="text-xs text-gray-400">status</p>
+
+                    <div class="relative overflow-hidden rounded-lg {{ $training->active ? 'bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200/50' : 'bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200/50' }} p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs {{ $training->active ? 'text-green-600' : 'text-red-600' }} font-medium uppercase tracking-wide">Status</p>
+                                <p class="text-2xl font-bold {{ $training->active ? 'text-green-900' : 'text-red-900' }} mt-1">{{ $training->active ? 'Ativo' : 'Inativo' }}</p>
+                            </div>
+                            <svg class="w-8 h-8 {{ $training->active ? 'text-green-200' : 'text-red-200' }}" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
                     </div>
-                    <div class="bg-gray-50 rounded-lg p-3 text-center">
-                        <p class="text-lg font-bold text-gray-800">{{ $training->has_quiz ? 'Sim' : 'Não' }}</p>
-                        <p class="text-xs text-gray-400">quiz</p>
+
+                    <div class="relative overflow-hidden rounded-lg {{ $training->has_quiz ? 'bg-gradient-to-br from-purple-50 to-purple-100/50 border border-purple-200/50' : 'bg-gradient-to-br from-gray-50 to-gray-100/50 border border-gray-200/50' }} p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs {{ $training->has_quiz ? 'text-purple-600' : 'text-gray-600' }} font-medium uppercase tracking-wide">Quiz</p>
+                                <p class="text-2xl font-bold {{ $training->has_quiz ? 'text-purple-900' : 'text-gray-800' }} mt-1">{{ $training->has_quiz ? 'Sim' : 'Não' }}</p>
+                            </div>
+                            <svg class="w-8 h-8 {{ $training->has_quiz ? 'text-purple-200' : 'text-gray-200' }}" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v2a1 1 0 11-2 0V5H4v12h6a1 1 0 110 2H4a2 2 0 01-2-2V5zm8 5a1 1 0 100-2 1 1 0 000 2zm-3 5a1 1 0 11-2 0 1 1 0 012 0zM14 13a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
                     </div>
-                    <div class="bg-gray-50 rounded-lg p-3 text-center">
-                        <p class="text-lg font-bold text-gray-800">{{ $training->completionRate() }}%</p>
-                        <p class="text-xs text-gray-400">conclusão</p>
+
+                    <div class="relative overflow-hidden rounded-lg bg-gradient-to-br from-amber-50 to-amber-100/50 p-4 border border-amber-200/50">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-amber-600 font-medium uppercase tracking-wide">Conclusão</p>
+                                <p class="text-2xl font-bold text-amber-900 mt-1">{{ $training->completionRate() }}%</p>
+                            </div>
+                            <div class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-200/50">
+                                <span class="text-xs font-bold text-amber-700">{{ $training->completionRate() }}%</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
