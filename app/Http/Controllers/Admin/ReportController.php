@@ -9,6 +9,7 @@ use App\Models\Training;
 use App\Models\TrainingView;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
@@ -65,8 +66,12 @@ class ReportController extends Controller
         $tab = $filters['tab'] ?? 'general';
         unset($filters['tab']);
 
-        // Get global stats (always)
-        $stats = TrainingView::getGlobalStats($filters);
+        // Get global stats (always) - with caching
+        $stats = Cache::remember(
+            'reports_stats_' . md5(json_encode($filters)),
+            now()->addMinutes(5),
+            fn() => TrainingView::getGlobalStats($filters)
+        );
 
         // Get tab-specific data
         $data = match($tab) {
