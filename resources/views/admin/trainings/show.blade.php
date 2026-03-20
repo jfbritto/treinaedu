@@ -51,8 +51,8 @@
                                 <p class="text-3xl font-bold text-gray-800 mt-2">{{ $training->duration_minutes }}</p>
                                 <p class="text-sm text-gray-600 mt-1">minutos</p>
                             </div>
-                            <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                            <div class="w-14 h-14 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
+                                <svg class="w-7 h-7 text-primary" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00-.293.707l-2.414 2.414a1 1 0 101.414 1.414L9 11.414V6z" clip-rule="evenodd"/>
                                 </svg>
                             </div>
