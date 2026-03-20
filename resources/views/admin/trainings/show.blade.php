@@ -383,11 +383,17 @@
 
             {{-- Usuários vinculados --}}
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-                    <div class="flex items-center gap-2">
-                        <div class="w-2 h-2 rounded-full bg-primary"></div>
-                        <h3 class="text-sm font-semibold text-gray-700">Usuários Vinculados</h3>
-                        <span class="text-xs text-gray-400 bg-gray-100 rounded-full px-2 py-0.5">{{ $assignedUsers->count() }}</span>
+                <div class="flex items-center justify-between px-6 py-5 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM9 6a3 3 0 11-6 0 3 3 0 016 0zM18 6a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-800">Usuários Vinculados</h3>
+                            <p class="text-xs text-gray-500 mt-0.5">{{ $assignedUsers->count() }} colaborador{{ $assignedUsers->count() !== 1 ? 'es' : '' }} atribuído{{ $assignedUsers->count() !== 1 ? 's' : '' }}</p>
+                        </div>
                     </div>
                 </div>
 
@@ -401,52 +407,63 @@
                 @else
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
-                            <thead class="bg-gray-50 border-b border-gray-100">
-                                <tr>
-                                    <th class="text-left px-6 py-3 font-semibold text-gray-700">Usuário</th>
-                                    <th class="text-center px-6 py-3 font-semibold text-gray-700">Progresso</th>
-                                    <th class="text-left px-6 py-3 font-semibold text-gray-700 hidden md:table-cell">Último Acesso</th>
-                                    <th class="text-center px-6 py-3 font-semibold text-gray-700">Status</th>
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-200">
+                                    <th class="text-left px-6 py-4 font-semibold text-gray-700 uppercase tracking-wider text-xs">Usuário</th>
+                                    <th class="text-center px-6 py-4 font-semibold text-gray-700 uppercase tracking-wider text-xs">Progresso</th>
+                                    <th class="text-left px-6 py-4 font-semibold text-gray-700 uppercase tracking-wider text-xs hidden md:table-cell">Último Acesso</th>
+                                    <th class="text-center px-6 py-4 font-semibold text-gray-700 uppercase tracking-wider text-xs">Status</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-100">
+                            <tbody class="divide-y divide-gray-150">
                                 @foreach($assignedUsers as $user)
-                                    <tr class="hover:bg-gray-50 transition">
+                                    <tr class="hover:bg-gray-50/50 transition">
                                         <td class="px-6 py-4">
-                                            <div>
-                                                <p class="text-sm font-semibold text-gray-800">{{ $user['name'] }}</p>
-                                                <p class="text-xs text-gray-500">{{ $user['email'] }}</p>
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                                    <span class="text-xs font-semibold text-primary">{{ substr($user['name'], 0, 1) }}</span>
+                                                </div>
+                                                <div>
+                                                    <p class="text-sm font-semibold text-gray-800">{{ $user['name'] }}</p>
+                                                    <p class="text-xs text-gray-500">{{ $user['email'] }}</p>
+                                                </div>
                                             </div>
                                         </td>
                                         <td class="px-6 py-4">
                                             <div class="flex items-center justify-center gap-2">
-                                                <div class="w-20 bg-gray-200 rounded-full h-2">
-                                                    <div class="bg-primary h-2 rounded-full transition-all" style="width: {{ $user['progress_percent'] }}%"></div>
+                                                <div class="w-20 bg-gray-200 rounded-full h-2.5">
+                                                    <div class="bg-primary h-2.5 rounded-full transition-all" style="width: {{ $user['progress_percent'] }}%"></div>
                                                 </div>
-                                                <span class="text-xs font-semibold text-gray-700 min-w-[35px]">{{ $user['progress_percent'] }}%</span>
+                                                <span class="text-xs font-bold text-gray-800 min-w-[35px] text-right">{{ $user['progress_percent'] }}%</span>
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 hidden md:table-cell">
                                             @if($user['last_accessed'])
-                                                <p class="text-sm text-gray-600">{{ $user['last_accessed']->format('d/m/Y H:i') }}</p>
+                                                <p class="text-sm text-gray-700">{{ $user['last_accessed']->format('d/m/Y H:i') }}</p>
                                             @else
                                                 <span class="text-xs text-gray-400">—</span>
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 text-center">
                                             @if($user['completed'])
-                                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-                                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                                                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                                                     </svg>
                                                     Concluído
                                                 </span>
                                             @elseif($user['progress_percent'] > 0)
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                                    </svg>
                                                     Em Progresso
                                                 </span>
                                             @else
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
                                                     Não Iniciado
                                                 </span>
                                             @endif
