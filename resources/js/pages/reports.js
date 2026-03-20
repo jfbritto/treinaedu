@@ -30,13 +30,15 @@ window.filterForm = function() {
 
         async applyFilters() {
             this.isLoading = true;
-            const activeTab = window.reportsTabsInstance?.activeTab || 'general';
+            const reportsContent = document.querySelector('[x-data*="reportsContent"]')?.__x;
+            const activeTab = reportsContent?.$data?.activeTab || 'general';
 
             try {
                 const params = new URLSearchParams(this.filters);
                 params.append('tab', activeTab);
 
                 const response = await fetch(`/reports/filter?${params}`);
+                if (!response.ok) throw new Error('API error');
                 const json = await response.json();
 
                 // Update stats globally
@@ -71,25 +73,7 @@ window.filterForm = function() {
     };
 };
 
-window.reportsTabs = function() {
-    return {
-        activeTab: 'general',
-
-        setTab(tab) {
-            this.activeTab = tab;
-            window.reportsTabsInstance = this;
-            // Trigger filter with new tab
-            const filterForm = document.querySelector('[x-data*="filterForm"]')?.__x;
-            if (filterForm) {
-                filterForm.$data.applyFilters();
-            }
-        },
-
-        init() {
-            window.reportsTabsInstance = this;
-        }
-    };
-};
+// Note: reportsTabs is deprecated - use setTab in reportsContent instead
 
 window.reportsContent = function() {
     return {
@@ -103,20 +87,27 @@ window.reportsContent = function() {
         periodTableHtml: '',
         periodChart: null,
 
+        setTab(tab) {
+            this.activeTab = tab;
+            this.applyFilters();
+        },
+
+        applyFilters() {
+            const filterForm = document.querySelector('[x-data*="filterForm"]')?.__x;
+            if (filterForm && filterForm.$data) {
+                filterForm.$data.applyFilters();
+            }
+        },
+
         init() {
             window.addEventListener('data-updated', (e) => {
                 this.handleDataUpdate(e.detail.data, e.detail.tab);
             });
 
             // Load initial data
-            this.loadInitialData();
-        },
-
-        loadInitialData() {
-            const filterForm = document.querySelector('[x-data*="filterForm"]')?.__x;
-            if (filterForm) {
-                filterForm.$data.applyFilters();
-            }
+            this.$nextTick(() => {
+                this.applyFilters();
+            });
         },
 
         handleDataUpdate(data, tab) {
