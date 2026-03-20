@@ -51,7 +51,7 @@
 
     {{-- Tabs and Content --}}
     {{-- Load reports-specific JavaScript before Alpine initializes --}}
-    <script src="{{ \Illuminate\Support\Facades\Vite::asset('resources/js/pages/reports.js') }}" type="module"></script>
+    <script src="{{ \Illuminate\Support\Facades\Vite::asset('resources/js/pages/reports.js') }}"></script>
 
     <div x-data="reportsContent()" id="reportsContent" class="mb-6">
         {{-- Tabs Navigation --}}
