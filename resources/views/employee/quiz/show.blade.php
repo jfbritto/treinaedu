@@ -7,7 +7,7 @@
             <p class="mt-1 text-gray-600">Responda as perguntas abaixo para concluir o quiz.</p>
         </div>
 
-        <form method="POST" action="{{ route('employee.quiz.submit', $training) }}" class="space-y-6">
+        <form method="POST" action="{{ route('employee.quiz.submit', $training) }}?{{ http_build_query(request()->query()) }}" class="space-y-6">
             @csrf
 
             @foreach ($quiz->questions as $index => $question)
