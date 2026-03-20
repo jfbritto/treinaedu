@@ -83,7 +83,7 @@
                             </div>
                             <div class="w-14 h-14 rounded-lg {{ $training->has_quiz ? 'bg-primary/15' : 'bg-gray-200/50' }} flex items-center justify-center flex-shrink-0">
                                 <svg class="w-7 h-7 {{ $training->has_quiz ? 'text-primary' : 'text-gray-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                    <path d="M9 12l2 2 4-4m7.07-10.07A9.75 9.75 0 006.5 6.5a9.75 9.75 0 10 0 10.5m-1.06 1.06A9.75 9.75 0 0115.5 15.5"/>
+                                    <circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01"/>
                                 </svg>
                             </div>
                         </div>
