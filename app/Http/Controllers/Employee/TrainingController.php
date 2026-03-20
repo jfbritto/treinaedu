@@ -55,7 +55,7 @@ class TrainingController extends Controller
 
         // Load modules with lessons
         $training->load([
-            'modules.lessons.quiz',
+            'modules.lessons.quiz.questions.options',
             'modules.lessons',
             'modules.quiz',
             'trainingQuiz',
