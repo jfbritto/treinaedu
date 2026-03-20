@@ -213,7 +213,7 @@ class TrainingController extends Controller
             'questions.*.question' => 'required_with:questions|string',
             'questions.*.options' => 'required_with:questions|array|min:2',
             'questions.*.options.*.text' => 'required_with:questions|string|max:500',
-            'questions.*.correct' => 'required_with:questions|integer|min:0',
+            'questions.*.correct' => 'required_with:questions|numeric|min:0',
         ]);
 
         DB::transaction(function () use ($request, $training) {
