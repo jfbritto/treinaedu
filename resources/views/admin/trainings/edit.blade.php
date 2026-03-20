@@ -401,10 +401,14 @@
                                     {{-- Lesson quiz toggle --}}
                                     <div class="pl-9 pt-2 border-t border-gray-100 mt-2">
                                         <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="hidden"
+                                                   :name="'modules['+mi+'][lessons]['+li+'][has_quiz]'"
+                                                   value="0">
                                             <input type="checkbox"
                                                    :name="'modules['+mi+'][lessons]['+li+'][has_quiz]'"
                                                    value="1"
-                                                   x-model="lesson.hasQuiz"
+                                                   @change="lesson.hasQuiz = $event.target.checked"
+                                                   :checked="lesson.hasQuiz"
                                                    class="rounded border-gray-300 text-primary focus:ring-primary">
                                             <span class="text-xs font-medium text-gray-600">Quiz desta aula</span>
                                         </label>
@@ -418,7 +422,8 @@
                                                             class="text-xs text-red-500 hover:text-red-700">Remover</button>
                                                     </div>
                                                     <input type="text" :name="'modules['+mi+'][lessons]['+li+'][questions]['+qi+'][question]'"
-                                                           x-model="q.text" placeholder="Pergunta..."
+                                                           :value="q.text" @input="q.text = $event.target.value"
+                                                           placeholder="Pergunta..."
                                                            class="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                                                     <div class="space-y-1.5">
                                                         <template x-for="(opt, oi) in q.options" :key="oi">
@@ -426,7 +431,8 @@
                                                                 <input type="radio" :name="'modules['+mi+'][lessons]['+li+'][questions]['+qi+'][correct]'" :value="oi"
                                                                        x-model="q.correct" class="text-primary border-gray-300">
                                                                 <input type="text" :name="'modules['+mi+'][lessons]['+li+'][questions]['+qi+'][options]['+oi+'][text]'"
-                                                                       x-model="opt.text" placeholder="Opção..."
+                                                                       :value="opt.text" @input="opt.text = $event.target.value"
+                                                                       placeholder="Opção..."
                                                                        class="flex-1 rounded-lg border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                                                                 <button type="button" @click="removeLessonOption(mi, li, qi, oi)" x-show="q.options.length > 2"
                                                                     class="text-gray-400 hover:text-red-500">
