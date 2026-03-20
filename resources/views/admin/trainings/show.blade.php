@@ -44,61 +44,61 @@
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     {{-- Duração --}}
-                    <div class="rounded-xl p-5 border-2 border-blue-500/30 bg-blue-50">
-                        <div class="flex items-start justify-between">
+                    <div class="rounded-xl p-5 border-2 border-primary/25 bg-primary/5">
+                        <div class="flex items-start justify-between gap-3">
                             <div>
-                                <p class="text-xs font-bold text-blue-600 uppercase tracking-wider">Duração</p>
-                                <p class="text-3xl font-bold text-blue-900 mt-2">{{ $training->duration_minutes }}</p>
-                                <p class="text-sm text-blue-700 mt-1">minutos</p>
+                                <p class="text-xs font-bold text-primary uppercase tracking-wider">Duração</p>
+                                <p class="text-3xl font-bold text-gray-800 mt-2">{{ $training->duration_minutes }}</p>
+                                <p class="text-sm text-gray-600 mt-1">minutos</p>
                             </div>
-                            <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
-                                <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00-.293.707l-2.414 2.414a1 1 0 101.414 1.414L9 11.414V6z" clip-rule="evenodd"/>
+                            <div class="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                             </div>
                         </div>
                     </div>
 
                     {{-- Status --}}
-                    <div class="rounded-xl p-5 {{ $training->active ? 'border-2 border-green-500/30 bg-green-50' : 'border-2 border-red-500/30 bg-red-50' }}">
-                        <div class="flex items-start justify-between">
+                    <div class="rounded-xl p-5 border-2 {{ $training->active ? 'border-primary/25 bg-primary/5' : 'border-gray-300/50 bg-gray-50' }}">
+                        <div class="flex items-start justify-between gap-3">
                             <div>
-                                <p class="text-xs font-bold {{ $training->active ? 'text-green-600' : 'text-red-600' }} uppercase tracking-wider">Status</p>
-                                <p class="text-3xl font-bold {{ $training->active ? 'text-green-900' : 'text-red-900' }} mt-2">{{ $training->active ? 'Ativo' : 'Inativo' }}</p>
+                                <p class="text-xs font-bold {{ $training->active ? 'text-primary' : 'text-gray-600' }} uppercase tracking-wider">Status</p>
+                                <p class="text-3xl font-bold {{ $training->active ? 'text-primary' : 'text-gray-800' }} mt-2">{{ $training->active ? 'Ativo' : 'Inativo' }}</p>
                             </div>
-                            <div class="w-12 h-12 rounded-lg {{ $training->active ? 'bg-green-500/20' : 'bg-red-500/20' }} flex items-center justify-center flex-shrink-0">
-                                <svg class="w-6 h-6 {{ $training->active ? 'text-green-600' : 'text-red-600' }}" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            <div class="w-10 h-10 rounded-lg {{ $training->active ? 'bg-primary/15' : 'bg-gray-200/50' }} flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 {{ $training->active ? 'text-primary' : 'text-gray-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                             </div>
                         </div>
                     </div>
 
                     {{-- Quiz --}}
-                    <div class="rounded-xl p-5 {{ $training->has_quiz ? 'border-2 border-purple-500/30 bg-purple-50' : 'border-2 border-gray-300/50 bg-gray-50' }}">
-                        <div class="flex items-start justify-between">
+                    <div class="rounded-xl p-5 border-2 {{ $training->has_quiz ? 'border-primary/25 bg-primary/5' : 'border-gray-300/50 bg-gray-50' }}">
+                        <div class="flex items-start justify-between gap-3">
                             <div>
-                                <p class="text-xs font-bold {{ $training->has_quiz ? 'text-purple-600' : 'text-gray-600' }} uppercase tracking-wider">Quiz</p>
-                                <p class="text-3xl font-bold {{ $training->has_quiz ? 'text-purple-900' : 'text-gray-800' }} mt-2">{{ $training->has_quiz ? 'Sim' : 'Não' }}</p>
+                                <p class="text-xs font-bold {{ $training->has_quiz ? 'text-primary' : 'text-gray-600' }} uppercase tracking-wider">Quiz</p>
+                                <p class="text-3xl font-bold {{ $training->has_quiz ? 'text-primary' : 'text-gray-800' }} mt-2">{{ $training->has_quiz ? 'Sim' : 'Não' }}</p>
                             </div>
-                            <div class="w-12 h-12 rounded-lg {{ $training->has_quiz ? 'bg-purple-500/20' : 'bg-gray-300/20' }} flex items-center justify-center flex-shrink-0">
-                                <svg class="w-6 h-6 {{ $training->has_quiz ? 'text-purple-600' : 'text-gray-600' }}" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v2a1 1 0 11-2 0V5H4v12h6a1 1 0 110 2H4a2 2 0 01-2-2V5zm8 5a1 1 0 100-2 1 1 0 000 2zm-3 5a1 1 0 11-2 0 1 1 0 012 0zM14 13a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+                            <div class="w-10 h-10 rounded-lg {{ $training->has_quiz ? 'bg-primary/15' : 'bg-gray-200/50' }} flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 {{ $training->has_quiz ? 'text-primary' : 'text-gray-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                                 </svg>
                             </div>
                         </div>
                     </div>
 
                     {{-- Conclusão --}}
-                    <div class="rounded-xl p-5 border-2 border-orange-500/30 bg-orange-50">
-                        <div class="flex items-start justify-between">
+                    <div class="rounded-xl p-5 border-2 border-primary/25 bg-primary/5">
+                        <div class="flex items-start justify-between gap-3">
                             <div>
-                                <p class="text-xs font-bold text-orange-600 uppercase tracking-wider">Conclusão</p>
-                                <p class="text-3xl font-bold text-orange-900 mt-2">{{ $training->completionRate() }}%</p>
+                                <p class="text-xs font-bold text-primary uppercase tracking-wider">Conclusão</p>
+                                <p class="text-3xl font-bold text-gray-800 mt-2">{{ $training->completionRate() }}%</p>
                             </div>
-                            <div class="w-12 h-12 rounded-lg bg-orange-500/20 flex items-center justify-center flex-shrink-0">
-                                <svg class="w-6 h-6 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M13 10V3L4 14h7v7l9-11h-7z" clip-rule="evenodd"/>
+                            <div class="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                                 </svg>
                             </div>
                         </div>
@@ -118,45 +118,45 @@
                 <div class="p-6">
                     {{-- Stats compactas --}}
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-                        <div class="rounded-xl p-4 border-2 border-primary/40 bg-primary/5">
-                            <div class="flex items-center justify-between">
+                        <div class="rounded-xl p-4 border-2 border-primary/25 bg-primary/5">
+                            <div class="flex items-center justify-between gap-2">
                                 <div>
-                                    <p class="text-3xl font-bold text-primary">{{ $training->modules->count() }}</p>
+                                    <p class="text-3xl font-bold text-gray-800">{{ $training->modules->count() }}</p>
                                     <p class="text-xs text-gray-700 mt-1 font-semibold">Módulo{{ $training->modules->count() !== 1 ? 's' : '' }}</p>
                                 </div>
-                                <div class="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v4a1 1 0 11-2 0V4H4v10h4a1 1 0 110 2H4a2 2 0 01-2-2V4z"/>
+                                <div class="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                                     </svg>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="rounded-xl p-4 border-2 border-blue-500/40 bg-blue-50">
-                            <div class="flex items-center justify-between">
+                        <div class="rounded-xl p-4 border-2 border-primary/25 bg-primary/5">
+                            <div class="flex items-center justify-between gap-2">
                                 <div>
-                                    <p class="text-3xl font-bold text-blue-600">{{ $totalLessons }}</p>
+                                    <p class="text-3xl font-bold text-gray-800">{{ $totalLessons }}</p>
                                     <p class="text-xs text-gray-700 mt-1 font-semibold">Aula{{ $totalLessons !== 1 ? 's' : '' }}</p>
                                 </div>
-                                <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
-                                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 1 1 0 000 2h10a1 1 0 000-2 2 2 0 00-2 2v10a2 2 0 002 2 1 1 0 100-2h-10a1 1 0 100 2 2 2 0 002-2V5z" clip-rule="evenodd"/>
+                                <div class="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C6.248 6.253 2 10.501 2 15.5 2 20.499 6.248 24.747 12 24.747c5.752 0 10-4.248 10-9.247S17.752 6.253 12 6.253z"/>
                                     </svg>
                                 </div>
                             </div>
                         </div>
 
                         @if(isset($contentTypes['video']) && $contentTypes['video'] > 0)
-                            <div class="rounded-xl p-4 border-2 border-red-500/40 bg-red-50">
-                                <div class="flex items-center justify-between">
+                            <div class="rounded-xl p-4 border-2 border-primary/25 bg-primary/5">
+                                <div class="flex items-center justify-between gap-2">
                                     <div>
-                                        <p class="text-3xl font-bold text-red-600">{{ $contentTypes['video'] }}</p>
+                                        <p class="text-3xl font-bold text-gray-800">{{ $contentTypes['video'] }}</p>
                                         <p class="text-xs text-gray-700 mt-1 font-semibold">Vídeo{{ $contentTypes['video'] !== 1 ? 's' : '' }}</p>
                                     </div>
-                                    <div class="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center">
-                                        <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm13.5-1a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
+                                    <div class="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                         </svg>
                                     </div>
                                 </div>
@@ -164,15 +164,15 @@
                         @endif
 
                         @if(isset($contentTypes['document']) && $contentTypes['document'] > 0)
-                            <div class="rounded-xl p-4 border-2 border-amber-500/40 bg-amber-50">
-                                <div class="flex items-center justify-between">
+                            <div class="rounded-xl p-4 border-2 border-primary/25 bg-primary/5">
+                                <div class="flex items-center justify-between gap-2">
                                     <div>
-                                        <p class="text-3xl font-bold text-amber-600">{{ $contentTypes['document'] }}</p>
+                                        <p class="text-3xl font-bold text-gray-800">{{ $contentTypes['document'] }}</p>
                                         <p class="text-xs text-gray-700 mt-1 font-semibold">Doc{{ $contentTypes['document'] !== 1 ? 's' : '' }}</p>
                                     </div>
-                                    <div class="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center">
-                                        <svg class="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0113 2.586L15.414 5A2 2 0 0116 6.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H7a1 1 0 01-1-1v-6z" clip-rule="evenodd"/>
+                                    <div class="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                         </svg>
                                     </div>
                                 </div>
@@ -180,15 +180,15 @@
                         @endif
 
                         @if(isset($contentTypes['text']) && $contentTypes['text'] > 0)
-                            <div class="rounded-xl p-4 border-2 border-green-500/40 bg-green-50">
-                                <div class="flex items-center justify-between">
+                            <div class="rounded-xl p-4 border-2 border-primary/25 bg-primary/5">
+                                <div class="flex items-center justify-between gap-2">
                                     <div>
-                                        <p class="text-3xl font-bold text-green-600">{{ $contentTypes['text'] }}</p>
+                                        <p class="text-3xl font-bold text-gray-800">{{ $contentTypes['text'] }}</p>
                                         <p class="text-xs text-gray-700 mt-1 font-semibold">Texto{{ $contentTypes['text'] !== 1 ? 's' : '' }}</p>
                                     </div>
-                                    <div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-                                        <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-8.5a.75.75 0 00-.75-.75h-8.5zm12-1.5a2.25 2.25 0 00-2.25 2.25v8.5a2.25 2.25 0 002.25 2.25h3.75a.75.75 0 00.75-.75v-2.5a.75.75 0 00-.75-.75h-3v-2h2.25a.75.75 0 00.75-.75v-2.5a.75.75 0 00-.75-.75h-2.25v-2h3v-1.5a2.25 2.25 0 00-2.25-2.25h-3.75z" clip-rule="evenodd"/>
+                                    <div class="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                         </svg>
                                     </div>
                                 </div>
