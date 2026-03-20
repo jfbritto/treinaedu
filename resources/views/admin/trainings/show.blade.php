@@ -82,7 +82,9 @@
                                 <p class="text-3xl font-bold {{ $training->has_quiz ? 'text-primary' : 'text-gray-800' }} mt-2">{{ $training->has_quiz ? 'Sim' : 'Não' }}</p>
                             </div>
                             <div class="w-14 h-14 rounded-lg {{ $training->has_quiz ? 'bg-primary/15' : 'bg-gray-200/50' }} flex items-center justify-center flex-shrink-0">
-                                <span class="text-xl font-bold {{ $training->has_quiz ? 'text-primary' : 'text-gray-600' }}">?</span>
+                                <svg class="w-7 h-7 {{ $training->has_quiz ? 'text-primary' : 'text-gray-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                </svg>
                             </div>
                         </div>
                     </div>
