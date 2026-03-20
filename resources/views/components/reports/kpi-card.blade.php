@@ -4,7 +4,7 @@
         {{ $slot }}
     </div>
     <div>
-        <p class="text-2xl font-bold text-gray-800" x-text="$stats?.{{ $key }}"></p>
+        <p class="text-2xl font-bold text-gray-800" x-text="stats?.{{ $key }}"></p>
         <p class="text-xs text-gray-400">{{ $label }}</p>
     </div>
 </div>
