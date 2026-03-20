@@ -116,11 +116,9 @@
                         this.handleDataUpdate(e.detail.data, e.detail.tab);
                     });
 
-                    // Load initial data
-                    this.$nextTick(() => {
-                        console.log('⏳ Calling applyFilters...');
-                        this.applyFilters();
-                    });
+                    // Load initial data immediately
+                    console.log('⏳ Calling applyFilters...');
+                    this.applyFilters();
                 },
 
                 handleDataUpdate(data, tab) {
