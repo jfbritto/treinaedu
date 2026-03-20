@@ -49,34 +49,35 @@
         </x-reports.kpi-card>
     </div>
 
-    {{-- Tabs Navigation --}}
-    <div class="mb-6" x-data="reportsTabs()">
-        <div class="flex gap-1 border-b border-gray-200">
-            <button @click="setTab('general')"
-                    :class="activeTab === 'general' ? 'border-b-2 border-primary text-primary' : 'text-gray-600 hover:text-gray-800'"
-                    class="px-4 py-3 font-medium text-sm transition">
-                Geral
-            </button>
-            <button @click="setTab('group')"
-                    :class="activeTab === 'group' ? 'border-b-2 border-primary text-primary' : 'text-gray-600 hover:text-gray-800'"
-                    class="px-4 py-3 font-medium text-sm transition">
-                Por Grupo
-            </button>
-            <button @click="setTab('instructor')"
-                    :class="activeTab === 'instructor' ? 'border-b-2 border-primary text-primary' : 'text-gray-600 hover:text-gray-800'"
-                    class="px-4 py-3 font-medium text-sm transition">
-                Por Instrutor
-            </button>
-            <button @click="setTab('period')"
-                    :class="activeTab === 'period' ? 'border-b-2 border-primary text-primary' : 'text-gray-600 hover:text-gray-800'"
-                    class="px-4 py-3 font-medium text-sm transition">
-                Por Período
-            </button>
+    {{-- Tabs and Content --}}
+    <div x-data="reportsContent()" id="reportsContent" class="mb-6">
+        {{-- Tabs Navigation --}}
+        <div class="mb-6">
+            <div class="flex gap-1 border-b border-gray-200">
+                <button @click="setTab('general')"
+                        :class="activeTab === 'general' ? 'border-b-2 border-primary text-primary' : 'text-gray-600 hover:text-gray-800'"
+                        class="px-4 py-3 font-medium text-sm transition">
+                    Geral
+                </button>
+                <button @click="setTab('group')"
+                        :class="activeTab === 'group' ? 'border-b-2 border-primary text-primary' : 'text-gray-600 hover:text-gray-800'"
+                        class="px-4 py-3 font-medium text-sm transition">
+                    Por Grupo
+                </button>
+                <button @click="setTab('instructor')"
+                        :class="activeTab === 'instructor' ? 'border-b-2 border-primary text-primary' : 'text-gray-600 hover:text-gray-800'"
+                        class="px-4 py-3 font-medium text-sm transition">
+                    Por Instrutor
+                </button>
+                <button @click="setTab('period')"
+                        :class="activeTab === 'period' ? 'border-b-2 border-primary text-primary' : 'text-gray-600 hover:text-gray-800'"
+                        class="px-4 py-3 font-medium text-sm transition">
+                    Por Período
+                </button>
+            </div>
         </div>
-    </div>
 
-    {{-- Tab Content --}}
-    <div x-data="reportsContent()" id="reportsContent">
+        {{-- Tab Content --}}
         {{-- General Tab --}}
         <x-reports.tab-panel name="general">
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
