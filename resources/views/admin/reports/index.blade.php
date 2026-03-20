@@ -35,7 +35,7 @@
 
                 async applyFilters() {
                     this.isLoading = true;
-                    const reportsContent = document.querySelector('[x-data*="reportsContent"]')?.__x;
+                    const reportsContent = document.querySelector('[x-data="reportsContent()"]')?.__x;
                     const activeTab = reportsContent?.$data?.activeTab || 'general';
 
                     try {
@@ -104,7 +104,7 @@
 
                 applyFilters() {
                     console.log('▶ reportsContent.applyFilters() called');
-                    const filterForm = document.querySelector('[x-data*="filterForm"]')?.__x;
+                    const filterForm = document.querySelector('[x-data="filterForm()"]')?.__x;
                     console.log('filterForm element found:', !!filterForm);
                     if (filterForm && filterForm.$data) {
                         console.log('✓ Calling filterForm.applyFilters()...');
