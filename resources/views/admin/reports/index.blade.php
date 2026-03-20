@@ -50,8 +50,168 @@
     </div>
 
     {{-- Tabs and Content --}}
-    {{-- Load reports-specific JavaScript before Alpine initializes --}}
-    <script src="{{ \Illuminate\Support\Facades\Vite::asset('resources/js/pages/reports.js') }}"></script>
+    {{-- Reports JavaScript Functions (inline to avoid module scoping issues) --}}
+    <script>
+        window.filterForm = function() {
+            return {
+                filters: {
+                    training_id: new URLSearchParams(window.location.search).get('training_id') || '',
+                    group_id: new URLSearchParams(window.location.search).get('group_id') || '',
+                    status: new URLSearchParams(window.location.search).get('status') || '',
+                    date_from: new URLSearchParams(window.location.search).get('date_from') || '',
+                    date_to: new URLSearchParams(window.location.search).get('date_to') || '',
+                },
+                isLoading: false,
+                debounceTimer: null,
+
+                debounceFilter() {
+                    clearTimeout(this.debounceTimer);
+                    this.debounceTimer = setTimeout(() => {
+                        this.applyFilters();
+                    }, 400);
+                },
+
+                hasActiveFilters() {
+                    return Object.values(this.filters).some(v => v !== '');
+                },
+
+                countActiveFilters() {
+                    return Object.values(this.filters).filter(v => v !== '').length;
+                },
+
+                async applyFilters() {
+                    this.isLoading = true;
+                    const reportsContent = document.querySelector('[x-data*="reportsContent"]')?.__x;
+                    const activeTab = reportsContent?.$data?.activeTab || 'general';
+
+                    try {
+                        const params = new URLSearchParams(this.filters);
+                        params.append('tab', activeTab);
+
+                        const response = await fetch(`/reports/filter?${params}`);
+                        if (!response.ok) throw new Error('API error');
+                        const json = await response.json();
+
+                        // Update stats globally
+                        window.dispatchEvent(new CustomEvent('filter-updated', {
+                            detail: { stats: json.stats }
+                        }));
+
+                        // Notify tabs to update content
+                        window.dispatchEvent(new CustomEvent('data-updated', {
+                            detail: { data: json.data, tab: json.tab }
+                        }));
+
+                        // Update URL
+                        window.history.replaceState({}, '', `?${params}`);
+                    } catch (error) {
+                        console.error('Filter error:', error);
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+
+                clearFilters() {
+                    this.filters = {
+                        training_id: '',
+                        group_id: '',
+                        status: '',
+                        date_from: '',
+                        date_to: '',
+                    };
+                    this.applyFilters();
+                }
+            };
+        };
+
+        window.reportsContent = function() {
+            return {
+                activeTab: 'general',
+                isLoading: false,
+                generalTableHtml: '<p class="p-4 text-gray-500">Carregando dados...</p>',
+                groupTableHtml: '',
+                groupChart: null,
+                instructorTableHtml: '',
+                instructorChart: null,
+                periodTableHtml: '',
+                periodChart: null,
+
+                setTab(tab) {
+                    this.activeTab = tab;
+                    this.applyFilters();
+                },
+
+                applyFilters() {
+                    const filterForm = document.querySelector('[x-data*="filterForm"]')?.__x;
+                    if (filterForm && filterForm.$data) {
+                        filterForm.$data.applyFilters();
+                    }
+                },
+
+                init() {
+                    window.addEventListener('data-updated', (e) => {
+                        this.handleDataUpdate(e.detail.data, e.detail.tab);
+                    });
+
+                    // Load initial data
+                    this.$nextTick(() => {
+                        this.applyFilters();
+                    });
+                },
+
+                handleDataUpdate(data, tab) {
+                    if (tab === 'general') {
+                        this.renderGeneralTable(data);
+                    } else if (tab === 'group') {
+                        this.renderGroupAnalysis(data);
+                    } else if (tab === 'instructor') {
+                        this.renderInstructorAnalysis(data);
+                    } else if (tab === 'period') {
+                        this.renderPeriodAnalysis(data);
+                    }
+                },
+
+                renderGeneralTable(data) {
+                    if (!data.data || !Array.isArray(data.data)) {
+                        this.generalTableHtml = '<p class="p-4 text-gray-500">Nenhum dado disponível</p>';
+                        return;
+                    }
+
+                    let html = '<table class="w-full text-sm"><thead><tr class="border-b"><th class="text-left p-3">Funcionário</th><th class="text-left p-3">Treinamento</th><th class="text-left p-3">Progresso</th><th class="text-left p-3">Status</th></tr></thead><tbody>';
+
+                    data.data.forEach(row => {
+                        const progress = row.progress || 0;
+                        const status = row.completed_at ? 'Concluído' : 'Pendente';
+                        const statusColor = row.completed_at ? 'text-green-600' : 'text-yellow-600';
+                        html += `<tr class="border-b"><td class="p-3">${row.user_name || 'N/A'}</td><td class="p-3">${row.training_name || 'N/A'}</td><td class="p-3"><div class="bg-gray-200 rounded h-2"><div class="bg-green-600 h-2 rounded" style="width:${progress}%"></div></div></td><td class="p-3"><span class="${statusColor}">${status}</span></td></tr>`;
+                    });
+
+                    html += '</tbody></table>';
+                    this.generalTableHtml = html;
+                },
+
+                renderGroupAnalysis(data) {
+                    this.groupTableHtml = '<p class="p-4 text-gray-500">Dados de grupo disponíveis</p>';
+                    if (data && Array.isArray(data)) {
+                        let html = '<table class="w-full text-sm"><thead><tr class="border-b"><th class="text-left p-3">Grupo</th><th class="text-left p-3">Total</th><th class="text-left p-3">Concluídos</th><th class="text-left p-3">% Conclusão</th></tr></thead><tbody>';
+                        data.forEach(row => {
+                            html += `<tr class="border-b"><td class="p-3">${row.group_name || 'N/A'}</td><td class="p-3">${row.total || 0}</td><td class="p-3">${row.completed || 0}</td><td class="p-3">${Math.round((row.completed || 0) / (row.total || 1) * 100)}%</td></tr>`;
+                        });
+                        html += '</tbody></table>';
+                        this.groupTableHtml = html;
+                    }
+                },
+
+                renderInstructorAnalysis(data) {
+                    this.instructorTableHtml = '<p class="p-4 text-gray-500">Dados de instrutor disponíveis</p>';
+                },
+
+                renderPeriodAnalysis(data) {
+                    this.periodTableHtml = '<p class="p-4 text-gray-500">Dados de período disponíveis</p>';
+                }
+            };
+        };
+    </script>
 
     <div x-data="reportsContent()" id="reportsContent" class="mb-6">
         {{-- Tabs Navigation --}}
