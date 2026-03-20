@@ -35,8 +35,9 @@
 
                 async applyFilters() {
                     this.isLoading = true;
-                    const reportsContent = document.querySelector('[x-data="reportsContent()"]')?.__x;
-                    const activeTab = reportsContent?.$data?.activeTab || 'general';
+                    // Get activeTab from the registered reportsContent instance
+                    const activeTab = window.__reportsContentData?.activeTab || 'general';
+                    console.log('📋 applyFilters - activeTab:', activeTab);
 
                     try {
                         const params = new URLSearchParams(this.filters);
