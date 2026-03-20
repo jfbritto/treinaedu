@@ -295,8 +295,8 @@ class TrainingController extends Controller
                 $training->quiz->delete();
             }
 
-            // Update has_quiz flag based on any quiz existence
-            $hasAnyQuiz = $request->boolean('has_quiz') || $training->quizzes()->whereNotNull('module_id')->exists();
+            // Update has_quiz flag based on any quiz existence (training-level or module-level)
+            $hasAnyQuiz = $training->quizzes()->exists();
             $training->update(['has_quiz' => $hasAnyQuiz]);
         });
 
