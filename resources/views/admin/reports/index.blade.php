@@ -117,7 +117,7 @@
         </x-reports.tab-panel>
     </div>
 
-    <script src="{{ asset('js/pages/reports.js') }}"></script>
+    @vite('resources/js/pages/reports.js')
 
     <script>
         // Load initial data when page loads
