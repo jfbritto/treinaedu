@@ -26,7 +26,10 @@
 
     {{-- KPI Cards --}}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 relative z-30"
-         x-data="{ stats: @json($stats ?? []) }"
+         id="statsContainer"
+         x-data="{
+            stats: { total: '-', completed: '-', pending: '-', avg_progress: '-' }
+         }"
          @filter-updated.window="stats = $event.detail.stats">
 
         <x-reports.kpi-card key="total" label="Registros totais">
@@ -73,18 +76,18 @@
     </div>
 
     {{-- Tab Content --}}
-    <div x-data="reportsContent()">
+    <div x-data="reportsContent()" id="reportsContent">
         {{-- General Tab --}}
         <x-reports.tab-panel name="general">
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div x-show="isLoading" class="p-12 text-center">
+                <div id="generalLoading" class="p-12 text-center">
                     <div class="inline-block animate-spin">
                         <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                         </svg>
                     </div>
                 </div>
-                <div x-show="!isLoading" x-html="generalTableHtml"></div>
+                <div id="generalContent"></div>
             </div>
         </x-reports.tab-panel>
 
@@ -92,7 +95,7 @@
         <x-reports.tab-panel name="group">
             <x-reports.chart-container chart-id="groupChart" title="Progresso por Grupo" height="350px" />
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div x-html="groupTableHtml"></div>
+                <div id="groupContent"></div>
             </div>
         </x-reports.tab-panel>
 
@@ -100,7 +103,7 @@
         <x-reports.tab-panel name="instructor">
             <x-reports.chart-container chart-id="instructorChart" title="Performance dos Instrutores" height="350px" />
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div x-html="instructorTableHtml"></div>
+                <div id="instructorContent"></div>
             </div>
         </x-reports.tab-panel>
 
@@ -108,7 +111,7 @@
         <x-reports.tab-panel name="period">
             <x-reports.chart-container chart-id="periodChart" title="Progressão ao Longo do Tempo" height="350px" />
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div x-html="periodTableHtml"></div>
+                <div id="periodContent"></div>
             </div>
         </x-reports.tab-panel>
     </div>
