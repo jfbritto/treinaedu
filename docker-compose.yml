@@ -1,4 +1,44 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: treinaedu_app
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=treinaedu
+      - DB_USERNAME=treinaedu
+      - DB_PASSWORD=secret
+      - MAIL_MAILER=smtp
+      - MAIL_HOST=mailpit
+      - MAIL_PORT=1025
+      - MAIL_USERNAME=
+      - MAIL_PASSWORD=
+      - MAIL_FROM_ADDRESS=noreply@treinaedu.test
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - treinaedu
+
+  nginx:
+    image: nginx:alpine
+    container_name: treinaedu_nginx
+    ports:
+      - "8003:80"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - treinaedu
+
   mysql:
     image: mysql:8.0
     container_name: treinaedu_mysql

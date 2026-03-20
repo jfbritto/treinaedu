@@ -19,6 +19,9 @@ class ReportController extends Controller
         $trainings = Training::all();
         $groups = Group::all();
 
+        // Get initial stats (no filters)
+        $stats = TrainingView::getGlobalStats([]);
+
         $query = TrainingView::with(['user', 'training']);
 
         if ($request->filled('training_id')) {
@@ -49,7 +52,7 @@ class ReportController extends Controller
 
         $views = $query->paginate(15);
 
-        return view('admin.reports.index', compact('views', 'trainings', 'groups'));
+        return view('admin.reports.index', compact('views', 'trainings', 'groups', 'stats'));
     }
 
     public function filter(Request $request)

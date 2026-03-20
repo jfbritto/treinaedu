@@ -115,4 +115,15 @@
 
     <script src="{{ asset('js/pages/reports.js') }}"></script>
 
+    <script>
+        // Load initial data when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Find the reportsContent element and trigger initial load
+            const element = document.querySelector('[x-data*="reportsContent"]');
+            if (element && element.__x && element.__x.$data) {
+                element.__x.$data.loadTab('general');
+            }
+        });
+    </script>
+
 </x-layout.app>

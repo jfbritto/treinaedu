@@ -1,0 +1,13 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+README.md
+.env.example
+.editorconfig
+.DS_Store
+storage/logs/*
+bootstrap/cache/*
+vendor
+.vscode
+.idea
