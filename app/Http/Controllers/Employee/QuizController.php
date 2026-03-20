@@ -22,9 +22,17 @@ class QuizController extends Controller
         if ($lessonId) {
             // Lesson-level quiz
             $lesson = TrainingLesson::whereHas('module', fn ($q) => $q->where('training_id', $training->id))
-                ->where('id', $lessonId)->firstOrFail();
+                ->where('id', $lessonId)
+                ->with('quiz.questions.options')
+                ->firstOrFail();
+
+            // Verify lesson has a quiz
+            if (!$lesson->quiz) {
+                abort(404, 'Este quiz de aula não existe.');
+            }
+
             $this->ensureLessonCompleted($user, $lesson);
-            $quiz = $lesson->quiz()->with('questions.options')->firstOrFail();
+            $quiz = $lesson->quiz;
         } elseif ($moduleId) {
             // Module-level quiz
             $module = $training->modules()->where('id', $moduleId)->firstOrFail();
