@@ -3,7 +3,10 @@
     {{-- Reports JavaScript Functions (injected into head) --}}
     @push('head')
     <script>
+        console.log('📋 [HEAD] Reports JavaScript loaded');
+
         window.filterForm = function() {
+            console.log('✓ filterForm() initialized');
             return {
                 filters: {
                     training_id: new URLSearchParams(window.location.search).get('training_id') || '',
@@ -82,6 +85,7 @@
         };
 
         window.reportsContent = function() {
+            console.log('✓ reportsContent() initialized');
             return {
                 activeTab: 'general',
                 isLoading: false,
@@ -106,12 +110,15 @@
                 },
 
                 init() {
+                    console.log('📂 reportsContent.init() called - loading data');
                     window.addEventListener('data-updated', (e) => {
+                        console.log('📥 data-updated event received:', e.detail);
                         this.handleDataUpdate(e.detail.data, e.detail.tab);
                     });
 
                     // Load initial data
                     this.$nextTick(() => {
+                        console.log('⏳ Calling applyFilters...');
                         this.applyFilters();
                     });
                 },
