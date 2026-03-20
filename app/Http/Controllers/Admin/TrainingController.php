@@ -205,6 +205,12 @@ class TrainingController extends Controller
             'modules.*.lessons.*.video_url' => 'required_if:modules.*.lessons.*.type,video|nullable|url',
             'modules.*.lessons.*.duration_minutes' => 'nullable|integer|min:0',
             'modules.*.lessons.*.content' => 'required_if:modules.*.lessons.*.type,text|nullable|string',
+            'modules.*.lessons.*.has_quiz' => 'boolean',
+            'modules.*.lessons.*.questions' => 'exclude_unless:modules.*.lessons.*.has_quiz,1|array',
+            'modules.*.lessons.*.questions.*.question' => 'required_with:modules.*.lessons.*.questions|string',
+            'modules.*.lessons.*.questions.*.options' => 'required_with:modules.*.lessons.*.questions|array|min:2',
+            'modules.*.lessons.*.questions.*.options.*.text' => 'required_with:modules.*.lessons.*.questions|string',
+            'modules.*.lessons.*.questions.*.correct' => 'required_with:modules.*.lessons.*.questions|numeric|min:0',
 
             'active' => 'boolean',
             'has_quiz' => 'boolean',
@@ -348,7 +354,9 @@ class TrainingController extends Controller
                     break;
             }
 
-            $module->lessons()->create($lessonAttributes);
+            $lesson = $module->lessons()->create($lessonAttributes);
+            // Process quiz if exists
+            $this->processLessonQuiz($lesson, $lessonData, $companyId, $module->training);
         }
     }
 
@@ -417,21 +425,26 @@ class TrainingController extends Controller
                 $lesson = TrainingLesson::find($lessonData['id']);
                 if ($lesson && (int) $lesson->module_id === $module->id) {
                     $lesson->update($lessonAttributes);
+                    // Process quiz if exists
+                    $this->processLessonQuiz($lesson, $lessonData, $companyId, $module->training);
                 }
             } else {
-                $module->lessons()->create($lessonAttributes);
+                $lesson = $module->lessons()->create($lessonAttributes);
+                // Process quiz if exists
+                $this->processLessonQuiz($lesson, $lessonData, $companyId, $module->training);
             }
         }
     }
 
     /**
-     * Create a quiz for a training (training-level or module-level).
+     * Create a quiz for a training (training-level, module-level, or lesson-level).
      */
-    private function createQuiz(Training $training, ?int $moduleId, array $questions, int $companyId): void
+    private function createQuiz(Training $training, ?int $moduleId, array $questions, int $companyId, ?int $lessonId = null): void
     {
         $quiz = $training->quizzes()->create([
             'company_id' => $companyId,
             'module_id' => $moduleId,
+            'lesson_id' => $lessonId,
         ]);
 
         foreach ($questions as $i => $questionData) {
@@ -446,6 +459,35 @@ class TrainingController extends Controller
                     'is_correct' => $j === (int) $questionData['correct'],
                     'order' => $j,
                 ]);
+            }
+        }
+    }
+
+    /**
+     * Handle lesson quiz - create, update, or delete.
+     */
+    private function processLessonQuiz(TrainingLesson $lesson, array $lessonData, int $companyId, $training): void
+    {
+        $hasQuiz = !empty($lessonData['has_quiz']);
+        $questions = $lessonData['questions'] ?? [];
+
+        // If quiz should exist
+        if ($hasQuiz && !empty($questions)) {
+            // Delete existing quiz if any
+            if ($lesson->quiz) {
+                $lesson->quiz->questions->each(fn ($q) => $q->options()->delete());
+                $lesson->quiz->questions()->delete();
+                $lesson->quiz->delete();
+            }
+
+            // Create new quiz with lesson_id
+            $this->createQuiz($training, null, $questions, $companyId, $lesson->id);
+        } else {
+            // Delete quiz if it exists and shouldn't
+            if ($lesson->quiz) {
+                $lesson->quiz->questions->each(fn ($q) => $q->options()->delete());
+                $lesson->quiz->questions()->delete();
+                $lesson->quiz->delete();
             }
         }
     }
