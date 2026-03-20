@@ -260,49 +260,60 @@
                         <p class="text-sm text-gray-400">Nenhum grupo atribuído ainda.</p>
                     </div>
                 @else
-                    <div class="divide-y divide-gray-50">
+                    <div class="p-6 space-y-3">
                         @foreach($training->assignments as $assignment)
                             @php
                                 $overdue  = $assignment->due_date && $assignment->due_date->isPast();
                                 $soonDays = $assignment->due_date ? (int) now()->diffInDays($assignment->due_date, false) : null;
                                 $dueSoon  = $soonDays !== null && $soonDays >= 0 && $soonDays <= 7;
                             @endphp
-                            <div class="flex items-center gap-4 px-6 py-3.5">
-                                {{-- Ícone grupo --}}
-                                <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                                    </svg>
-                                </div>
-                                {{-- Nome do grupo --}}
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-medium text-gray-800">{{ $assignment->group->name }}</p>
-                                    <div class="flex items-center gap-2 flex-wrap mt-0.5">
-                                        @if($assignment->mandatory)
-                                            <span class="inline-flex items-center gap-1 text-xs font-medium bg-red-100 text-red-700 rounded-full px-2 py-0.5">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                Obrigatório
-                                            </span>
-                                        @else
-                                            <span class="text-xs text-gray-400">Opcional</span>
-                                        @endif
-                                        @if($assignment->due_date)
-                                            <span class="text-xs {{ $overdue ? 'text-red-500 font-medium' : ($dueSoon ? 'text-yellow-600' : 'text-gray-400') }}">
-                                                Prazo: {{ $assignment->due_date->format('d/m/Y') }}
-                                                @if($overdue) (vencido)
-                                                @elseif($dueSoon) ({{ $soonDays }}d)
+                            <div class="border border-gray-200 rounded-lg p-4 hover:border-primary/30 transition">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex items-start gap-3 flex-1">
+                                        {{-- Ícone grupo --}}
+                                        <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+                                            </svg>
+                                        </div>
+                                        {{-- Info do grupo --}}
+                                        <div class="flex-1 min-w-0">
+                                            <h4 class="text-sm font-semibold text-gray-800">{{ $assignment->group->name }}</h4>
+                                            <div class="flex items-center gap-2 flex-wrap mt-2">
+                                                @if($assignment->mandatory)
+                                                    <span class="inline-flex items-center gap-1 text-xs font-medium bg-red-100 text-red-700 rounded-full px-2 py-0.5">
+                                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 100-2 1 1 0 000 2zm0 4a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
+                                                        Obrigatório
+                                                    </span>
+                                                @else
+                                                    <span class="text-xs text-gray-500 bg-gray-100 rounded-full px-2 py-0.5">Opcional</span>
                                                 @endif
-                                            </span>
-                                        @endif
+                                                @if($assignment->due_date)
+                                                    <span class="text-xs {{ $overdue ? 'text-red-600 font-medium bg-red-50' : ($dueSoon ? 'text-yellow-700 bg-yellow-50' : 'text-gray-600 bg-gray-50') }} rounded-full px-2 py-0.5">
+                                                        {{ $assignment->due_date->format('d/m/Y') }}
+                                                        @if($overdue)
+                                                            <svg class="w-3 h-3 inline-block ml-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
+                                                        @elseif($dueSoon)
+                                                            ({{ $soonDays }}d)
+                                                        @endif
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
                                     </div>
+                                    {{-- Remover --}}
+                                    <form method="POST"
+                                          action="{{ route('trainings.assignments.destroy', [$training, $assignment]) }}"
+                                          data-confirm="Remover atribuição do grupo {{ $assignment->group->name }}?"
+                                          class="flex-shrink-0">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="text-xs font-medium text-red-500 hover:text-red-700 hover:bg-red-50 rounded px-2 py-1 transition">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                        </button>
+                                    </form>
                                 </div>
-                                {{-- Remover --}}
-                                <form method="POST"
-                                      action="{{ route('trainings.assignments.destroy', [$training, $assignment]) }}"
-                                      data-confirm="Remover atribuição do grupo {{ $assignment->group->name }}?">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="text-xs font-medium text-red-400 hover:text-red-600 transition">Remover</button>
-                                </form>
                             </div>
                         @endforeach
                     </div>
