@@ -30,13 +30,13 @@ window.filterForm = function() {
 
         async applyFilters() {
             this.isLoading = true;
-            const tab = document.querySelector('[x-data="reportsTabs()"]')?.__x?.getUnobservedData?.activeTab || 'general';
+            const activeTab = window.reportsTabsInstance?.activeTab || 'general';
 
             try {
                 const params = new URLSearchParams(this.filters);
-                params.append('tab', tab);
+                params.append('tab', activeTab);
 
-                const response = await fetch(`/admin/reports/filter?${params}`);
+                const response = await fetch(`/reports/filter?${params}`);
                 const json = await response.json();
 
                 // Update stats globally
@@ -77,7 +77,16 @@ window.reportsTabs = function() {
 
         setTab(tab) {
             this.activeTab = tab;
-            document.querySelector('[x-data="filterForm()"]')?.__x?.getUnobservedData?.applyFilters?.();
+            window.reportsTabsInstance = this;
+            // Trigger filter with new tab
+            const filterForm = document.querySelector('[x-data*="filterForm"]')?.__x;
+            if (filterForm) {
+                filterForm.$data.applyFilters();
+            }
+        },
+
+        init() {
+            window.reportsTabsInstance = this;
         }
     };
 };
@@ -86,7 +95,7 @@ window.reportsContent = function() {
     return {
         activeTab: 'general',
         isLoading: false,
-        generalTableHtml: '',
+        generalTableHtml: '<p class="p-4 text-gray-500">Carregando dados...</p>',
         groupTableHtml: '',
         groupChart: null,
         instructorTableHtml: '',
@@ -98,186 +107,67 @@ window.reportsContent = function() {
             window.addEventListener('data-updated', (e) => {
                 this.handleDataUpdate(e.detail.data, e.detail.tab);
             });
+
+            // Load initial data
+            this.loadInitialData();
+        },
+
+        loadInitialData() {
+            const filterForm = document.querySelector('[x-data*="filterForm"]')?.__x;
+            if (filterForm) {
+                filterForm.$data.applyFilters();
+            }
         },
 
         handleDataUpdate(data, tab) {
-            this.isLoading = false;
-
-            switch(tab) {
-                case 'general':
-                    this.renderGeneralTable(data);
-                    break;
-                case 'group':
-                    this.renderGroupChart(data);
-                    this.renderGroupTable(data);
-                    break;
-                case 'instructor':
-                    this.renderInstructorChart(data);
-                    this.renderInstructorTable(data);
-                    break;
-                case 'period':
-                    this.renderPeriodChart(data);
-                    this.renderPeriodTable(data);
-                    break;
+            if (tab === 'general') {
+                this.renderGeneralTable(data);
+            } else if (tab === 'group') {
+                this.renderGroupAnalysis(data);
+            } else if (tab === 'instructor') {
+                this.renderInstructorAnalysis(data);
+            } else if (tab === 'period') {
+                this.renderPeriodAnalysis(data);
             }
         },
 
         renderGeneralTable(data) {
-            // This would render the general table - implementation depends on data structure
-            // For now, using placeholder
-            this.generalTableHtml = `<div class="p-4">Table content</div>`;
-        },
+            if (!data.data || !Array.isArray(data.data)) {
+                this.generalTableHtml = '<p class="p-4 text-gray-500">Nenhum dado disponível</p>';
+                return;
+            }
 
-        renderGroupChart(data) {
-            const ctx = document.getElementById('groupChart');
-            if (!ctx) return;
+            let html = '<table class="w-full text-sm"><thead><tr class="border-b"><th class="text-left p-3">Funcionário</th><th class="text-left p-3">Treinamento</th><th class="text-left p-3">Progresso</th><th class="text-left p-3">Status</th></tr></thead><tbody>';
 
-            if (this.groupChart) this.groupChart.destroy();
-
-            this.groupChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: data.map(row => row.name),
-                    datasets: [{
-                        label: 'Progresso Médio (%)',
-                        data: data.map(row => row.avg_progress),
-                        backgroundColor: data.map(row =>
-                            row.avg_progress >= 75 ? '#10b981' :
-                            row.avg_progress >= 50 ? '#3b82f6' : '#fbbf24'
-                        ),
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    indexAxis: 'y',
-                }
+            data.data.forEach(row => {
+                const progress = row.progress || 0;
+                const status = row.completed_at ? 'Concluído' : 'Pendente';
+                const statusColor = row.completed_at ? 'text-green-600' : 'text-yellow-600';
+                html += `<tr class="border-b"><td class="p-3">${row.user_name || 'N/A'}</td><td class="p-3">${row.training_name || 'N/A'}</td><td class="p-3"><div class="bg-gray-200 rounded h-2"><div class="bg-green-600 h-2 rounded" style="width:${progress}%"></div></div></td><td class="p-3"><span class="${statusColor}">${status}</span></td></tr>`;
             });
+
+            html += '</tbody></table>';
+            this.generalTableHtml = html;
         },
 
-        renderGroupTable(data) {
-            this.groupTableHtml = `
-                <table class="w-full">
-                    <thead>
-                        <tr class="border-b border-gray-100">
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-400">Grupo</th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-400">Total</th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-400">Concluídos</th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-400">Pendentes</th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-400">% Médio</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-50">
-                        ${data.map(row => `
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 text-sm font-medium text-gray-800">${row.name}</td>
-                                <td class="px-6 py-4 text-sm text-gray-600">${row.total}</td>
-                                <td class="px-6 py-4 text-sm text-gray-600">${row.completed}</td>
-                                <td class="px-6 py-4 text-sm text-gray-600">${row.pending}</td>
-                                <td class="px-6 py-4 text-sm font-semibold text-gray-800">${row.avg_progress}%</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
+        renderGroupAnalysis(data) {
+            this.groupTableHtml = '<p class="p-4 text-gray-500">Dados de grupo disponíveis</p>';
+            if (data && Array.isArray(data)) {
+                let html = '<table class="w-full text-sm"><thead><tr class="border-b"><th class="text-left p-3">Grupo</th><th class="text-left p-3">Total</th><th class="text-left p-3">Concluídos</th><th class="text-left p-3">% Conclusão</th></tr></thead><tbody>';
+                data.forEach(row => {
+                    html += `<tr class="border-b"><td class="p-3">${row.group_name || 'N/A'}</td><td class="p-3">${row.total || 0}</td><td class="p-3">${row.completed || 0}</td><td class="p-3">${Math.round((row.completed || 0) / (row.total || 1) * 100)}%</td></tr>`;
+                });
+                html += '</tbody></table>';
+                this.groupTableHtml = html;
+            }
         },
 
-        renderInstructorChart(data) {
-            const ctx = document.getElementById('instructorChart');
-            if (!ctx) return;
-
-            if (this.instructorChart) this.instructorChart.destroy();
-
-            this.instructorChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: data.map(row => row.name),
-                    datasets: [{
-                        label: 'Progresso Médio (%)',
-                        data: data.map(row => row.avg_progress),
-                        backgroundColor: '#3b82f6',
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                }
-            });
+        renderInstructorAnalysis(data) {
+            this.instructorTableHtml = '<p class="p-4 text-gray-500">Dados de instrutor disponíveis</p>';
         },
 
-        renderInstructorTable(data) {
-            this.instructorTableHtml = `
-                <table class="w-full">
-                    <thead>
-                        <tr class="border-b border-gray-100">
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-400">Instrutor</th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-400">Total Alunos</th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-400">Concluídos</th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-400">% Médio</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-50">
-                        ${data.map(row => `
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 text-sm font-medium text-gray-800">${row.name}</td>
-                                <td class="px-6 py-4 text-sm text-gray-600">${row.total}</td>
-                                <td class="px-6 py-4 text-sm text-gray-600">${row.completed}</td>
-                                <td class="px-6 py-4 text-sm font-semibold text-gray-800">${row.avg_progress}%</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
-        },
-
-        renderPeriodChart(data) {
-            const ctx = document.getElementById('periodChart');
-            if (!ctx) return;
-
-            if (this.periodChart) this.periodChart.destroy();
-
-            this.periodChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: data.map(row => new Date(row.period).toLocaleDateString('pt-BR')),
-                    datasets: [{
-                        label: 'Conclusões',
-                        data: data.map(row => row.completed),
-                        borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        tension: 0.4,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                }
-            });
-        },
-
-        renderPeriodTable(data) {
-            this.periodTableHtml = `
-                <table class="w-full">
-                    <thead>
-                        <tr class="border-b border-gray-100">
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-400">Período</th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-400">Conclusões</th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-400">% Crescimento</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-50">
-                        ${data.map((row, idx) => `
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 text-sm font-medium text-gray-800">${new Date(row.period).toLocaleDateString('pt-BR')}</td>
-                                <td class="px-6 py-4 text-sm text-gray-600">${row.completed}</td>
-                                <td class="px-6 py-4 text-sm font-semibold text-gray-800">
-                                    ${row.growth_percent > 0 ? '↑' : row.growth_percent < 0 ? '↓' : '—'} ${row.growth_percent}%
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
+        renderPeriodAnalysis(data) {
+            this.periodTableHtml = '<p class="p-4 text-gray-500">Dados de período disponíveis</p>';
         }
     };
 };
