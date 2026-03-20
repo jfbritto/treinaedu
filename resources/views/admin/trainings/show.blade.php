@@ -66,9 +66,9 @@
                                 <p class="text-xs font-bold {{ $training->active ? 'text-primary' : 'text-gray-600' }} uppercase tracking-wider">Status</p>
                                 <p class="text-3xl font-bold {{ $training->active ? 'text-primary' : 'text-gray-800' }} mt-2">{{ $training->active ? 'Ativo' : 'Inativo' }}</p>
                             </div>
-                            <div class="w-12 h-12 rounded-lg {{ $training->active ? 'bg-primary/10' : 'bg-gray-200/50' }} flex items-center justify-center flex-shrink-0">
-                                <svg class="w-6 h-6 {{ $training->active ? 'text-primary' : 'text-gray-600' }}" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            <div class="w-14 h-14 rounded-lg {{ $training->active ? 'bg-primary/15' : 'bg-gray-200/50' }} flex items-center justify-center flex-shrink-0">
+                                <svg class="w-7 h-7 {{ $training->active ? 'text-primary' : 'text-gray-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/>
                                 </svg>
                             </div>
                         </div>
@@ -81,9 +81,9 @@
                                 <p class="text-xs font-bold {{ $training->has_quiz ? 'text-primary' : 'text-gray-600' }} uppercase tracking-wider">Quiz</p>
                                 <p class="text-3xl font-bold {{ $training->has_quiz ? 'text-primary' : 'text-gray-800' }} mt-2">{{ $training->has_quiz ? 'Sim' : 'Não' }}</p>
                             </div>
-                            <div class="w-12 h-12 rounded-lg {{ $training->has_quiz ? 'bg-primary/10' : 'bg-gray-200/50' }} flex items-center justify-center flex-shrink-0">
-                                <svg class="w-6 h-6 {{ $training->has_quiz ? 'text-primary' : 'text-gray-600' }}" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v2a1 1 0 11-2 0V5H4v12h6a1 1 0 110 2H4a2 2 0 01-2-2V5zm8 5a1 1 0 100-2 1 1 0 000 2zm-3 5a1 1 0 11-2 0 1 1 0 012 0zM14 13a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+                            <div class="w-14 h-14 rounded-lg {{ $training->has_quiz ? 'bg-primary/15' : 'bg-gray-200/50' }} flex items-center justify-center flex-shrink-0">
+                                <svg class="w-7 h-7 {{ $training->has_quiz ? 'text-primary' : 'text-gray-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4m7.07-10.07A9.75 9.75 0 006.5 6.5a9.75 9.75 0 10 0 10.5m-1.06 1.06A9.75 9.75 0 0115.5 15.5"/>
                                 </svg>
                             </div>
                         </div>
@@ -96,9 +96,9 @@
                                 <p class="text-xs font-bold text-primary uppercase tracking-wider">Conclusão</p>
                                 <p class="text-3xl font-bold text-gray-800 mt-2">{{ $training->completionRate() }}%</p>
                             </div>
-                            <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v-1h8v1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3h.5a.5.5 0 000-1H15v-1h-.5a.5.5 0 000-1h.5v-1H16a2 2 0 012 2v4a2 2 0 01-2 2z"/>
+                            <div class="w-14 h-14 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
+                                <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
                                 </svg>
                             </div>
                         </div>
