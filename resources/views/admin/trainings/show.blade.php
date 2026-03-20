@@ -422,6 +422,57 @@
 
         {{-- Sidebar info --}}
         <div class="space-y-4">
+            {{-- Resumo Rápido --}}
+            <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zm-11-1a1 1 0 11-2 0 1 1 0 012 0z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-semibold text-gray-800">Resumo</p>
+                </div>
+                <div class="space-y-3 text-xs">
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-600">Grupos</span>
+                        <span class="font-semibold text-gray-800">{{ $training->assignments->count() }}</span>
+                    </div>
+                    <div class="border-t border-gray-100 pt-3 flex items-center justify-between">
+                        <span class="text-gray-600">Colaboradores</span>
+                        <span class="font-semibold text-gray-800">{{ $assignedUsers->count() }}</span>
+                    </div>
+                    <div class="border-t border-gray-100 pt-3 flex items-center justify-between">
+                        <span class="text-gray-600">Taxa Conclusão</span>
+                        <span class="font-semibold {{ $training->completionRate() >= 50 ? 'text-green-600' : ($training->completionRate() >= 25 ? 'text-yellow-600' : 'text-gray-800') }}">
+                            {{ $training->completionRate() }}%
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Metadata --}}
+            <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-6 h-6 rounded-md bg-gray-100 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"/>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-semibold text-gray-800">Informações</p>
+                </div>
+                <div class="space-y-3 text-xs">
+                    <div>
+                        <p class="text-gray-500">Criado em</p>
+                        <p class="text-gray-800 font-medium mt-0.5">{{ $training->created_at->format('d/m/Y H:i') }}</p>
+                    </div>
+                    <div class="border-t border-gray-100 pt-3">
+                        <p class="text-gray-500">Atualizado em</p>
+                        <p class="text-gray-800 font-medium mt-0.5">{{ $training->updated_at->format('d/m/Y H:i') }}</p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Como funciona --}}
             <div class="bg-primary/5 border border-primary/15 rounded-xl p-4">
                 <div class="flex items-center gap-2 mb-3">
                     <div class="w-6 h-6 rounded-md bg-primary flex items-center justify-center flex-shrink-0">
@@ -432,9 +483,9 @@
                     <p class="text-sm font-semibold text-primary">Como funciona</p>
                 </div>
                 <div class="space-y-2.5 text-xs text-gray-600">
-                    <p>Atribuindo a um grupo, todos os membros desse grupo passam a ver este treinamento automaticamente.</p>
-                    <p>Marcar como <strong>obrigatório</strong> destaca o treinamento para o colaborador e sinaliza que a conclusão é exigida.</p>
-                    <p>A <strong>data limite</strong> aparece com indicador de urgência quando o prazo se aproxima.</p>
+                    <p>Atribuindo a um grupo, todos os membros passam a ver este treinamento automaticamente.</p>
+                    <p>Marcar como <strong>obrigatório</strong> sinaliza que a conclusão é exigida.</p>
+                    <p>A <strong>data limite</strong> aparece com urgência quando o prazo se aproxima.</p>
                 </div>
             </div>
 
