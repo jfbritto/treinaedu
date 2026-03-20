@@ -152,38 +152,181 @@
                         return;
                     }
 
-                    let html = '<table class="w-full text-sm"><thead><tr class="border-b"><th class="text-left p-3">Funcionário</th><th class="text-left p-3">Treinamento</th><th class="text-left p-3">Progresso</th><th class="text-left p-3">Status</th></tr></thead><tbody>';
+                    let html = `
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead class="bg-gray-50 border-b border-gray-200">
+                                    <tr>
+                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Funcionário</th>
+                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Treinamento</th>
+                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Progresso</th>
+                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Data Início</th>
+                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
 
                     data.data.forEach(row => {
                         const progress = row.progress_percent || 0;
                         const status = row.completed_at ? 'Concluído' : 'Pendente';
-                        const statusColor = row.completed_at ? 'text-green-600' : 'text-yellow-600';
-                        html += `<tr class="border-b"><td class="p-3">${row.user?.name || 'N/A'}</td><td class="p-3">${row.training?.title || 'N/A'}</td><td class="p-3"><div class="bg-gray-200 rounded h-2"><div class="bg-green-600 h-2 rounded" style="width:${progress}%"></div></div></td><td class="p-3"><span class="${statusColor}">${status}</span></td></tr>`;
+                        const statusBg = row.completed_at ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-700';
+                        const startDate = row.started_at ? new Date(row.started_at).toLocaleDateString('pt-BR') : '-';
+
+                        html += `
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                                <td class="px-4 py-3 text-gray-900">${row.user?.name || 'N/A'}</td>
+                                <td class="px-4 py-3 text-gray-900">${row.training?.title || 'N/A'}</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-20 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-blue-600 h-2 rounded-full" style="width:${progress}%"></div>
+                                        </div>
+                                        <span class="text-xs font-medium text-gray-600">${progress}%</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-gray-600 text-xs">${startDate}</td>
+                                <td class="px-4 py-3">
+                                    <span class="px-3 py-1 rounded-full text-xs font-medium ${statusBg}">
+                                        ${status}
+                                    </span>
+                                </td>
+                            </tr>
+                        `;
                     });
 
-                    html += '</tbody></table>';
+                    html += `
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="px-4 py-3 border-t border-gray-200 text-xs text-gray-500">
+                            Exibindo ${data.data.length} de ${data.total} registros
+                        </div>
+                    `;
+
                     this.generalTableHtml = html;
-                    console.log('✓ Table HTML set:', this.generalTableHtml.substring(0, 100));
+                    console.log('✓ Table HTML rendered successfully');
                 },
 
                 renderGroupAnalysis(data) {
-                    this.groupTableHtml = '<p class="p-4 text-gray-500">Dados de grupo disponíveis</p>';
-                    if (data && Array.isArray(data)) {
-                        let html = '<table class="w-full text-sm"><thead><tr class="border-b"><th class="text-left p-3">Grupo</th><th class="text-left p-3">Total</th><th class="text-left p-3">Concluídos</th><th class="text-left p-3">% Conclusão</th></tr></thead><tbody>';
-                        data.forEach(row => {
-                            html += `<tr class="border-b"><td class="p-3">${row.group_name || 'N/A'}</td><td class="p-3">${row.total || 0}</td><td class="p-3">${row.completed || 0}</td><td class="p-3">${Math.round((row.completed || 0) / (row.total || 1) * 100)}%</td></tr>`;
-                        });
-                        html += '</tbody></table>';
-                        this.groupTableHtml = html;
+                    if (!data || !Array.isArray(data) || data.length === 0) {
+                        this.groupTableHtml = '<p class="p-4 text-gray-500">Nenhum dado disponível</p>';
+                        return;
                     }
+
+                    let html = `
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead class="bg-gray-50 border-b border-gray-200">
+                                    <tr>
+                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Grupo</th>
+                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Total</th>
+                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Concluídos</th>
+                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Taxa de Conclusão</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+
+                    data.forEach(row => {
+                        const completion = Math.round((row.completed || 0) / (row.total || 1) * 100);
+                        html += `
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                                <td class="px-4 py-3 text-gray-900 font-medium">${row.group_name || 'N/A'}</td>
+                                <td class="px-4 py-3 text-gray-600">${row.total || 0}</td>
+                                <td class="px-4 py-3 text-gray-600">${row.completed || 0}</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-20 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-green-600 h-2 rounded-full" style="width:${completion}%"></div>
+                                        </div>
+                                        <span class="text-xs font-medium text-gray-600">${completion}%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    html += `</tbody></table></div>`;
+                    this.groupTableHtml = html;
                 },
 
                 renderInstructorAnalysis(data) {
-                    this.instructorTableHtml = '<p class="p-4 text-gray-500">Dados de instrutor disponíveis</p>';
+                    if (!data || !Array.isArray(data) || data.length === 0) {
+                        this.instructorTableHtml = '<p class="p-4 text-gray-500">Nenhum dado disponível</p>';
+                        return;
+                    }
+
+                    let html = `
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead class="bg-gray-50 border-b border-gray-200">
+                                    <tr>
+                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Instrutor</th>
+                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Total</th>
+                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Concluídos</th>
+                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Progresso Médio</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+
+                    data.forEach(row => {
+                        html += `
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                                <td class="px-4 py-3 text-gray-900 font-medium">${row.instructor_name || 'N/A'}</td>
+                                <td class="px-4 py-3 text-gray-600">${row.total || 0}</td>
+                                <td class="px-4 py-3 text-gray-600">${row.completed || 0}</td>
+                                <td class="px-4 py-3 text-gray-600">${row.avg_progress || 0}%</td>
+                            </tr>
+                        `;
+                    });
+
+                    html += `</tbody></table></div>`;
+                    this.instructorTableHtml = html;
                 },
 
                 renderPeriodAnalysis(data) {
-                    this.periodTableHtml = '<p class="p-4 text-gray-500">Dados de período disponíveis</p>';
+                    if (!data || !Array.isArray(data) || data.length === 0) {
+                        this.periodTableHtml = '<p class="p-4 text-gray-500">Nenhum dado disponível</p>';
+                        return;
+                    }
+
+                    let html = `
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead class="bg-gray-50 border-b border-gray-200">
+                                    <tr>
+                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Período</th>
+                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Total</th>
+                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Concluídos</th>
+                                        <th class="text-left px-4 py-3 font-semibold text-gray-700">Taxa de Conclusão</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+
+                    data.forEach(row => {
+                        const completion = Math.round((row.completed || 0) / (row.total || 1) * 100);
+                        html += `
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                                <td class="px-4 py-3 text-gray-900 font-medium">${row.period || 'N/A'}</td>
+                                <td class="px-4 py-3 text-gray-600">${row.total || 0}</td>
+                                <td class="px-4 py-3 text-gray-600">${row.completed || 0}</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-20 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-purple-600 h-2 rounded-full" style="width:${completion}%"></div>
+                                        </div>
+                                        <span class="text-xs font-medium text-gray-600">${completion}%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    html += `</tbody></table></div>`;
+                    this.periodTableHtml = html;
                 }
             };
 

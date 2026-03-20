@@ -81,7 +81,10 @@ class ReportController extends Controller
             'group' => TrainingView::getGroupAnalysis($filters),
             'instructor' => TrainingView::getInstructorAnalysis($filters),
             'period' => TrainingView::getPeriodAnalysis($filters),
-            default => TrainingView::withFilters($filters)->paginate(15),
+            default => TrainingView::with(['user', 'training'])
+                ->withFilters($filters)
+                ->orderBy('created_at', 'desc')
+                ->paginate(15),
         };
 
         return response()->json([
