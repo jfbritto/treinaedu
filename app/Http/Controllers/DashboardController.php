@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Certificate;
+use App\Models\Path;
 use App\Models\Training;
 use App\Models\TrainingView;
 use App\Models\User;
@@ -146,7 +147,26 @@ class DashboardController extends Controller
             'data' => $this->getCertificateMonthCounts($certificates),
         ];
 
-        return view('employee.dashboard', compact('pending', 'completed', 'certificates', 'chartData'));
+        // Trilhas com progresso
+        $paths = Path::where('active', true)
+            ->withCount('trainings')
+            ->orderBy('sort_order')
+            ->get()
+            ->map(function ($path) use ($user) {
+                $trainingIds = $path->trainings()->pluck('trainings.id');
+                $completed = TrainingView::withoutGlobalScope('company')
+                    ->where('user_id', $user->id)
+                    ->whereIn('training_id', $trainingIds)
+                    ->whereNotNull('completed_at')
+                    ->count();
+                $path->completed_trainings = $completed;
+                $path->progress_percent = $trainingIds->count() > 0
+                    ? round(($completed / $trainingIds->count()) * 100)
+                    : 0;
+                return $path;
+            });
+
+        return view('employee.dashboard', compact('pending', 'completed', 'certificates', 'chartData', 'paths'));
     }
 
     private function getCertificateMonthLabels($certificates)

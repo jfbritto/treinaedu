@@ -67,6 +67,33 @@
         </div>
     </div>
 
+    {{-- Trilhas --}}
+    @if($paths->isNotEmpty())
+        <div class="mb-6">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm font-semibold text-gray-700">Trilhas de Aprendizagem</h3>
+                <a href="{{ route('employee.paths.index') }}" class="text-xs text-primary hover:underline">Ver todas</a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                @foreach($paths->take(3) as $path)
+                    <a href="{{ route('employee.paths.show', $path) }}"
+                       class="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition group">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-3 h-8 rounded-full flex-shrink-0" style="background-color: {{ $path->color }}"></div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-semibold text-gray-800 truncate group-hover:text-primary transition">{{ $path->title }}</p>
+                                <p class="text-xs text-gray-400">{{ $path->completed_trainings }}/{{ $path->trainings_count }} treinamentos</p>
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5">
+                            <div class="h-1.5 rounded-full transition-all" style="width: {{ $path->progress_percent }}%; background-color: {{ $path->color }}"></div>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     {{-- Gráfico de Progresso --}}
     @if($certificates->isNotEmpty())
         <div class="bg-white rounded-xl shadow-sm p-6 mb-6">

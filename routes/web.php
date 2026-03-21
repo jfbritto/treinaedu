@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\CertificateController as AdminCertificateControll
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\EngagementController;
 use App\Http\Controllers\Admin\CompanySettingsController;
+use App\Http\Controllers\Admin\PathController;
+use App\Http\Controllers\Employee\PathController as EmployeePathController;
 use App\Http\Controllers\Instructor\TrainingController as InstructorTrainingController;
 use App\Http\Controllers\Employee\TrainingController as EmployeeTrainingController;
 use App\Http\Controllers\Employee\CertificateController as EmployeeCertificateController;
@@ -69,6 +71,7 @@ Route::middleware(['auth', 'theme'])->group(function () {
             Route::resource('users', UserController::class);
             Route::resource('groups', GroupController::class);
             Route::resource('trainings', AdminTrainingController::class);
+            Route::resource('paths', PathController::class);
             Route::post('trainings/{training}/assignments', [AdminTrainingController::class, 'storeAssignment'])
                 ->name('trainings.assignments.store');
             Route::delete('trainings/{training}/assignments/{assignment}', [AdminTrainingController::class, 'destroyAssignment'])
@@ -108,6 +111,10 @@ Route::middleware(['auth', 'theme'])->group(function () {
                 ->name('quiz.show');
             Route::post('trainings/{training}/quiz', [QuizController::class, 'submit'])
                 ->name('quiz.submit');
+            Route::get('paths', [EmployeePathController::class, 'index'])
+                ->name('paths.index');
+            Route::get('paths/{path}', [EmployeePathController::class, 'show'])
+                ->name('paths.show');
             Route::get('certificates', [EmployeeCertificateController::class, 'index'])
                 ->name('certificates.index');
             Route::get('certificates/{certificate}/success', [EmployeeCertificateController::class, 'success'])

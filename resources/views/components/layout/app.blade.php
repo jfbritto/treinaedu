@@ -135,6 +135,10 @@
                         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                         Treinamentos
                     </a>
+                    <a href="{{ route('paths.index') }}" @click="sidebarOpen = false" class="flex items-center gap-2 px-3 py-2.5 rounded-md text-sm hover:bg-white/10 transition {{ request()->routeIs('paths.*') ? 'bg-white/20' : '' }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                        Trilhas
+                    </a>
                     <a href="{{ route('reports.index') }}" @click="sidebarOpen = false" class="flex items-center gap-2 px-3 py-2.5 rounded-md text-sm hover:bg-white/10 transition {{ request()->routeIs('reports.*') ? 'bg-white/20' : '' }}">
                         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                         Relatórios
@@ -160,6 +164,10 @@
                     <a href="{{ route('employee.trainings.index') }}" @click="sidebarOpen = false" class="flex items-center gap-2 px-3 py-2.5 rounded-md text-sm hover:bg-white/10 transition {{ request()->routeIs('employee.trainings.*') ? 'bg-white/20' : '' }}">
                         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                         Meus Treinamentos
+                    </a>
+                    <a href="{{ route('employee.paths.index') }}" @click="sidebarOpen = false" class="flex items-center gap-2 px-3 py-2.5 rounded-md text-sm hover:bg-white/10 transition {{ request()->routeIs('employee.paths.*') ? 'bg-white/20' : '' }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                        Trilhas
                     </a>
                     <a href="{{ route('employee.certificates.index') }}" @click="sidebarOpen = false" class="flex items-center gap-2 px-3 py-2.5 rounded-md text-sm hover:bg-white/10 transition {{ request()->routeIs('employee.certificates.*') ? 'bg-white/20' : '' }}">
                         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
