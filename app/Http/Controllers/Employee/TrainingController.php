@@ -17,12 +17,15 @@ class TrainingController extends Controller
             ->get();
 
         // Compute mandatory/due_date from the user's group assignments
-        $assignedTrainings->each(function ($training) {
+        $assignedTrainings->each(function ($training) use ($user) {
             $training->is_mandatory      = $training->assignments->contains('mandatory', true);
             $training->effective_due_date = $training->assignments
                 ->whereNotNull('due_date')
                 ->sortBy('due_date')
                 ->first()?->due_date;
+            // Adicionar dados de progresso
+            $training->total_lessons = $training->totalLessons();
+            $training->completed_lessons = $training->userCompletedLessons($user->id);
         });
 
         $pending = $assignedTrainings

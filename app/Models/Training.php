@@ -108,6 +108,20 @@ class Training extends Model
         return round(($completed / $totalAssigned) * 100, 1);
     }
 
+    public function totalLessons(): int
+    {
+        return $this->lessons()->count();
+    }
+
+    public function userCompletedLessons(int $userId): int
+    {
+        return $this->lessons()
+            ->whereHas('lessonViews', fn ($q) =>
+                $q->where('user_id', $userId)->whereNotNull('completed_at')
+            )
+            ->count();
+    }
+
     public static function detectProvider(string $url): string
     {
         if (str_contains($url, 'youtube.com') || str_contains($url, 'youtu.be')) {

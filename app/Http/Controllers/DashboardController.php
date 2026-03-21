@@ -112,12 +112,15 @@ class DashboardController extends Controller
             ->with(['views' => fn ($q) => $q->where('user_id', $user->id)])
             ->get();
 
-        $assignedTrainings->each(function ($training) {
+        $assignedTrainings->each(function ($training) use ($user) {
             $training->is_mandatory      = $training->assignments->contains('mandatory', true);
             $training->effective_due_date = $training->assignments
                 ->whereNotNull('due_date')
                 ->sortBy('due_date')
                 ->first()?->due_date;
+            // Adicionar dados de progresso
+            $training->total_lessons = $training->totalLessons();
+            $training->completed_lessons = $training->userCompletedLessons($user->id);
         });
 
         $pending = $assignedTrainings

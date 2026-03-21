@@ -105,6 +105,12 @@
 
                             {{-- Tags --}}
                             <div class="flex items-center gap-2 flex-wrap mt-auto">
+                                @if($training->total_lessons > 0)
+                                    <span class="inline-flex items-center gap-1 text-xs text-gray-400">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 8h.01M15 12h.01"/></svg>
+                                        📊 {{ $training->completed_lessons }}/{{ $training->total_lessons }} aula{{ $training->total_lessons !== 1 ? 's' : '' }}
+                                    </span>
+                                @endif
                                 <span class="inline-flex items-center gap-1 text-xs text-gray-400">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     {{ $training->duration_minutes }} min

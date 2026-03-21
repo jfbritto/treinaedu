@@ -126,8 +126,20 @@
                                         </div>
                                         <span class="text-xs text-gray-400 flex-shrink-0">{{ $progress }}%</span>
                                     </div>
+                                    @if($training->total_lessons > 0)
+                                        <p class="text-xs text-gray-400 mt-1">
+                                            📊 {{ $training->completed_lessons }}/{{ $training->total_lessons }} aula{{ $training->total_lessons !== 1 ? 's' : '' }} concluída{{ $training->completed_lessons !== 1 ? 's' : '' }}
+                                        </p>
+                                    @endif
                                 @else
-                                    <p class="text-xs text-gray-400 mt-0.5">Não iniciado · {{ $training->duration_minutes }} min</p>
+                                    <p class="text-xs text-gray-400 mt-0.5">
+                                        Não iniciado
+                                        @if($training->total_lessons > 0)
+                                            · {{ $training->completed_lessons }}/{{ $training->total_lessons }} aula{{ $training->total_lessons !== 1 ? 's' : '' }}
+                                        @else
+                                            · {{ $training->duration_minutes }} min
+                                        @endif
+                                    </p>
                                 @endif
                                 @if($dueDate)
                                     <p class="text-xs mt-0.5 {{ $overdue ? 'text-red-500 font-medium' : ($dueSoon ? 'text-yellow-600' : 'text-gray-400') }}">
