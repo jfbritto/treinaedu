@@ -85,11 +85,20 @@ class QuizController extends Controller
             ->exists();
 
         if ($alreadyPassed) {
-            return redirect()->route('employee.quiz.show', array_filter([
-                'training' => $training->id,
-                'module' => $moduleId,
-                'lesson' => $lessonId,
-            ]))->with('info', 'Você já foi aprovado neste quiz.');
+            // If already passed, redirect to next lesson
+            $nextLessonUrl = null;
+            if ($lessonId) {
+                $lesson = TrainingLesson::find($lessonId);
+                $allLessons = $training->modules->flatMap->lessons;
+                $currentIndex = $allLessons->search(fn($l) => $l->id === $lesson->id);
+                $nextLesson = $currentIndex !== false ? $allLessons->get($currentIndex + 1) : null;
+                $nextLessonUrl = $nextLesson
+                    ? route('employee.trainings.show', ['training' => $training, 'lesson' => $nextLesson->id, 'autoplay' => 1])
+                    : route('employee.trainings.show', $training);
+            } else {
+                $nextLessonUrl = route('employee.trainings.show', $training);
+            }
+            return redirect($nextLessonUrl)->with('info', 'Você já foi aprovado neste quiz.');
         }
 
         $correctAnswers = 0;
@@ -115,7 +124,22 @@ class QuizController extends Controller
             'completed_at' => now(),
         ]);
 
-        return view('employee.quiz.result', compact('training', 'attempt', 'score', 'passed'));
+        // Determine quiz level and next action
+        $quizLevel = $lessonId ? 'lesson' : ($moduleId ? 'module' : 'training');
+
+        // Calculate next lesson URL if this was a lesson/module quiz
+        $nextLessonUrl = null;
+        if (($quizLevel === 'lesson' || $quizLevel === 'module') && $passed) {
+            $allLessons = $training->modules->flatMap->lessons;
+            $currentLesson = $lessonId ? TrainingLesson::find($lessonId) : $allLessons->first();
+            $currentIndex = $allLessons->search(fn($l) => $l->id === $currentLesson->id);
+            $nextLesson = $currentIndex !== false ? $allLessons->get($currentIndex + 1) : null;
+            if ($nextLesson) {
+                $nextLessonUrl = route('employee.trainings.show', ['training' => $training, 'lesson' => $nextLesson->id, 'autoplay' => 1]);
+            }
+        }
+
+        return view('employee.quiz.result', compact('training', 'attempt', 'score', 'passed', 'moduleId', 'lessonId', 'quizLevel', 'nextLessonUrl'));
     }
 
     /**

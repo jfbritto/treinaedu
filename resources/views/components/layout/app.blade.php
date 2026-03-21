@@ -89,7 +89,7 @@
                     {{-- Logo da empresa centralizada --}}
                     <div class="flex justify-center mb-3">
                         <div class="bg-white rounded-xl px-4 py-3 shadow-lg" style="max-width: 200px">
-                            <img src="{{ Storage::url($companyLogo) }}" alt="Logo" class="h-12 w-auto object-contain mx-auto">
+                            <img src="{{ Storage::disk('public')->url($companyLogo) }}" alt="Logo" class="h-12 w-auto object-contain mx-auto">
                         </div>
                     </div>
                     <div class="text-center">

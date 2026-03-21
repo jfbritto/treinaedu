@@ -12,10 +12,29 @@
     <meta property="og:type" content="website">
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
         .cert-font { font-family: 'Playfair Display', Georgia, serif; }
         .body-font { font-family: 'Inter', sans-serif; }
+        .cert-decoration {
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+        }
+        .cert-badge {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 3px solid #3B82F6;
+        }
+        @media print {
+            body { background: white; }
+            .print-hidden { display: none; }
+        }
     </style>
 </head>
 <body class="bg-gray-100 body-font">
@@ -36,58 +55,104 @@
     <main class="max-w-4xl mx-auto px-4 py-8 space-y-6">
 
         {{-- Certificado visual --}}
-        <div class="bg-white rounded-2xl shadow-md overflow-hidden">
-            <div class="relative p-10 border-8 border-blue-900 m-4 rounded-xl text-center"
-                 style="background: linear-gradient(135deg, #f8faff 0%, #eef2ff 100%);">
-                {{-- Inner border --}}
-                <div class="absolute inset-3 border-2 border-blue-900 rounded-lg pointer-events-none opacity-40"></div>
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <div class="relative p-16 text-center print:p-12"
+                 style="background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 50%, #ffffff 100%); min-height: 600px; display: flex; flex-direction: column; justify-content: space-between;">
 
-                {{-- Logo da empresa --}}
-                @if($certificate->company->logo_path)
-                    <img src="{{ Storage::url($certificate->company->logo_path) }}"
-                         alt="{{ $certificate->company->name }}"
-                         class="h-14 object-contain mx-auto mb-6">
-                @else
-                    <div class="text-blue-900 font-bold text-lg mb-6">{{ $certificate->company->name }}</div>
-                @endif
-
-                {{-- Título --}}
-                <div class="cert-font text-3xl font-bold text-blue-900 tracking-widest uppercase mb-8">
-                    Certificado de Conclusão
+                {{-- Decoração superior --}}
+                <div class="absolute top-0 left-0 right-0 h-1 cert-decoration"></div>
+                <div class="absolute top-8 left-0 right-0 flex justify-around opacity-5">
+                    <div class="w-32 h-32 rounded-full border-2" style="border-color: #3B82F6;"></div>
+                    <div class="w-24 h-24 rounded-full border-2" style="border-color: #3B82F6;"></div>
+                    <div class="w-32 h-32 rounded-full border-2" style="border-color: #3B82F6;"></div>
                 </div>
 
-                {{-- Corpo --}}
-                <p class="text-gray-500 text-sm mb-2">Certificamos que</p>
-                <p class="cert-font text-4xl font-bold text-blue-900 mb-4">{{ $certificate->user->name }}</p>
-                <p class="text-gray-600 text-sm mb-2">concluiu com sucesso o treinamento</p>
-                <p class="cert-font text-2xl font-bold text-gray-800 mb-4">{{ $certificate->training->title }}</p>
-                <p class="text-gray-500 text-sm">
-                    @php
-                        $mins = $certificate->training->calculatedDuration();
-                        $durLabel = $mins >= 60
-                            ? floor($mins/60).'h'.($mins%60 > 0 ? ' '.($mins%60).'min' : '')
-                            : $mins.' min';
-                    @endphp
-                    com carga horária de <strong>{{ $durLabel }}</strong>,
-                    na empresa <strong>{{ $certificate->company->name }}</strong>.
-                </p>
+                <div class="relative z-10">
+                    {{-- Logo e empresa --}}
+                    <div class="mb-6">
+                        @if($certificate->company->logo_path)
+                            <img src="{{ Storage::disk('public')->url($certificate->company->logo_path) }}"
+                                 alt="{{ $certificate->company->name }}"
+                                 class="h-16 object-contain mx-auto">
+                        @else
+                            <div class="text-blue-900 font-bold text-xl">{{ $certificate->company->name }}</div>
+                        @endif
+                    </div>
 
-                {{-- Data --}}
-                <div class="mt-8 text-gray-500 text-sm">
-                    Data de conclusão: <strong>{{ $certificate->generated_at->locale('pt_BR')->translatedFormat('d \d\e F \d\e Y') }}</strong>
+                    {{-- Linha decorativa --}}
+                    <div class="flex items-center justify-center gap-4 mb-8">
+                        <div class="flex-1 h-px" style="background: linear-gradient(90deg, transparent, #3B82F6, transparent);"></div>
+                        <div class="text-blue-900 font-light text-xs tracking-widest">APRESENTA</div>
+                        <div class="flex-1 h-px" style="background: linear-gradient(90deg, transparent, #3B82F6, transparent);"></div>
+                    </div>
+
+                    {{-- Título principal --}}
+                    <div class="cert-font text-5xl font-bold text-blue-900 tracking-wider mb-2" style="letter-spacing: 2px;">
+                        CERTIFICADO
+                    </div>
+                    <div class="cert-font text-2xl font-light text-blue-700 mb-12" style="letter-spacing: 1px;">
+                        de Conclusão
+                    </div>
+
+                    {{-- Corpo principal --}}
+                    <p class="text-gray-600 text-sm tracking-wide mb-4">Certificamos que</p>
+
+                    <p class="cert-font text-5xl font-bold text-blue-900 mb-6" style="letter-spacing: 1px;">
+                        {{ $certificate->user->name }}
+                    </p>
+
+                    <div class="border-t-2 border-b-2 border-blue-200 py-6 mb-8 px-8" style="background: rgba(59, 130, 246, 0.02);">
+                        <p class="text-gray-600 text-sm mb-3">concluiu com sucesso o treinamento</p>
+                        <p class="cert-font text-3xl font-bold text-gray-800 mb-3">
+                            {{ $certificate->training->title }}
+                        </p>
+                        @php
+                            $mins = $certificate->training->calculatedDuration();
+                            $durLabel = $mins >= 60
+                                ? floor($mins/60).'h'.($mins%60 > 0 ? ' '.($mins%60).'min' : '')
+                                : $mins.' min';
+                        @endphp
+                        <p class="text-gray-600 text-sm">
+                            com carga horária de <strong class="text-gray-800">{{ $durLabel }}</strong>
+                        </p>
+                    </div>
+
+                    {{-- Data e footer --}}
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-gray-600">
+                        <div class="text-center md:text-left">
+                            <p class="uppercase tracking-wider text-gray-400 text-xs mb-1">Emitido em</p>
+                            <p class="cert-font text-lg font-semibold text-gray-800">
+                                {{ $certificate->generated_at->locale('pt_BR')->translatedFormat('d \d\e F \d\e Y') }}
+                            </p>
+                        </div>
+
+                        {{-- Código do certificado --}}
+                        <div class="text-center">
+                            <p class="uppercase tracking-wider text-gray-400 text-xs mb-2">Código</p>
+                            <p class="font-mono text-sm text-blue-900 font-semibold">{{ $certificate->certificate_code }}</p>
+                        </div>
+
+                        {{-- QR Code --}}
+                        <div class="text-center">
+                            <p class="uppercase tracking-wider text-gray-400 text-xs mb-2">Verificar</p>
+                            <div id="qrcode" class="flex justify-center"></div>
+                        </div>
+                    </div>
                 </div>
 
-                {{-- Rodapé com código --}}
-                <div class="mt-8 pt-4 border-t border-blue-200 flex items-center justify-between text-xs text-gray-400">
-                    <span class="font-mono">Código: {{ $certificate->certificate_code }}</span>
-                    <span>{{ url('/certificate/verify') }}</span>
-                </div>
+                {{-- Linha decorativa inferior --}}
+                <div class="absolute bottom-0 left-0 right-0 h-1 cert-decoration"></div>
             </div>
         </div>
 
         {{-- Compartilhar --}}
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <h2 class="text-sm font-semibold text-gray-700 mb-4">Compartilhar conquista</h2>
+        <div class="bg-white rounded-xl shadow-md p-6 print:hidden">
+            <div class="flex items-center gap-2 mb-4">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
+                </svg>
+                <h2 class="text-sm font-semibold text-gray-700">Compartilhar conquista</h2>
+            </div>
 
             @php
                 $shareUrl = url()->current();
@@ -143,8 +208,13 @@
         </div>
 
         {{-- Info do certificado --}}
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <h2 class="text-sm font-semibold text-gray-700 mb-4">Detalhes do certificado</h2>
+        <div class="bg-white rounded-xl shadow-md p-6 print:hidden">
+            <div class="flex items-center gap-2 mb-4">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <h2 class="text-sm font-semibold text-gray-700">Detalhes do certificado</h2>
+            </div>
             <dl class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
                 <div>
                     <dt class="text-gray-400 text-xs uppercase tracking-wide mb-0.5">Concluinte</dt>
@@ -200,6 +270,20 @@
                 setTimeout(() => label.textContent = 'Copiar link', 2000);
             });
         }
+
+        // Generate QR Code
+        document.addEventListener('DOMContentLoaded', function() {
+            const qrcodeContainer = document.getElementById('qrcode');
+            const verifyUrl = '{{ url("/certificate/verify") }}?code={{ $certificate->certificate_code }}';
+            new QRCode(qrcodeContainer, {
+                text: verifyUrl,
+                width: 100,
+                height: 100,
+                colorDark: '#3B82F6',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        });
     </script>
 </body>
 </html>

@@ -32,7 +32,7 @@
 
                     @if($company->logo_path)
                         <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100 mb-4">
-                            <img src="{{ Storage::url($company->logo_path) }}" alt="Logo atual"
+                            <img src="{{ Storage::disk('public')->url($company->logo_path) }}" alt="Logo atual"
                                  class="h-12 w-auto max-w-32 object-contain rounded-lg border border-gray-200 bg-white p-1.5">
                             <div class="flex-1">
                                 <p class="text-sm font-medium text-gray-700">Logo atual</p>

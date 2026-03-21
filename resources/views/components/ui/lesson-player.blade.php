@@ -83,7 +83,7 @@
 
         <div class="bg-white rounded-xl shadow-sm overflow-hidden" x-data="{ marked: {{ $lessonView?->completed_at ? 'true' : 'false' }} }">
             @if($lesson->file_path)
-                <iframe src="{{ Storage::url($lesson->file_path) }}" class="w-full" style="height: 70vh" frameborder="0"></iframe>
+                <iframe src="{{ Storage::disk('public')->url($lesson->file_path) }}" class="w-full" style="height: 70vh" frameborder="0"></iframe>
             @endif
             <div class="px-4 py-3 border-t border-gray-100 flex items-center justify-between">
                 <div class="flex items-center gap-3">
@@ -93,7 +93,7 @@
                             Anterior
                         </a>
                     @endif
-                    <a href="{{ Storage::url($lesson->file_path) }}" target="_blank" download
+                    <a href="{{ Storage::disk('public')->url($lesson->file_path) }}" target="_blank" download
                         class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
                         @click="if (!marked) { fetch('/api/lesson-progress', { method: 'POST', headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content}, body: JSON.stringify({lesson_id: {{ $lesson->id }}, progress_percent: 100}) }); marked = true; }">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
@@ -132,7 +132,7 @@
 
         <div class="bg-white rounded-xl shadow-sm overflow-hidden"
              x-data="{ completed: {{ $lessonView?->completed_at ? 'true' : 'false' }} }"
-             x-init="if (!completed) { setTimeout(() => { fetch('/api/lesson-progress', { method: 'POST', headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content}, body: JSON.stringify({lesson_id: {{ $lesson->id }}, progress_percent: 100}) }); completed = true; }, 30000); }">
+             x-init="if (!completed) { fetch('/api/lesson-progress', { method: 'POST', headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content}, body: JSON.stringify({lesson_id: {{ $lesson->id }}, progress_percent: 100}) }); completed = true; }">
             <div class="p-6 prose prose-sm max-w-none" style="max-height: 60vh; overflow-y: auto">
                 {!! nl2br(e($lesson->content)) !!}
             </div>

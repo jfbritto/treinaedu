@@ -110,6 +110,10 @@ Route::middleware(['auth', 'theme'])->group(function () {
                 ->name('quiz.submit');
             Route::get('certificates', [EmployeeCertificateController::class, 'index'])
                 ->name('certificates.index');
+            Route::get('certificates/{certificate}/success', [EmployeeCertificateController::class, 'success'])
+                ->name('certificates.success');
+            Route::get('certificates/{certificate}', [EmployeeCertificateController::class, 'show'])
+                ->name('certificates.show');
             Route::get('certificates/{certificate}/download', [EmployeeCertificateController::class, 'download'])
                 ->name('certificates.download');
             Route::post('certificates/{training}/generate', [EmployeeCertificateController::class, 'generate'])

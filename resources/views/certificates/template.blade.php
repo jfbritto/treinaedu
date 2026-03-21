@@ -3,207 +3,323 @@
 <head>
     <meta charset="UTF-8">
     <title>Certificado de Conclusão</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        @page { margin: 0; size: A4 landscape; }
+        @page { margin: 0; size: A4 portrait; }
 
         body {
-            font-family: Georgia, 'Times New Roman', serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: #ffffff;
-            width: 297mm;
-            height: 210mm;
+            width: 210mm;
+            height: 297mm;
         }
 
         .certificate {
-            width: 297mm;
-            height: 210mm;
-            background: linear-gradient(135deg, #f8faff 0%, #eef2ff 100%);
-            border: 10px solid #1a3a6e;
+            width: 210mm;
+            height: 297mm;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 50%, #ffffff 100%);
             position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             text-align: center;
-            padding: 18mm 28mm;
+            padding: 40px 35px;
+            page-break-after: always;
         }
 
-        .inner-border {
-            position: absolute;
-            top: 14px;
-            left: 14px;
-            right: 14px;
-            bottom: 14px;
-            border: 2px solid #1a3a6e;
-            opacity: 0.35;
-        }
-
-        .logo {
-            max-height: 60px;
-            max-width: 180px;
-            margin-bottom: 14px;
-        }
-
-        .company-name {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 13px;
-            font-weight: bold;
-            color: #1a3a6e;
-            letter-spacing: 1px;
-            margin-bottom: 14px;
-        }
-
-        .title {
-            font-family: Georgia, 'Times New Roman', serif;
-            font-size: 26px;
-            font-weight: bold;
-            color: #1a3a6e;
-            letter-spacing: 5px;
-            text-transform: uppercase;
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             margin-bottom: 20px;
         }
 
-        .certifies {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 12px;
-            color: #888888;
+        .logo {
+            max-height: 50px;
+            max-width: 150px;
+            margin-bottom: 20px;
+            object-fit: contain;
+        }
+
+        .company-name {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e3a8a;
+            letter-spacing: 0.5px;
+            margin-bottom: 25px;
+        }
+
+        .decoration-top {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), transparent);
+            margin-bottom: 20px;
+        }
+
+        .title-wrapper {
+            margin-bottom: 30px;
+        }
+
+        .subtitle {
+            font-size: 10px;
+            color: #6b7280;
+            letter-spacing: 1px;
             margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 48px;
+            font-weight: 700;
+            color: #1e3a8a;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+
+        .title-subtext {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 22px;
+            font-weight: 300;
+            color: #3b82f6;
+            letter-spacing: 1px;
+        }
+
+        .content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin: 20px 0;
+            width: 100%;
+        }
+
+        .certifies {
+            font-size: 11px;
+            color: #6b7280;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
         }
 
         .recipient {
-            font-family: Georgia, 'Times New Roman', serif;
-            font-size: 32px;
-            font-weight: bold;
-            color: #1a3a6e;
-            margin-bottom: 10px;
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 40px;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        .highlight-box {
+            border-top: 2px solid #3b82f6;
+            border-bottom: 2px solid #3b82f6;
+            background: rgba(59, 130, 246, 0.03);
+            padding: 20px 25px;
+            margin: 20px 0;
         }
 
         .completed {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 12px;
-            color: #666666;
-            margin-bottom: 6px;
+            font-size: 11px;
+            color: #4b5563;
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
         }
 
         .training-title {
-            font-family: Georgia, 'Times New Roman', serif;
-            font-size: 18px;
-            font-weight: bold;
-            color: #222222;
-            margin-bottom: 10px;
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 12px;
         }
 
         .meta {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 11px;
-            color: #777777;
-            margin-bottom: 14px;
+            font-size: 10px;
+            color: #6b7280;
+            line-height: 1.6;
         }
 
         .meta strong {
-            color: #333333;
+            color: #1f2937;
+            font-weight: 600;
         }
 
-        .date-line {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 11px;
-            color: #777777;
-            margin-bottom: 0;
-        }
-
-        .date-line strong {
-            color: #333333;
-        }
-
-        .divider {
-            width: 80px;
-            height: 2px;
-            background-color: #1a3a6e;
-            margin: 14px auto 14px;
-            opacity: 0.3;
-        }
-
-        .footer {
-            position: absolute;
-            bottom: 22px;
-            left: 30px;
-            right: 30px;
-            border-top: 1px solid #d0d8f0;
-            padding-top: 8px;
+        .footer-content {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: space-around;
+            align-items: flex-end;
+            width: 100%;
+            padding-top: 20px;
+            border-top: 1px solid rgba(59, 130, 246, 0.15);
+            margin-top: 20px;
         }
 
-        .footer .code {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 9px;
-            color: #aaaaaa;
+        .footer-item {
+            text-align: center;
+            flex: 1;
         }
 
-        .footer .verify {
-            font-family: Arial, Helvetica, sans-serif;
+        .footer-label {
+            font-size: 8px;
+            color: #9ca3af;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .footer-value {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 13px;
+            color: #1e3a8a;
+            font-weight: 600;
+        }
+
+        .footer-code {
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            color: #4b5563;
+        }
+
+        .decoration-bottom {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), transparent);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+
+        .modules {
             font-size: 9px;
-            color: #aaaaaa;
+            color: #6b7280;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 4px;
+        }
+
+        .modules-title {
+            font-size: 9px;
+            color: #9ca3af;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .module-item {
+            font-size: 8px;
+            color: #4b5563;
+            margin: 3px 0;
+            line-height: 1.4;
+        }
+
+        #qrcode {
+            width: 80px !important;
+            height: 80px !important;
+        }
+
+        #qrcode img {
+            width: 100% !important;
+            height: 100% !important;
         }
     </style>
 </head>
 <body>
     <div class="certificate">
-        <div class="inner-border"></div>
-
-        @if(!empty($companyLogo))
-            <img src="{{ storage_path('app/' . $companyLogo) }}" alt="{{ $companyName }}" class="logo">
-        @else
-            <div class="company-name">{{ $companyName }}</div>
-        @endif
-
-        <div class="title">Certificado de Conclusão</div>
-
-        <div class="certifies">Certificamos que</div>
-
-        <div class="recipient">{{ $userName }}</div>
-
-        <div class="completed">concluiu com sucesso o treinamento</div>
-
-        <div class="training-title">{{ $trainingTitle }}</div>
-
-        @php
-            $mins = (int) $durationMinutes;
-            $durLabel = $mins >= 60
-                ? floor($mins/60).'h'.($mins%60 > 0 ? ' '.($mins%60).'min' : '')
-                : ($mins > 0 ? $mins.' min' : null);
-        @endphp
-
-        <div class="meta">
-            @if($durLabel)
-                com carga horária de <strong>{{ $durLabel }}</strong>,
+        <div class="header">
+            @if(!empty($companyLogo))
+                <img src="{{ storage_path('app/' . $companyLogo) }}" alt="{{ $companyName }}" class="logo">
+            @else
+                <div class="company-name">{{ $companyName }}</div>
             @endif
-            na empresa <strong>{{ $companyName }}</strong>
+
+            <div class="decoration-top"></div>
         </div>
 
-        <div class="divider"></div>
-
-        <div class="date-line">
-            Data de conclusão: <strong>{{ $completionDate }}</strong>
+        <div class="title-wrapper">
+            <div class="subtitle">Apresenta</div>
+            <div class="title">CERTIFICADO</div>
+            <div class="title-subtext">de Conclusão</div>
         </div>
 
-        @if(!empty($modules) && $modules->count() > 0)
-            <div style="margin-top: 10px; text-align: center;">
-                <p style="font-family: Arial, sans-serif; font-size: 9px; color: #888; margin-bottom: 4px;">Conteúdo Programático</p>
-                @foreach($modules as $module)
-                    <p style="font-family: Arial, sans-serif; font-size: 9px; color: #555;">
-                        {{ $module->title }} ({{ $module->lessons->count() }} aula{{ $module->lessons->count() !== 1 ? 's' : '' }}{{ $module->quiz ? ' + avaliação' : '' }})
-                    </p>
-                @endforeach
+        <div class="content">
+            <div class="certifies">Certificamos que</div>
+            <div class="recipient">{{ $userName }}</div>
+
+            <div class="highlight-box">
+                <div class="completed">concluiu com sucesso o treinamento</div>
+                <div class="training-title">{{ $trainingTitle }}</div>
+
+                @php
+                    $mins = (int) $durationMinutes;
+                    $durLabel = $mins >= 60
+                        ? floor($mins/60).'h'.($mins%60 > 0 ? ' '.($mins%60).'min' : '')
+                        : ($mins > 0 ? $mins.' min' : null);
+                @endphp
+
+                <div class="meta">
+                    @if($durLabel)
+                        com carga horária de <strong>{{ $durLabel }}</strong>
+                    @endif
+                    @if($durLabel && $companyName)
+                        •
+                    @endif
+                    @if($companyName)
+                        na empresa <strong>{{ $companyName }}</strong>
+                    @endif
+                </div>
             </div>
-        @endif
 
-        <div class="footer">
-            <span class="code">Código: {{ $certificateCode }}</span>
-            <span class="verify">{{ url('/certificate/verify') }}</span>
+            @if(!empty($modules) && $modules->count() > 0)
+                <div class="modules">
+                    <div class="modules-title">Conteúdo Programático</div>
+                    @foreach($modules as $module)
+                        <div class="module-item">
+                            {{ $module->title }} ({{ $module->lessons->count() }} aula{{ $module->lessons->count() !== 1 ? 's' : '' }}{{ $module->quiz ? ' + avaliação' : '' }})
+                        </div>
+                    @endforeach
+                </div>
+            @endif
         </div>
+
+        <div class="footer-content">
+            <div class="footer-item">
+                <div class="footer-label">Emitido em</div>
+                <div class="footer-value">{{ $completionDate }}</div>
+            </div>
+
+            <div class="footer-item">
+                <div class="footer-label">Código</div>
+                <div class="footer-code">{{ $certificateCode }}</div>
+            </div>
+
+            <div class="footer-item">
+                <div class="footer-label">Verificar</div>
+                <div id="qrcode"></div>
+            </div>
+        </div>
+
+        <div class="decoration-bottom"></div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const qrcodeContainer = document.getElementById('qrcode');
+            const verifyUrl = '{{ url("/certificate/verify") }}?code={{ $certificateCode }}';
+            new QRCode(qrcodeContainer, {
+                text: verifyUrl,
+                width: 80,
+                height: 80,
+                colorDark: '#1e3a8a',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        });
+    </script>
 </body>
 </html>

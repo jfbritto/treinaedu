@@ -29,7 +29,25 @@ class CertificateController extends Controller
 
         $certificate = $service->generate($user, $training);
 
-        return redirect()->route('employee.certificates.download', $certificate);
+        return redirect()->route('employee.certificates.success', $certificate);
+    }
+
+    public function success(Certificate $certificate)
+    {
+        if ($certificate->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        return view('employee.certificates.success', compact('certificate'));
+    }
+
+    public function show(Certificate $certificate)
+    {
+        if ($certificate->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        return view('employee.certificates.show', compact('certificate'));
     }
 
     public function download(Certificate $certificate)
