@@ -140,6 +140,34 @@ class DashboardController extends Controller
 
         $certificates = $user->certificates()->with('training')->latest()->get();
 
-        return view('employee.dashboard', compact('pending', 'completed', 'certificates'));
+        // Dados para gráfico de progressão
+        $chartData = [
+            'labels' => $this->getCertificateMonthLabels($certificates),
+            'data' => $this->getCertificateMonthCounts($certificates),
+        ];
+
+        return view('employee.dashboard', compact('pending', 'completed', 'certificates', 'chartData'));
+    }
+
+    private function getCertificateMonthLabels($certificates)
+    {
+        $months = collect();
+        for ($i = 5; $i >= 0; $i--) {
+            $months->push(now()->subMonths($i)->format('M/y'));
+        }
+        return $months->toArray();
+    }
+
+    private function getCertificateMonthCounts($certificates)
+    {
+        $counts = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $month = now()->subMonths($i);
+            $count = $certificates->filter(fn ($c) =>
+                $c->generated_at->format('Y-m') === $month->format('Y-m')
+            )->count();
+            $counts[] = $count;
+        }
+        return $counts;
     }
 }

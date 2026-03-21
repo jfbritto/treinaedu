@@ -67,6 +67,16 @@
         </div>
     </div>
 
+    {{-- Gráfico de Progresso --}}
+    @if($certificates->isNotEmpty())
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <h3 class="text-sm font-semibold text-gray-700 mb-4">Evolução dos Certificados</h3>
+            <div style="height: 250px;">
+                <canvas id="progressChart"></canvas>
+            </div>
+        </div>
+    @endif
+
     {{-- Conteúdo em grid --}}
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -227,5 +237,49 @@
 
         </div>
     </div>
+
+    @if($certificates->isNotEmpty())
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const ctx = document.getElementById('progressChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: @json($chartData['labels']),
+                        datasets: [{
+                            label: 'Certificados emitidos',
+                            data: @json($chartData['data']),
+                            borderColor: 'var(--primary)',
+                            backgroundColor: 'color-mix(in srgb, var(--primary) 10%, transparent)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointBackgroundColor: 'var(--primary)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 6,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1 }
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+    @endif
 
 </x-layout.app>
