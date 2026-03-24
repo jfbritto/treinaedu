@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use App\Models\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class LessonView extends Model
 {
-    use BelongsToCompany;
+    use HasFactory, BelongsToCompany;
 
     protected $fillable = [
         'lesson_id', 'user_id', 'company_id',

@@ -6,12 +6,19 @@ use App\Models\Company;
 use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\User;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class UserControllerTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutMiddleware(ValidateCsrfToken::class);
+    }
 
     private function createAdminWithSubscription(int $maxUsers = 50): User
     {

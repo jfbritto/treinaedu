@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use App\Models\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Quiz extends Model
 {
-    use BelongsToCompany;
+    use HasFactory, BelongsToCompany;
 
     protected $fillable = ['training_id', 'company_id', 'module_id', 'lesson_id'];
 

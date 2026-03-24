@@ -13,12 +13,19 @@ use App\Models\Training;
 use App\Models\TrainingAssignment;
 use App\Models\TrainingView;
 use App\Models\User;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class QuizControllerTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutMiddleware(ValidateCsrfToken::class);
+    }
 
     private function setupQuizScenario(): array
     {

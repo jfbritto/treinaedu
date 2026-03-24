@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use App\Models\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class TrainingAssignment extends Model
 {
-    use BelongsToCompany;
+    use HasFactory, BelongsToCompany;
 
     protected $fillable = ['company_id', 'training_id', 'group_id', 'due_date', 'mandatory'];
 
