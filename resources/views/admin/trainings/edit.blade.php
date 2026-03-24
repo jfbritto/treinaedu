@@ -29,6 +29,14 @@
         .flash-move { animation: flash-move 0.6s ease-out; }
     </style>
 
+    <script>
+        window.ytApiReady = new Promise(resolve => {
+            if (window.YT && window.YT.Player) { resolve(); return; }
+            window.onYouTubeIframeAPIReady = resolve;
+        });
+    </script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+
     <div x-data="{
         modules: @js($training->modules->map(fn($m) => [
             'id' => $m->id,
@@ -120,6 +128,39 @@
         },
         removeOption(qi, oi) {
             if (this.questions[qi].options.length > 2) this.questions[qi].options.splice(oi, 1);
+        },
+        fetchVideoDuration(lesson) {
+            const url = lesson.video_url;
+            if (!url) return;
+            const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+            if (ytMatch) { this.fetchYouTubeDuration(ytMatch[1], lesson); return; }
+            const vmMatch = url.match(/vimeo\.com\/(\d+)/);
+            if (vmMatch) { this.fetchVimeoDuration(url, lesson); return; }
+        },
+        fetchVimeoDuration(url, lesson) {
+            fetch('https://vimeo.com/api/oembed.json?url=' + encodeURIComponent(url))
+                .then(r => r.json())
+                .then(data => { if (data.duration) lesson.duration_minutes = Math.ceil(data.duration / 60); })
+                .catch(() => {});
+        },
+        async fetchYouTubeDuration(videoId, lesson) {
+            await window.ytApiReady;
+            const id = 'yt-temp-' + Date.now();
+            const div = document.createElement('div');
+            div.id = id;
+            div.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;';
+            document.body.appendChild(div);
+            new YT.Player(id, {
+                videoId: videoId,
+                events: {
+                    onReady(e) {
+                        const sec = e.target.getDuration();
+                        if (sec > 0) lesson.duration_minutes = Math.ceil(sec / 60);
+                        e.target.destroy();
+                        div.remove();
+                    }
+                }
+            });
         }
     }">
 
@@ -344,6 +385,8 @@
                                             <input type="url"
                                                    :name="'modules['+mi+'][lessons]['+li+'][video_url]'"
                                                    x-model="lesson.video_url"
+                                                   @change="fetchVideoDuration(lesson)"
+                                                   @paste.debounce.500ms="$nextTick(() => fetchVideoDuration(lesson))"
                                                    placeholder="https://www.youtube.com/watch?v=..."
                                                    class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white">
                                         </div>
