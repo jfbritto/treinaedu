@@ -129,6 +129,9 @@
         removeOption(qi, oi) {
             if (this.questions[qi].options.length > 2) this.questions[qi].options.splice(oi, 1);
         },
+        get totalDuration() {
+            return this.modules.reduce((sum, m) => sum + m.lessons.reduce((s, l) => s + (parseInt(l.duration_minutes) || 0), 0), 0);
+        },
         fetchVideoDuration(lesson) {
             const url = lesson.video_url;
             if (!url) return;
@@ -217,11 +220,14 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="space-y-1">
-                            <label class="block text-sm font-medium text-gray-700">Duração (minutos)</label>
-                            <input type="number" name="duration_minutes_override" value="{{ old('duration_minutes_override', $training->duration_minutes_override) }}" min="1"
-                                   class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                                   placeholder="Calculado automaticamente">
-                            <p class="text-xs text-gray-400">Deixe vazio para calcular a partir das aulas</p>
+                            <label class="block text-sm font-medium text-gray-700">Duração total</label>
+                            <div class="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-gray-200 bg-gray-50">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span class="text-sm font-semibold" :class="totalDuration > 0 ? 'text-gray-800' : 'text-gray-400'" x-text="totalDuration > 0 ? totalDuration + ' min' : '0 min'"></span>
+                            </div>
+                            <p class="text-xs text-gray-400">Soma automática das durações das aulas</p>
                         </div>
                         <div class="flex flex-col justify-end pb-0.5 space-y-1">
                             <label class="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
