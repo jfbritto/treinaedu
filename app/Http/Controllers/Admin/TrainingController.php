@@ -431,7 +431,7 @@ class TrainingController extends Controller
             } else {
                 $lesson = $module->lessons()->create($lessonAttributes);
                 // Process quiz if exists
-                $this->processLessonQuiz($lesson, $lessonData, $companyId, $module->training);
+                $this->processLessonQuiz($lesson, $lessonData, $companyId, $module->training_id);
             }
         }
     }
