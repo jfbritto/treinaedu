@@ -502,7 +502,7 @@
                 @if($views->isEmpty())
                     <div class="p-12 text-center">
                         <svg class="w-12 h-12 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .984.292 1.9.585 2.332m5.216 0a2.25 2.25 0 01.25.4m0 0h.007v.015h-.007m0 0v-.015"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                         <p class="text-gray-400 text-sm font-medium">Nenhum registro encontrado.</p>
                     </div>
