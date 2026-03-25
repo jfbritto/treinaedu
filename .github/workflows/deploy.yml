@@ -51,6 +51,8 @@ jobs:
         run: |
           cp .env.testing .env
           php artisan key:generate
+          mkdir -p public/build
+          echo '{}' > public/build/manifest.json
         env:
           DB_HOST: 127.0.0.1
 
