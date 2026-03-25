@@ -14,12 +14,16 @@ class TrialExpiringNotification extends Notification
 
     public function toMail($notifiable): MailMessage
     {
+        $firstName = explode(' ', $notifiable->name)[0];
+
         return (new MailMessage)
-            ->subject('Seu período de teste expira em 2 dias')
-            ->greeting("Olá, {$notifiable->name}!")
-            ->line('Seu período de teste no TreinaEdu expira em 2 dias.')
-            ->line('Para continuar usando a plataforma, escolha um plano de assinatura.')
-            ->action('Escolher Plano', url('/subscription/plans'))
-            ->line('Se tiver dúvidas, entre em contato conosco.');
+            ->subject('Seu teste gratuito termina em 2 dias - TreinaEdu')
+            ->greeting("Olá, {$firstName}!")
+            ->line('Seu período de **teste gratuito** no TreinaEdu termina em **2 dias**.')
+            ->line('Para que sua equipe continue acessando os treinamentos, certificados e todas as funcionalidades, escolha um plano de assinatura.')
+            ->line('Todos os dados e progresso da sua equipe serão mantidos ao assinar.')
+            ->action('Escolher um Plano', url('/subscription/plans'))
+            ->line('Tem alguma dúvida sobre os planos? Responda este e-mail e ajudaremos você a escolher o melhor para sua empresa.')
+            ->salutation('Equipe TreinaEdu');
     }
 }
