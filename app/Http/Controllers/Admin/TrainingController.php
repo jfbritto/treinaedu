@@ -332,7 +332,7 @@ class TrainingController extends Controller
             $lessonAttributes = [
                 'title' => $lessonData['title'],
                 'type' => $lessonData['type'],
-                'duration_minutes' => $lessonData['duration_minutes'] ?? null,
+                'duration_minutes' => !empty($lessonData['duration_minutes']) ? (int) $lessonData['duration_minutes'] : 0,
                 'sort_order' => $li,
             ];
 
@@ -356,7 +356,7 @@ class TrainingController extends Controller
 
             $lesson = $module->lessons()->create($lessonAttributes);
             // Process quiz if exists
-            $this->processLessonQuiz($lesson, $lessonData, $companyId, $module->training_id);
+            $this->processLessonQuiz($lesson, $lessonData, $companyId, $module->training);
         }
     }
 
@@ -384,7 +384,7 @@ class TrainingController extends Controller
             $lessonAttributes = [
                 'title' => $lessonData['title'],
                 'type' => $lessonData['type'],
-                'duration_minutes' => $lessonData['duration_minutes'] ?? null,
+                'duration_minutes' => !empty($lessonData['duration_minutes']) ? (int) $lessonData['duration_minutes'] : 0,
                 'sort_order' => $li,
             ];
 
@@ -426,12 +426,12 @@ class TrainingController extends Controller
                 if ($lesson && (int) $lesson->module_id === $module->id) {
                     $lesson->update($lessonAttributes);
                     // Process quiz if exists
-                    $this->processLessonQuiz($lesson, $lessonData, $companyId, $module->training_id);
+                    $this->processLessonQuiz($lesson, $lessonData, $companyId, $module->training);
                 }
             } else {
                 $lesson = $module->lessons()->create($lessonAttributes);
                 // Process quiz if exists
-                $this->processLessonQuiz($lesson, $lessonData, $companyId, $module->training_id);
+                $this->processLessonQuiz($lesson, $lessonData, $companyId, $module->training);
             }
         }
     }
@@ -466,13 +466,8 @@ class TrainingController extends Controller
     /**
      * Handle lesson quiz - create, update, or delete.
      */
-    private function processLessonQuiz(TrainingLesson $lesson, array $lessonData, int $companyId, int $trainingId): void
+    private function processLessonQuiz(TrainingLesson $lesson, array $lessonData, int $companyId, Training $training): void
     {
-        $training = Training::find($trainingId);
-        if (!$training) {
-            return;
-        }
-
         $hasQuiz = !empty($lessonData['has_quiz']);
         $questions = $lessonData['questions'] ?? [];
 

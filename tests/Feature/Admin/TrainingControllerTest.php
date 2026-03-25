@@ -78,16 +78,84 @@ class TrainingControllerTest extends TestCase
                             'video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                             'duration_minutes' => '15',
                         ],
+                        [
+                            'title' => 'Aula 2 - Conteudo Textual',
+                            'type' => 'text',
+                            'content' => 'Este e o conteudo da aula em texto.',
+                        ],
+                    ],
+                ],
+                [
+                    'title' => 'Modulo 2',
+                    'description' => 'Segundo modulo',
+                    'is_sequential' => '1',
+                    'lessons' => [
+                        [
+                            'title' => 'Aula 3 - Video Avancado',
+                            'type' => 'video',
+                            'video_url' => 'https://vimeo.com/123456789',
+                            'duration_minutes' => '30',
+                        ],
                     ],
                 ],
             ],
         ]);
 
-        $response->assertRedirect();
+        $response->assertRedirect(route('trainings.index'));
+
+        // Verify training was created
         $this->assertDatabaseHas('trainings', [
             'title' => 'Treinamento de Seguranca',
             'company_id' => $admin->company_id,
+            'is_sequential' => false,
+            'has_quiz' => false,
+            'created_by' => $admin->id,
         ]);
+
+        $training = Training::where('title', 'Treinamento de Seguranca')->first();
+
+        // Verify modules were created
+        $this->assertDatabaseHas('training_modules', [
+            'training_id' => $training->id,
+            'title' => 'Modulo 1',
+            'sort_order' => 0,
+        ]);
+        $this->assertDatabaseHas('training_modules', [
+            'training_id' => $training->id,
+            'title' => 'Modulo 2',
+            'sort_order' => 1,
+            'is_sequential' => true,
+        ]);
+
+        // Verify video lesson with duration
+        $this->assertDatabaseHas('training_lessons', [
+            'title' => 'Aula 1 - Introducao',
+            'type' => 'video',
+            'video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            'video_provider' => 'youtube',
+            'duration_minutes' => 15,
+        ]);
+
+        // Verify text lesson without explicit duration defaults to 0
+        $this->assertDatabaseHas('training_lessons', [
+            'title' => 'Aula 2 - Conteudo Textual',
+            'type' => 'text',
+            'content' => 'Este e o conteudo da aula em texto.',
+            'duration_minutes' => 0,
+        ]);
+
+        // Verify vimeo video lesson
+        $this->assertDatabaseHas('training_lessons', [
+            'title' => 'Aula 3 - Video Avancado',
+            'type' => 'video',
+            'video_url' => 'https://vimeo.com/123456789',
+            'video_provider' => 'vimeo',
+            'duration_minutes' => 30,
+        ]);
+
+        // Verify correct count of modules and lessons
+        $this->assertEquals(2, $training->modules()->count());
+        $this->assertEquals(3, $training->lessons()->count());
     }
 
     public function test_admin_can_update_training(): void

@@ -2,12 +2,19 @@
 
 namespace Tests\Feature\Auth;
 
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutMiddleware(ValidateCsrfToken::class);
+    }
 
     public function test_registration_screen_can_be_rendered(): void
     {
@@ -18,7 +25,7 @@ class RegistrationTest extends TestCase
 
     public function test_new_users_can_register(): void
     {
-        \App\Models\Plan::create(['name' => 'Basic', 'price' => 99.90, 'max_users' => 50, 'max_trainings' => 20]);
+        \App\Models\Plan::create(['name' => 'Basic', 'price' => 99.90, 'max_users' => 50, 'max_trainings' => 20, 'features' => ['certificates', 'reports']]);
 
         $response = $this->post('/register', [
             'company_name' => 'Test Company',
