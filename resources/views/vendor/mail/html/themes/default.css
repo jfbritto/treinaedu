@@ -32,15 +32,22 @@ body {
 
 /* Header */
 .header {
-    padding: 24px 0;
+    padding: 0;
     text-align: center;
+}
+
+.header-inner {
+    max-width: 570px;
+    margin: 0 auto 24px;
+    padding: 28px 32px;
     background: linear-gradient(135deg, #1E40AF, #3B82F6);
-    border-radius: 12px 12px 0 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
 }
 
 .header a {
     color: #ffffff;
-    font-size: 20px;
+    font-size: 24px;
     font-weight: bold;
     text-decoration: none;
 }
