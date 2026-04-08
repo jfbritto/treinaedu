@@ -174,7 +174,7 @@
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C6.248 6.253 2 10.501 2 15.5 2 20.499 6.248 24.747 12 24.747c5.752 0 10-4.248 10-9.247S17.752 6.253 12 6.253z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                     </svg>
                 </div>
                 <h2 class="text-sm font-semibold text-gray-800">Treinamentos Atribuídos</h2>
@@ -184,7 +184,7 @@
         @if($assignedTrainings->isEmpty())
             <div class="px-6 py-12 text-center text-gray-400">
                 <svg class="w-12 h-12 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C6.248 6.253 2 10.501 2 15.5 2 20.499 6.248 24.747 12 24.747c5.752 0 10-4.248 10-9.247S17.752 6.253 12 6.253z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                 </svg>
                 <p class="text-sm">Nenhum treinamento atribuído a este colaborador.</p>
             </div>
