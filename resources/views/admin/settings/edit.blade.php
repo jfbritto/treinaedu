@@ -5,30 +5,51 @@
 
     <p class="text-sm text-gray-500 mb-6">Personalize a identidade visual da plataforma</p>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <form method="POST" action="{{ route('company.settings.update') }}" enctype="multipart/form-data" id="settings-form">
+        @csrf
+        @method('PUT')
 
-        {{-- Formulário (2/3) --}}
-        <div class="lg:col-span-2 space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            <form method="POST" action="{{ route('company.settings.update') }}" enctype="multipart/form-data" id="settings-form">
-                @csrf
-                @method('PUT')
+            {{-- Formulário (2/3) --}}
+            <div class="lg:col-span-2 space-y-6">
 
-                {{-- Nome --}}
+                {{-- Nome da Empresa --}}
                 <div class="bg-white rounded-xl shadow-sm p-6">
-                    <h3 class="text-sm font-semibold text-gray-800 mb-4">Nome da Empresa</h3>
-                    <div class="space-y-1">
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-800">Nome da Empresa</h3>
+                            <p class="text-xs text-gray-400">Como aparece no menu e nas telas do sistema</p>
+                        </div>
+                    </div>
+                    <div class="space-y-1.5">
                         <label for="name" class="block text-sm font-medium text-gray-700">Nome exibido no sistema <span class="text-red-500">*</span></label>
                         <input type="text" id="name" name="name"
                             value="{{ old('name', $company->name) }}" required
-                            class="w-full rounded-lg border @error('name') border-red-400 @else border-gray-300 @enderror px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            placeholder="Ex: Minha Empresa Ltda"
+                            class="w-full rounded-lg border @error('name') border-red-400 @else border-gray-300 @enderror px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                         @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
                 {{-- Logo com Cropper --}}
                 <div class="bg-white rounded-xl shadow-sm p-6" x-data="logoUploader()">
-                    <h3 class="text-sm font-semibold text-gray-800 mb-4">Logo</h3>
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-800">Logo</h3>
+                            <p class="text-xs text-gray-400">Imagem exibida no topo do menu lateral</p>
+                        </div>
+                    </div>
 
                     @if($company->logo_path)
                         <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100 mb-4">
@@ -132,7 +153,17 @@
 
                 {{-- Cores --}}
                 <div class="bg-white rounded-xl shadow-sm p-6">
-                    <h3 class="text-sm font-semibold text-gray-800 mb-4">Cores</h3>
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-800">Cores da Marca</h3>
+                            <p class="text-xs text-gray-400">Personalize as cores que representam sua empresa no sistema</p>
+                        </div>
+                    </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6" x-data="{
                         primary: '{{ old('primary_color', $company->primary_color ?? '#3B82F6') }}',
@@ -189,19 +220,9 @@
                     </div>
                 </div>
 
-                <div class="flex justify-end mt-6">
-                    <button type="submit"
-                            class="inline-flex items-center gap-2 bg-primary hover:bg-secondary text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        </svg>
-                        Salvar Configurações
-                    </button>
-                </div>
-            </form>
-        </div>
+            </div>
 
-        {{-- Preview ao vivo (1/3) --}}
+            {{-- Preview ao vivo (1/3) --}}
         <div x-data="{
             primary: '{{ $company->primary_color ?? '#3B82F6' }}',
             secondary: '{{ $company->secondary_color ?? '#1E40AF' }}'
@@ -277,9 +298,20 @@
                     </div>
                 </div>
                 <p class="text-xs text-gray-400 mt-3">As cores são refletidas no menu ao salvar e recarregar a página.</p>
+
+                <div class="mt-5 pt-5 border-t border-gray-100">
+                    <button type="submit"
+                            class="w-full inline-flex items-center justify-center gap-2 bg-primary hover:bg-secondary text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Salvar Configurações
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
+        </div>
+    </form>
 
     @push('scripts')
     <script>
