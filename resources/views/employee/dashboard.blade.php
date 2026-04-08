@@ -38,52 +38,82 @@
 
     {{-- KPIs --}}
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div class="bg-white rounded-xl shadow-sm p-5 flex items-center gap-4">
-            <div class="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd"/></svg>
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
             </div>
-            <div>
-                <p class="text-2xl font-bold text-gray-800">{{ $pending->count() }}</p>
-                <p class="text-xs text-gray-400">Pendente{{ $pending->count() !== 1 ? 's' : '' }}</p>
-            </div>
+            <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Pendente{{ $pending->count() !== 1 ? 's' : '' }}</p>
+            <p class="text-2xl font-bold text-gray-800 mt-1">{{ $pending->count() }}</p>
+            <p class="text-xs text-gray-400 mt-0.5">{{ $pending->count() === 1 ? 'treinamento aguardando' : 'treinamentos aguardando' }}</p>
         </div>
-        <div class="bg-white rounded-xl shadow-sm p-5 flex items-center gap-4">
-            <div class="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>
+
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
             </div>
-            <div>
-                <p class="text-2xl font-bold text-gray-800">{{ $completed->count() }}</p>
-                <p class="text-xs text-gray-400">Concluído{{ $completed->count() !== 1 ? 's' : '' }}</p>
-            </div>
+            <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Concluído{{ $completed->count() !== 1 ? 's' : '' }}</p>
+            <p class="text-2xl font-bold text-gray-800 mt-1">{{ $completed->count() }}</p>
+            <p class="text-xs text-gray-400 mt-0.5">{{ $completed->count() === 1 ? 'treinamento finalizado' : 'treinamentos finalizados' }}</p>
         </div>
-        <div class="bg-white rounded-xl shadow-sm p-5 flex items-center gap-4">
-            <div class="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005z" clip-rule="evenodd"/></svg>
+
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                    </svg>
+                </div>
             </div>
-            <div>
-                <p class="text-2xl font-bold text-gray-800">{{ $certificates->count() }}</p>
-                <p class="text-xs text-gray-400">Certificado{{ $certificates->count() !== 1 ? 's' : '' }}</p>
-            </div>
+            <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Certificado{{ $certificates->count() !== 1 ? 's' : '' }}</p>
+            <p class="text-2xl font-bold text-gray-800 mt-1">{{ $certificates->count() }}</p>
+            <p class="text-xs text-gray-400 mt-0.5">{{ $certificates->count() === 1 ? 'emitido' : 'emitidos' }}</p>
         </div>
     </div>
 
     {{-- Trilhas --}}
     @if($paths->isNotEmpty())
-        <div class="mb-6">
-            <div class="flex items-center justify-between mb-3">
-                <h3 class="text-sm font-semibold text-gray-700">Trilhas de Aprendizagem</h3>
-                <a href="{{ route('employee.paths.index') }}" class="text-xs text-primary hover:underline">Ver todas</a>
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+            <div class="px-6 py-4 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-sm font-semibold text-gray-800">Trilhas de Aprendizagem</h3>
+                        <p class="text-xs text-gray-400">Jornadas estruturadas atribuídas a você</p>
+                    </div>
+                    <a href="{{ route('employee.paths.index') }}" class="text-xs font-medium text-primary hover:text-secondary transition">Ver todas →</a>
+                </div>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div class="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 @foreach($paths->take(3) as $path)
                     <a href="{{ route('employee.paths.show', $path) }}"
-                       class="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition group">
+                       class="border border-gray-100 rounded-xl p-4 hover:shadow-md hover:border-primary/20 transition group">
                         <div class="flex items-center gap-3 mb-3">
-                            <div class="w-3 h-8 rounded-full flex-shrink-0 bg-primary"></div>
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                                 style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                                </svg>
+                            </div>
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-semibold text-gray-800 truncate group-hover:text-primary transition">{{ $path->title }}</p>
                                 <p class="text-xs text-gray-400">{{ $path->completed_trainings }}/{{ $path->trainings_count }} treinamentos</p>
                             </div>
+                        </div>
+                        <div class="flex justify-between text-xs text-gray-400 mb-1">
+                            <span>Progresso</span>
+                            <span class="font-semibold text-gray-600">{{ $path->progress_percent }}%</span>
                         </div>
                         <div class="w-full bg-gray-100 rounded-full h-1.5">
                             <div class="h-1.5 rounded-full bg-primary transition-all" style="width: {{ $path->progress_percent }}%"></div>
@@ -96,10 +126,24 @@
 
     {{-- Gráfico de Progresso --}}
     @if($certificates->isNotEmpty())
-        <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
-            <h3 class="text-sm font-semibold text-gray-700 mb-4">Evolução dos Certificados</h3>
-            <div style="height: 250px;">
-                <canvas id="progressChart"></canvas>
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+            <div class="px-6 py-4 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-sm font-semibold text-gray-800">Evolução dos Certificados</h3>
+                        <p class="text-xs text-gray-400">Histórico de certificados emitidos ao longo do tempo</p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6">
+                <div style="height: 250px;">
+                    <canvas id="progressChart"></canvas>
+                </div>
             </div>
         </div>
     @endif
@@ -109,12 +153,19 @@
 
         {{-- Treinamentos pendentes (2/3) --}}
         <div class="lg:col-span-2 bg-white rounded-xl shadow-sm overflow-hidden">
-            <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-                <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-yellow-400"></div>
-                    <h3 class="text-sm font-semibold text-gray-700">Treinamentos Pendentes</h3>
+            <div class="px-6 py-4 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-sm font-semibold text-gray-800">Treinamentos Pendentes</h3>
+                        <p class="text-xs text-gray-400">Continue de onde parou ou inicie um novo treinamento</p>
+                    </div>
+                    <a href="{{ route('employee.trainings.index') }}" class="text-xs font-medium text-primary hover:text-secondary transition">Ver todos →</a>
                 </div>
-                <a href="{{ route('employee.trainings.index') }}" class="text-xs text-primary hover:underline">Ver todos →</a>
             </div>
 
             @if($pending->isEmpty())
@@ -174,7 +225,7 @@
                                         @if($training->total_lessons > 0)
                                             · {{ $training->completed_lessons }}/{{ $training->total_lessons }} aula{{ $training->total_lessons !== 1 ? 's' : '' }}
                                         @else
-                                            · {{ $training->duration_minutes }} min
+                                            · {{ $training->calculatedDuration() }} min
                                         @endif
                                     </p>
                                 @endif
@@ -202,12 +253,19 @@
 
             {{-- Certificados recentes --}}
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-                    <div class="flex items-center gap-2">
-                        <div class="w-2 h-2 rounded-full bg-primary"></div>
-                        <h3 class="text-sm font-semibold text-gray-700">Certificados</h3>
+                <div class="px-6 py-4 border-b border-gray-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-sm font-semibold text-gray-800">Certificados</h3>
+                            <p class="text-xs text-gray-400">Conquistas recentes</p>
+                        </div>
+                        <a href="{{ route('employee.certificates.index') }}" class="text-xs font-medium text-primary hover:text-secondary transition">Ver todos →</a>
                     </div>
-                    <a href="{{ route('employee.certificates.index') }}" class="text-xs text-primary hover:underline">Ver todos →</a>
                 </div>
 
                 @if($certificates->isEmpty())
@@ -244,9 +302,18 @@
             {{-- Treinamentos concluídos recentes --}}
             @if($completed->isNotEmpty())
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div class="flex items-center gap-2 px-5 py-4 border-b border-gray-100">
-                        <div class="w-2 h-2 rounded-full bg-primary"></div>
-                        <h3 class="text-sm font-semibold text-gray-700">Recém Concluídos</h3>
+                    <div class="px-6 py-4 border-b border-gray-100">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-sm font-semibold text-gray-800">Recém Concluídos</h3>
+                                <p class="text-xs text-gray-400">Últimas finalizações</p>
+                            </div>
+                        </div>
                     </div>
                     <div class="divide-y divide-gray-50">
                         @foreach($completed->take(3) as $training)

@@ -5,39 +5,69 @@
         $pct   = $total > 0 ? round(($completed->count() / $total) * 100) : 0;
     @endphp
 
-    {{-- Barra de progresso geral --}}
-    <div class="bg-white rounded-xl shadow-sm p-5 mb-6 flex flex-col sm:flex-row sm:items-center gap-5">
-        <div class="flex-1">
-            <div class="flex items-baseline justify-between mb-2">
-                <span class="text-sm text-gray-500">Progresso geral</span>
-                <span class="text-sm font-bold text-primary">{{ $pct }}% concluído</span>
+    <p class="text-sm text-gray-500 mb-6">Acompanhe o progresso dos seus treinamentos</p>
+
+    {{-- Stats --}}
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
             </div>
-            <div class="w-full bg-gray-100 rounded-full h-2.5">
-                <div class="bg-primary h-2.5 rounded-full transition-all" style="width: {{ $pct }}%"></div>
-            </div>
-            <p class="text-xs text-gray-400 mt-2">
-                {{ $completed->count() }} de {{ $total }} treinamento{{ $total !== 1 ? 's' : '' }} concluído{{ $completed->count() !== 1 ? 's' : '' }}
-            </p>
+            <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Pendente{{ $pending->count() !== 1 ? 's' : '' }}</p>
+            <p class="text-2xl font-bold text-gray-800 mt-1">{{ $pending->count() }}</p>
+            <p class="text-xs text-gray-400 mt-0.5">{{ $pending->count() === 1 ? 'treinamento aguardando' : 'treinamentos aguardando' }}</p>
         </div>
-        <div class="flex gap-4 sm:flex-col sm:text-right">
-            <div>
-                <p class="text-xl font-bold text-primary">{{ $pending->count() }}</p>
-                <p class="text-xs text-gray-400">Pendente{{ $pending->count() !== 1 ? 's' : '' }}</p>
+
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
             </div>
-            <div>
-                <p class="text-xl font-bold text-green-500">{{ $completed->count() }}</p>
-                <p class="text-xs text-gray-400">Concluído{{ $completed->count() !== 1 ? 's' : '' }}</p>
+            <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Concluído{{ $completed->count() !== 1 ? 's' : '' }}</p>
+            <p class="text-2xl font-bold text-gray-800 mt-1">{{ $completed->count() }}</p>
+            <p class="text-xs text-gray-400 mt-0.5">{{ $completed->count() === 1 ? 'treinamento finalizado' : 'treinamentos finalizados' }}</p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+                </div>
+            </div>
+            <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Progresso Geral</p>
+            <p class="text-2xl font-bold text-gray-800 mt-1">{{ $pct }}%</p>
+            <div class="w-full bg-gray-100 rounded-full h-1.5 mt-2">
+                <div class="bg-primary h-1.5 rounded-full transition-all" style="width: {{ $pct }}%"></div>
             </div>
         </div>
     </div>
 
     {{-- Pendentes --}}
     @if($pending->isNotEmpty())
-        <div class="mb-8">
-            <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3 px-1">
-                Pendentes &mdash; {{ $pending->count() }}
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+            <div class="px-6 py-4 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-sm font-semibold text-gray-800">Treinamentos Pendentes</h3>
+                        <p class="text-xs text-gray-400">{{ $pending->count() }} {{ $pending->count() === 1 ? 'treinamento aguardando sua atenção' : 'treinamentos aguardando sua atenção' }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 @foreach($pending as $training)
                     @php
                         $view      = $training->views->first();
@@ -113,7 +143,7 @@
                                 @endif
                                 <span class="inline-flex items-center gap-1 text-xs text-gray-400">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    {{ $training->duration_minutes }} min
+                                    {{ $training->calculatedDuration() }} min
                                 </span>
                                 @if($training->has_quiz)
                                     <span class="inline-flex items-center gap-1 text-xs text-primary">
@@ -150,11 +180,21 @@
 
     {{-- Concluídos --}}
     @if($completed->isNotEmpty())
-        <div>
-            <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3 px-1">
-                Concluídos &mdash; {{ $completed->count() }}
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+            <div class="px-6 py-4 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-sm font-semibold text-gray-800">Treinamentos Concluídos</h3>
+                        <p class="text-xs text-gray-400">{{ $completed->count() }} {{ $completed->count() === 1 ? 'treinamento finalizado' : 'treinamentos finalizados' }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 @foreach($completed as $training)
                     @php $view = $training->views->first(); @endphp
                     <a href="{{ route('employee.trainings.show', $training) }}"
@@ -175,7 +215,7 @@
                             <div class="flex items-center gap-2 flex-wrap mt-auto">
                                 <span class="inline-flex items-center gap-1 text-xs text-gray-400">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    {{ $training->duration_minutes }} min
+                                    {{ $training->calculatedDuration() }} min
                                 </span>
                                 @if($training->has_quiz)
                                     <span class="inline-flex items-center gap-1 text-xs text-primary">
@@ -206,11 +246,13 @@
     {{-- Estado vazio total --}}
     @if($pending->isEmpty() && $completed->isEmpty())
         <div class="bg-white rounded-xl shadow-sm p-12 text-center">
-            <svg class="w-12 h-12 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-            </svg>
-            <p class="text-gray-400 text-sm font-medium">Nenhum treinamento atribuído ainda.</p>
-            <p class="text-gray-300 text-xs mt-1">Seu gestor ainda não atribuiu treinamentos para você.</p>
+            <div class="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <p class="text-gray-500 text-sm font-medium mb-1">Nenhum treinamento atribuído ainda</p>
+            <p class="text-xs text-gray-400">Seu gestor ainda não atribuiu treinamentos para você.</p>
         </div>
     @endif
 
