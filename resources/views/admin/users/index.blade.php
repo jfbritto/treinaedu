@@ -112,13 +112,44 @@
         {{-- Table --}}
         <div class="overflow-x-auto">
         @if($users->isEmpty())
-            <div class="p-12 text-center">
-                <svg class="w-12 h-12 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                </svg>
-                <p class="text-gray-400 text-sm font-medium">Nenhum usuário cadastrado.</p>
-                <a href="{{ route('users.create') }}" class="inline-block mt-3 text-sm text-primary hover:underline">Criar primeiro usuário →</a>
-            </div>
+            @if($totalUsers === 0)
+                {{-- Nenhum usuário cadastrado no sistema --}}
+                <div class="p-12 text-center">
+                    <div class="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                    </div>
+                    <p class="text-gray-500 text-sm font-medium mb-1">Nenhum usuário cadastrado</p>
+                    <p class="text-xs text-gray-400 mb-4">Cadastre colaboradores e instrutores para começar.</p>
+                    <a href="{{ route('users.create') }}" class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-secondary transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Criar primeiro usuário
+                    </a>
+                </div>
+            @else
+                {{-- Filtros/busca sem resultados --}}
+                <div class="px-6 py-12 text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-medium text-gray-500">Nenhum usuário encontrado</p>
+                    <p class="text-xs text-gray-400 mt-1">
+                        @if(request('search') && request('role'))
+                            Nenhum resultado para "<strong>{{ request('search') }}</strong>" com o perfil selecionado.
+                        @elseif(request('search'))
+                            Nenhum resultado para "<strong>{{ request('search') }}</strong>". Tente outro termo.
+                        @else
+                            Nenhum usuário com o perfil selecionado.
+                        @endif
+                    </p>
+                    <a href="{{ route('users.index') }}" class="inline-block mt-3 text-xs font-medium text-primary hover:underline">Limpar filtros</a>
+                </div>
+            @endif
         @else
             <table class="w-full">
                 <thead>
