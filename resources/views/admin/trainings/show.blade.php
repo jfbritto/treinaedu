@@ -46,66 +46,73 @@
                     {{-- Duração --}}
                     @php
                         $totalMin = $training->calculatedDuration();
-                        $durValue = $totalMin >= 60 ? floor($totalMin/60) : $totalMin;
-                        $durUnit = $totalMin >= 60 ? ($totalMin%60 > 0 ? 'h '.($totalMin%60).'min' : 'horas') : 'minutos';
+                        if ($totalMin >= 60) {
+                            $hours = floor($totalMin/60);
+                            $mins = $totalMin % 60;
+                            $durText = $mins > 0 ? "{$hours}h {$mins}min" : "{$hours}h";
+                        } else {
+                            $durText = "{$totalMin} min";
+                        }
                     @endphp
-                    <div class="rounded-xl p-5 border-2 border-primary/25 bg-primary/5">
-                        <div class="flex items-start justify-between gap-3">
-                            <div>
-                                <p class="text-xs font-bold text-primary uppercase tracking-wider">Duração</p>
-                                <p class="text-3xl font-bold text-gray-800 mt-2">{{ $durValue }}</p>
-                                <p class="text-sm text-gray-600 mt-1">{{ $durUnit }}</p>
-                            </div>
-                            <div class="w-14 h-14 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
-                                <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                    <circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/>
+                    <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                             </div>
                         </div>
+                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Duração</p>
+                        <p class="text-2xl font-bold text-gray-800 mt-1">{{ $durText }}</p>
                     </div>
 
                     {{-- Status --}}
-                    <div class="rounded-xl p-5 border-2 {{ $training->active ? 'border-primary/25 bg-primary/5' : 'border-gray-300/50 bg-gray-50' }}">
-                        <div class="flex items-start justify-between gap-3">
-                            <div>
-                                <p class="text-xs font-bold {{ $training->active ? 'text-primary' : 'text-gray-600' }} uppercase tracking-wider">Status</p>
-                                <p class="text-3xl font-bold {{ $training->active ? 'text-primary' : 'text-gray-800' }} mt-2">{{ $training->active ? 'Ativo' : 'Inativo' }}</p>
-                            </div>
-                            <div class="w-14 h-14 rounded-lg {{ $training->active ? 'bg-primary/15' : 'bg-gray-200/50' }} flex items-center justify-center flex-shrink-0">
-                                <svg class="w-7 h-7 {{ $training->active ? 'text-primary' : 'text-gray-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                    <circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/>
+                    <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 rounded-xl {{ $training->active ? 'bg-green-50' : 'bg-gray-100' }} flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 {{ $training->active ? 'text-green-600' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    @if($training->active)
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    @else
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    @endif
                                 </svg>
                             </div>
+                        </div>
+                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Status</p>
+                        <div class="flex items-center gap-1.5 mt-1">
+                            <span class="w-2 h-2 rounded-full {{ $training->active ? 'bg-green-500' : 'bg-gray-300' }}"></span>
+                            <p class="text-2xl font-bold {{ $training->active ? 'text-gray-800' : 'text-gray-400' }}">{{ $training->active ? 'Ativo' : 'Inativo' }}</p>
                         </div>
                     </div>
 
                     {{-- Quiz --}}
-                    <div class="rounded-xl p-5 border-2 {{ $training->has_quiz ? 'border-primary/25 bg-primary/5' : 'border-gray-300/50 bg-gray-50' }}">
-                        <div class="flex items-start justify-between gap-3">
-                            <div>
-                                <p class="text-xs font-bold {{ $training->has_quiz ? 'text-primary' : 'text-gray-600' }} uppercase tracking-wider">Quiz</p>
-                                <p class="text-3xl font-bold {{ $training->has_quiz ? 'text-primary' : 'text-gray-800' }} mt-2">{{ $training->has_quiz ? 'Sim' : 'Não' }}</p>
-                            </div>
-                            <div class="w-14 h-14 rounded-lg {{ $training->has_quiz ? 'bg-primary/15' : 'bg-gray-200/50' }} flex items-center justify-center flex-shrink-0">
-                                <svg class="w-7 h-7 {{ $training->has_quiz ? 'text-primary' : 'text-gray-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 rounded-xl {{ $training->has_quiz ? 'bg-purple-50' : 'bg-gray-100' }} flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 {{ $training->has_quiz ? 'text-purple-600' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                                 </svg>
                             </div>
                         </div>
+                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Avaliação</p>
+                        <p class="text-2xl font-bold {{ $training->has_quiz ? 'text-gray-800' : 'text-gray-400' }} mt-1">{{ $training->has_quiz ? 'Com quiz' : 'Sem quiz' }}</p>
                     </div>
 
                     {{-- Conclusão --}}
-                    <div class="rounded-xl p-5 border-2 border-primary/25 bg-primary/5">
-                        <div class="flex items-start justify-between gap-3">
-                            <div>
-                                <p class="text-xs font-bold text-primary uppercase tracking-wider">Conclusão</p>
-                                <p class="text-3xl font-bold text-gray-800 mt-2">{{ $training->completionRate() }}%</p>
-                            </div>
-                            <div class="w-14 h-14 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
-                                <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                    <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    @php $completion = $training->completionRate(); @endphp
+                    <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                                 </svg>
                             </div>
+                        </div>
+                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Conclusão</p>
+                        <p class="text-2xl font-bold text-gray-800 mt-1">{{ $completion }}%</p>
+                        <div class="mt-2 w-full bg-gray-100 rounded-full h-1.5">
+                            <div class="h-1.5 rounded-full bg-primary transition-all" style="width: {{ $completion }}%"></div>
                         </div>
                     </div>
                 </div>
