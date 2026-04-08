@@ -136,90 +136,45 @@
 
                 <div class="p-6">
                     {{-- Stats compactas --}}
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-                        <div class="rounded-xl p-4 border-2 border-primary/25 bg-primary/5">
-                            <div class="flex items-center justify-between gap-2">
-                                <div>
-                                    <p class="text-3xl font-bold text-gray-800">{{ $training->modules->count() }}</p>
-                                    <p class="text-xs text-gray-700 mt-1 font-semibold">Módulo{{ $training->modules->count() !== 1 ? 's' : '' }}</p>
-                                </div>
-                                <div class="w-14 h-14 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
-                                    <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect x="2" y="7" width="20" height="14" rx="2"/>
-                                        <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="rounded-xl p-4 border-2 border-primary/25 bg-primary/5">
-                            <div class="flex items-center justify-between gap-2">
-                                <div>
-                                    <p class="text-3xl font-bold text-gray-800">{{ $totalLessons }}</p>
-                                    <p class="text-xs text-gray-700 mt-1 font-semibold">Aula{{ $totalLessons !== 1 ? 's' : '' }}</p>
-                                </div>
-                                <div class="w-14 h-14 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
-                                    <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect x="2" y="7" width="20" height="14" rx="2"/>
-                                        <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-
-                        @if(isset($contentTypes['video']) && $contentTypes['video'] > 0)
-                            <div class="rounded-xl p-4 border-2 border-primary/25 bg-primary/5">
-                                <div class="flex items-center justify-between gap-2">
-                                    <div>
-                                        <p class="text-3xl font-bold text-gray-800">{{ $contentTypes['video'] }}</p>
-                                        <p class="text-xs text-gray-700 mt-1 font-semibold">Vídeo{{ $contentTypes['video'] !== 1 ? 's' : '' }}</p>
-                                    </div>
-                                    <div class="w-14 h-14 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
-                                        <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polygon points="23 7 16 12 23 17 23 7"/>
-                                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                    @php
+                        $stats = [
+                            ['label' => 'Módulo', 'labelPlural' => 'Módulos', 'count' => $training->modules->count(), 'color' => 'blue', 'icon' => 'M20 7l-8 4-8-4m16 0l-8-4-8 4m16 0v10l-8 4m0-14L4 7m8 4v10'],
+                            ['label' => 'Aula', 'labelPlural' => 'Aulas', 'count' => $totalLessons, 'color' => 'primary', 'icon' => 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'],
+                        ];
+                        if (isset($contentTypes['video']) && $contentTypes['video'] > 0) {
+                            $stats[] = ['label' => 'Vídeo', 'labelPlural' => 'Vídeos', 'count' => $contentTypes['video'], 'color' => 'red', 'icon' => 'M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z'];
+                        }
+                        if (isset($contentTypes['document']) && $contentTypes['document'] > 0) {
+                            $stats[] = ['label' => 'Documento', 'labelPlural' => 'Documentos', 'count' => $contentTypes['document'], 'color' => 'amber', 'icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'];
+                        }
+                        if (isset($contentTypes['text']) && $contentTypes['text'] > 0) {
+                            $stats[] = ['label' => 'Texto', 'labelPlural' => 'Textos', 'count' => $contentTypes['text'], 'color' => 'green', 'icon' => 'M4 6h16M4 12h16M4 18h7'];
+                        }
+                        $colorMap = [
+                            'blue' => ['bg' => 'bg-blue-50', 'text' => 'text-blue-600'],
+                            'primary' => ['bg' => 'bg-primary/10', 'text' => 'text-primary'],
+                            'red' => ['bg' => 'bg-red-50', 'text' => 'text-red-500'],
+                            'amber' => ['bg' => 'bg-amber-50', 'text' => 'text-amber-600'],
+                            'green' => ['bg' => 'bg-green-50', 'text' => 'text-green-600'],
+                        ];
+                    @endphp
+                    <div class="grid grid-cols-2 sm:grid-cols-{{ min(count($stats), 4) }} gap-3 mb-6">
+                        @foreach($stats as $stat)
+                            @php $c = $colorMap[$stat['color']]; @endphp
+                            <div class="bg-white rounded-xl border border-gray-100 p-4 hover:shadow-sm transition">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl {{ $c['bg'] }} flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-5 h-5 {{ $c['text'] }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $stat['icon'] }}"/>
                                         </svg>
                                     </div>
-                                </div>
-                            </div>
-                        @endif
-
-                        @if(isset($contentTypes['document']) && $contentTypes['document'] > 0)
-                            <div class="rounded-xl p-4 border-2 border-primary/25 bg-primary/5">
-                                <div class="flex items-center justify-between gap-2">
                                     <div>
-                                        <p class="text-3xl font-bold text-gray-800">{{ $contentTypes['document'] }}</p>
-                                        <p class="text-xs text-gray-700 mt-1 font-semibold">Doc{{ $contentTypes['document'] !== 1 ? 's' : '' }}</p>
-                                    </div>
-                                    <div class="w-14 h-14 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
-                                        <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
-                                            <polyline points="13 2 13 9 20 9"/>
-                                            <line x1="9" y1="15" x2="15" y2="15"/>
-                                            <line x1="9" y1="19" x2="15" y2="19"/>
-                                        </svg>
+                                        <p class="text-2xl font-bold text-gray-800 leading-none">{{ $stat['count'] }}</p>
+                                        <p class="text-xs text-gray-500 mt-1">{{ $stat['count'] !== 1 ? $stat['labelPlural'] : $stat['label'] }}</p>
                                     </div>
                                 </div>
                             </div>
-                        @endif
-
-                        @if(isset($contentTypes['text']) && $contentTypes['text'] > 0)
-                            <div class="rounded-xl p-4 border-2 border-primary/25 bg-primary/5">
-                                <div class="flex items-center justify-between gap-2">
-                                    <div>
-                                        <p class="text-3xl font-bold text-gray-800">{{ $contentTypes['text'] }}</p>
-                                        <p class="text-xs text-gray-700 mt-1 font-semibold">Texto{{ $contentTypes['text'] !== 1 ? 's' : '' }}</p>
-                                    </div>
-                                    <div class="w-14 h-14 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
-                                        <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <circle cx="12" cy="12" r="10"/>
-                                            <line x1="12" y1="16" x2="12" y2="12"/>
-                                            <line x1="12" y1="8" x2="12.01" y2="8"/>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
+                        @endforeach
                     </div>
 
                     {{-- Estrutura de módulos --}}
@@ -228,61 +183,73 @@
                             @foreach($training->modules as $index => $module)
                                 @php
                                     $moduleLessons = $module->lessons->count();
-                                    $moduleQuizzes = $module->quiz ? 1 : 0;
+                                    $moduleDuration = $module->lessons->sum('duration_minutes');
                                 @endphp
-                                <div class="border border-gray-200 rounded-lg overflow-hidden hover:border-primary/30 transition">
+                                <div class="border border-gray-200 rounded-xl overflow-hidden hover:border-primary/30 transition">
                                     {{-- Cabeçalho do módulo --}}
-                                    <div class="bg-gradient-to-r from-gray-50 to-white px-4 py-3 flex items-center justify-between">
-                                        <div class="flex items-center gap-3 flex-1">
-                                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 text-sm font-semibold text-primary">
+                                    <div class="bg-gradient-to-r from-gray-50 to-white px-5 py-4 flex items-center justify-between gap-3">
+                                        <div class="flex items-center gap-3 flex-1 min-w-0">
+                                            <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold text-white shadow-sm"
+                                                 style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
                                                 {{ $index + 1 }}
                                             </div>
                                             <div class="flex-1 min-w-0">
-                                                <h4 class="text-sm font-semibold text-gray-800">{{ $module->title }}</h4>
-                                                @if($module->description)
-                                                    <p class="text-xs text-gray-500 mt-0.5 line-clamp-1">{{ $module->description }}</p>
-                                                @endif
+                                                <h4 class="text-sm font-semibold text-gray-800 truncate">{{ $module->title }}</h4>
+                                                <div class="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                                                    <span class="inline-flex items-center gap-1">
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                                        </svg>
+                                                        {{ $moduleLessons }} {{ $moduleLessons !== 1 ? 'aulas' : 'aula' }}
+                                                    </span>
+                                                    @if($moduleDuration > 0)
+                                                        <span class="inline-flex items-center gap-1">
+                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                            </svg>
+                                                            {{ $moduleDuration }} min
+                                                        </span>
+                                                    @endif
+                                                    @if($module->is_sequential)
+                                                        <span class="inline-flex items-center gap-1 text-blue-600">
+                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                                                            </svg>
+                                                            Sequencial
+                                                        </span>
+                                                    @endif
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="flex items-center gap-2 ml-3">
-                                            @if($module->is_sequential)
-                                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-700 font-medium flex-shrink-0">
-                                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 011 1v4a1 1 0 11-2 0v-3H7v3a1 1 0 11-2 0v-4zm0-5a1 1 0 011-1h8a1 1 0 011 1v1a1 1 0 11-2 0V5H7v1a1 1 0 11-2 0V5z" clip-rule="evenodd"/>
-                                                    </svg>
-                                                    Sequencial
-                                                </span>
-                                            @endif
-                                            <span class="text-xs font-medium text-gray-500 px-2 py-1 bg-gray-100 rounded-full flex-shrink-0">
-                                                {{ $moduleLessons }} aula{{ $moduleLessons !== 1 ? 's' : '' }}
-                                            </span>
                                         </div>
                                     </div>
 
                                     {{-- Aulas do módulo --}}
-                                    <div class="border-t border-gray-100 px-4 py-2 space-y-1 bg-gray-50/50">
-                                        @foreach($module->lessons as $lesson)
-                                            <div class="flex items-center gap-2.5 py-2 text-sm text-gray-700">
-                                                @if($lesson->type === 'video')
-                                                    <svg class="w-4 h-4 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm13.5-1a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
-                                                    </svg>
-                                                @elseif($lesson->type === 'document')
-                                                    <svg class="w-4 h-4 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0113 2.586L15.414 5A2 2 0 0116 6.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H7a1 1 0 01-1-1v-6z" clip-rule="evenodd"/>
-                                                    </svg>
-                                                @elseif($lesson->type === 'text')
-                                                    <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-8.5a.75.75 0 00-.75-.75h-8.5zm12-1.5a2.25 2.25 0 00-2.25 2.25v8.5a2.25 2.25 0 002.25 2.25h3.75a.75.75 0 00.75-.75v-2.5a.75.75 0 00-.75-.75h-3v-2h2.25a.75.75 0 00.75-.75v-2.5a.75.75 0 00-.75-.75h-2.25v-2h3v-1.5a2.25 2.25 0 00-2.25-2.25h-3.75z" clip-rule="evenodd"/>
-                                                    </svg>
-                                                @endif
-                                                <span class="flex-1">{{ $lesson->title }}</span>
-                                                @if($lesson->duration_minutes)
-                                                    <span class="text-xs text-gray-500 flex-shrink-0">{{ $lesson->duration_minutes }}m</span>
-                                                @endif
-                                            </div>
-                                        @endforeach
-                                    </div>
+                                    @if($moduleLessons > 0)
+                                        <div class="divide-y divide-gray-50 bg-white">
+                                            @foreach($module->lessons as $li => $lesson)
+                                                @php
+                                                    $typeConfig = [
+                                                        'video' => ['bg' => 'bg-red-50', 'text' => 'text-red-500', 'icon' => 'M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z'],
+                                                        'document' => ['bg' => 'bg-amber-50', 'text' => 'text-amber-600', 'icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
+                                                        'text' => ['bg' => 'bg-green-50', 'text' => 'text-green-600', 'icon' => 'M4 6h16M4 12h16M4 18h7'],
+                                                    ];
+                                                    $t = $typeConfig[$lesson->type] ?? $typeConfig['text'];
+                                                @endphp
+                                                <div class="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition">
+                                                    <span class="text-xs font-medium text-gray-400 w-5 text-center flex-shrink-0">{{ $li + 1 }}</span>
+                                                    <div class="w-7 h-7 rounded-lg {{ $t['bg'] }} flex items-center justify-center flex-shrink-0">
+                                                        <svg class="w-3.5 h-3.5 {{ $t['text'] }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $t['icon'] }}"/>
+                                                        </svg>
+                                                    </div>
+                                                    <span class="flex-1 text-sm text-gray-700 truncate">{{ $lesson->title }}</span>
+                                                    @if($lesson->duration_minutes)
+                                                        <span class="text-xs text-gray-400 flex-shrink-0">{{ $lesson->duration_minutes }} min</span>
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
                                 </div>
                             @endforeach
                         </div>
