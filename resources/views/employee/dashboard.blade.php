@@ -79,14 +79,14 @@
                     <a href="{{ route('employee.paths.show', $path) }}"
                        class="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition group">
                         <div class="flex items-center gap-3 mb-3">
-                            <div class="w-3 h-8 rounded-full flex-shrink-0" style="background-color: {{ $path->color }}"></div>
+                            <div class="w-3 h-8 rounded-full flex-shrink-0 bg-primary"></div>
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-semibold text-gray-800 truncate group-hover:text-primary transition">{{ $path->title }}</p>
                                 <p class="text-xs text-gray-400">{{ $path->completed_trainings }}/{{ $path->trainings_count }} treinamentos</p>
                             </div>
                         </div>
                         <div class="w-full bg-gray-100 rounded-full h-1.5">
-                            <div class="h-1.5 rounded-full transition-all" style="width: {{ $path->progress_percent }}%; background-color: {{ $path->color }}"></div>
+                            <div class="h-1.5 rounded-full bg-primary transition-all" style="width: {{ $path->progress_percent }}%"></div>
                         </div>
                     </a>
                 @endforeach

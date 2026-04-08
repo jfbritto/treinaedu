@@ -1,7 +1,7 @@
 <x-layout.app title="{{ $path->title }}">
 
     {{-- Header --}}
-    <div class="rounded-xl p-6 mb-6 text-white" style="background: linear-gradient(135deg, {{ $path->color }}, {{ $path->color }}cc)">
+    <div class="rounded-xl p-6 mb-6 text-white" style="background: linear-gradient(135deg, var(--secondary), var(--primary))">
         <div class="flex items-center gap-2 mb-4">
             <a href="{{ route('employee.paths.index') }}" class="text-white/60 hover:text-white transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -45,8 +45,7 @@
                class="bg-white rounded-xl shadow-sm hover:shadow-md transition flex items-center gap-4 p-5 group">
                 {{-- Número --}}
                 <span class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0
-                    {{ $training->user_status === 'completed' ? 'bg-green-500 text-white' : '' }}"
-                    @if($training->user_status !== 'completed') style="background-color: {{ $path->color }}20; color: {{ $path->color }}" @endif>
+                    {{ $training->user_status === 'completed' ? 'bg-green-500 text-white' : 'bg-primary/10 text-primary' }}">
                     @if($training->user_status === 'completed')
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
@@ -75,7 +74,7 @@
                     @if($training->user_status === 'in_progress')
                         <div class="flex items-center gap-2 mt-2">
                             <div class="flex-1 bg-gray-100 rounded-full h-1.5">
-                                <div class="h-1.5 rounded-full" style="width: {{ $training->user_progress }}%; background-color: {{ $path->color }}"></div>
+                                <div class="h-1.5 rounded-full bg-primary" style="width: {{ $training->user_progress }}%"></div>
                             </div>
                             <span class="text-xs text-gray-400">{{ $training->user_progress }}%</span>
                         </div>

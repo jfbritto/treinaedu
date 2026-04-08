@@ -89,12 +89,12 @@
                     $isLast = $index === $paths->count() - 1 && $paths->currentPage() === $paths->lastPage();
                 @endphp
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col border border-gray-100">
-                    <div class="h-1.5" style="background: {{ $path->color }}"></div>
+                    <div class="h-1.5" style="background: linear-gradient(to right, var(--secondary), var(--primary))"></div>
                     <div class="p-5 flex-1 flex flex-col gap-4">
                         <div class="flex items-start justify-between gap-2">
                             <div class="flex items-start gap-3 flex-1 min-w-0">
                                 <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                                     style="background: linear-gradient(135deg, {{ $path->color }}, {{ $path->color }}cc)">
+                                     style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
                                     </svg>

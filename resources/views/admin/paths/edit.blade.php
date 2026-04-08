@@ -15,7 +15,6 @@
           x-data="{
               title: '{{ old('title', addslashes($path->title)) }}',
               description: '{{ old('description', addslashes($path->description ?? '')) }}',
-              color: '{{ old('color', $path->color) }}',
               active: {{ old('active', $path->active) ? 'true' : 'false' }},
               search: '',
               selected: @js(old('trainings', $pathTrainingIds)),
@@ -77,15 +76,6 @@
                             <p class="text-xs text-gray-400">A descrição ajuda os colaboradores a entenderem o objetivo da trilha.</p>
                         </div>
 
-                        <div class="space-y-1.5">
-                            <label for="color" class="block text-sm font-medium text-gray-700">Cor de destaque</label>
-                            <div class="flex items-center gap-3">
-                                <input type="color" id="color" name="color"
-                                    x-model="color"
-                                    class="w-11 h-11 rounded-lg border border-gray-300 cursor-pointer p-0.5">
-                                <span class="text-xs font-mono text-gray-500" x-text="color"></span>
-                            </div>
-                        </div>
 
                         <label class="flex items-center gap-2 cursor-pointer pt-2">
                             <input type="hidden" name="active" value="0">
@@ -169,7 +159,7 @@
 
                     <div class="flex flex-col items-center text-center pb-5 border-b border-gray-100">
                         <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-3"
-                             :style="'background: linear-gradient(135deg, ' + color + ', ' + color + 'dd)'">
+                             style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
                             <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
                             </svg>
@@ -197,13 +187,6 @@
                                     Inativa
                                 </span>
                             </template>
-                        </div>
-                        <div class="flex items-center justify-between text-sm">
-                            <span class="text-gray-500">Cor</span>
-                            <div class="flex items-center gap-1.5">
-                                <span class="w-4 h-4 rounded border border-gray-200" :style="'background-color: ' + color"></span>
-                                <span class="font-mono text-xs text-gray-600" x-text="color"></span>
-                            </div>
                         </div>
                         <div class="flex items-center justify-between text-sm">
                             <span class="text-gray-500">Criada em</span>

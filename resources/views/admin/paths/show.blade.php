@@ -11,7 +11,7 @@
 
     {{-- Hero --}}
     <div class="rounded-xl p-6 mb-6 text-white relative overflow-hidden"
-         style="background: linear-gradient(135deg, {{ $path->color }}, {{ $path->color }}cc)">
+         style="background: linear-gradient(135deg, var(--secondary), var(--primary))">
         {{-- Decorative circles --}}
         <div class="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-white/5"></div>
         <div class="absolute -bottom-16 -left-16 w-56 h-56 rounded-full bg-white/5"></div>
@@ -65,9 +65,8 @@
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100">
                     <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                             style="background-color: {{ $path->color }}15">
-                            <svg class="w-5 h-5" style="color: {{ $path->color }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                             </svg>
                         </div>
@@ -100,7 +99,7 @@
                         @foreach($path->trainings as $index => $training)
                             <div class="flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition group">
                                 <span class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0 shadow-sm"
-                                      style="background: linear-gradient(135deg, {{ $path->color }}, {{ $path->color }}cc)">
+                                      style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
                                     {{ $index + 1 }}
                                 </span>
                                 <div class="flex-1 min-w-0">
@@ -151,9 +150,8 @@
 
                 <div class="space-y-4">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                             style="background-color: {{ $path->color }}15">
-                            <svg class="w-5 h-5" style="color: {{ $path->color }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                             </svg>
                         </div>
@@ -202,13 +200,6 @@
                             <span class="w-1.5 h-1.5 rounded-full {{ $path->active ? 'bg-green-500' : 'bg-gray-300' }}"></span>
                             {{ $path->active ? 'Ativa' : 'Inativa' }}
                         </span>
-                    </div>
-                    <div class="flex items-center justify-between text-sm">
-                        <span class="text-gray-500">Cor</span>
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-4 h-4 rounded border border-gray-200" style="background-color: {{ $path->color }}"></span>
-                            <span class="font-mono text-xs text-gray-600">{{ $path->color }}</span>
-                        </div>
                     </div>
                     <div class="flex items-center justify-between text-sm">
                         <span class="text-gray-500">Criada em</span>
