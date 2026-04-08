@@ -11,9 +11,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Essenciais (sempre executados, inclusive em produção)
         $this->call([
+            PlanSeeder::class,
             SuperAdminSeeder::class,
-            DemoSeeder::class,
         ]);
+
+        // Dados de demonstração apenas em ambientes não-produção
+        if (!app()->environment('production')) {
+            $this->call(DemoSeeder::class);
+        }
     }
 }

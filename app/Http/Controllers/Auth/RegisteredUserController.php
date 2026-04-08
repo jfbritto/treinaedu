@@ -36,7 +36,13 @@ class RegisteredUserController extends Controller
         $basicPlan = Plan::where('name', 'Basic')->first();
 
         if (!$basicPlan) {
-            return back()->withErrors(['company_name' => 'Sistema indisponível temporariamente. Tente novamente em instantes.']);
+            \Log::error('Plano Basic não encontrado durante registro de empresa', [
+                'company_name' => $request->company_name,
+                'email' => $request->email,
+            ]);
+            return back()
+                ->withInput()
+                ->with('error', 'Não foi possível concluir o cadastro no momento. Por favor, tente novamente em alguns instantes ou entre em contato com o suporte.');
         }
 
         $user = DB::transaction(function () use ($request, $basicPlan) {
