@@ -14,29 +14,9 @@
               name: '{{ old('name', '') }}',
               email: '{{ old('email', '') }}',
               role: '{{ old('role', '') }}',
-              password: '',
-              password_confirmation: '',
               get initials() {
                   if (!this.name) return '?';
                   return this.name.split(' ').filter(w => w).slice(0, 2).map(w => w[0].toUpperCase()).join('');
-              },
-              get passwordStrength() {
-                  let score = 0;
-                  if (this.password.length >= 8) score++;
-                  if (/[A-Z]/.test(this.password)) score++;
-                  if (/[0-9]/.test(this.password)) score++;
-                  if (/[^A-Za-z0-9]/.test(this.password)) score++;
-                  return score;
-              },
-              get strengthLabel() {
-                  if (!this.password) return '';
-                  return ['Muito fraca','Fraca','Razoável','Forte','Muito forte'][this.passwordStrength];
-              },
-              get strengthColor() {
-                  return ['#ef4444','#f97316','#eab308','#22c55e','#16a34a'][this.passwordStrength];
-              },
-              get passwordsMatch() {
-                  return this.password && this.password === this.password_confirmation;
               },
               get roleLabel() {
                   return { instructor: 'Instrutor', employee: 'Colaborador' }[this.role] || 'Sem perfil';
@@ -161,56 +141,18 @@
                     @error('role') <p class="text-red-500 text-xs mt-2">{{ $message }}</p> @enderror
                 </div>
 
-                {{-- Senha --}}
-                <div class="bg-white rounded-xl shadow-sm p-6">
-                    <div class="flex items-center gap-3 mb-5">
-                        <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                {{-- Convite por email --}}
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-5">
+                    <div class="flex items-start gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                             </svg>
                         </div>
-                        <div>
-                            <h3 class="text-sm font-semibold text-gray-800">Senha de Acesso</h3>
-                            <p class="text-xs text-gray-400">O usuário pode alterar a senha após o primeiro acesso</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div class="space-y-1.5">
-                            <label for="password" class="block text-sm font-medium text-gray-700">Senha <span class="text-red-500">*</span></label>
-                            <input type="password" id="password" name="password"
-                                x-model="password" required minlength="8"
-                                placeholder="Mínimo 8 caracteres"
-                                class="w-full rounded-lg border @error('password') border-red-400 @else border-gray-300 @enderror px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-                            @error('password') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
-
-                            {{-- Strength indicator --}}
-                            <div x-show="password" x-cloak class="mt-2">
-                                <div class="flex gap-1">
-                                    <template x-for="i in 4" :key="i">
-                                        <div class="flex-1 h-1 rounded-full bg-gray-100">
-                                            <div class="h-full rounded-full transition-all"
-                                                :style="'width:' + (passwordStrength >= i ? '100%' : '0%') + '; background-color: ' + strengthColor"></div>
-                                        </div>
-                                    </template>
-                                </div>
-                                <p class="text-xs mt-1.5" :style="'color:' + strengthColor" x-text="'Força: ' + strengthLabel"></p>
-                            </div>
-                        </div>
-
-                        <div class="space-y-1.5">
-                            <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirmar Senha <span class="text-red-500">*</span></label>
-                            <input type="password" id="password_confirmation" name="password_confirmation"
-                                x-model="password_confirmation" required
-                                placeholder="Repita a senha"
-                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-                            <p x-show="password_confirmation && !passwordsMatch" x-cloak class="text-xs text-red-500 flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
-                                As senhas não coincidem
-                            </p>
-                            <p x-show="password_confirmation && passwordsMatch" x-cloak class="text-xs text-green-600 flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                                Senhas coincidem
+                        <div class="flex-1">
+                            <h3 class="text-sm font-semibold text-blue-900">Convite enviado por e-mail</h3>
+                            <p class="text-xs text-blue-700 mt-1 leading-relaxed">
+                                O usuário receberá um e-mail com um link seguro para definir sua própria senha. O link é válido por <strong>7 dias</strong>. Você não precisa criar nem comunicar uma senha temporária.
                             </p>
                         </div>
                     </div>
@@ -309,9 +251,9 @@
                         <button type="submit"
                             class="w-full inline-flex items-center justify-center gap-2 bg-primary hover:bg-secondary text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition shadow-sm">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                             </svg>
-                            Criar Usuário
+                            Enviar Convite
                         </button>
                         <a href="{{ route('users.index') }}" class="block text-center text-sm text-gray-500 hover:text-gray-700 transition py-1">
                             Cancelar

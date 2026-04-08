@@ -7,8 +7,11 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Group;
 use App\Models\User;
+use App\Notifications\UserInvitedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -50,25 +53,33 @@ class UserController extends Controller
 
     public function store(StoreUserRequest $request)
     {
-        $company = auth()->user()->company()->with('subscription.plan')->first();
+        $admin = auth()->user();
+        $company = $admin->company()->with('subscription.plan')->first();
 
         if ($company->hasReachedUserLimit()) {
             return back()->with('error', 'Limite de usuários do plano atingido.');
         }
 
+        // Senha aleatória forte - usuário definirá a própria via link de convite
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => Hash::make(Str::random(40)),
             'company_id' => $company->id,
             'role' => $request->role,
+            'active' => true,
         ]);
 
         if ($request->has('groups')) {
             $user->groups()->sync($request->groups);
         }
 
-        return redirect()->route('users.index')->with('success', 'Usuário criado com sucesso.');
+        // Envia convite com link para o usuário definir sua própria senha
+        $token = Password::broker('invites')->createToken($user);
+        $user->notify(new UserInvitedNotification($token, $admin, $company));
+
+        return redirect()->route('users.index')
+            ->with('success', "Usuário criado! Um e-mail de convite foi enviado para {$user->email}.");
     }
 
     public function show(User $user)

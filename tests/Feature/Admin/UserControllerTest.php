@@ -43,16 +43,23 @@ class UserControllerTest extends TestCase
 
     public function test_admin_can_create_user(): void
     {
+        \Illuminate\Support\Facades\Notification::fake();
+
         $admin = $this->createAdminWithSubscription();
         $response = $this->actingAs($admin)->post('/users', [
             'name' => 'New Employee',
             'email' => 'employee@test.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
             'role' => 'employee',
         ]);
         $response->assertRedirect('/users');
         $this->assertDatabaseHas('users', ['email' => 'employee@test.com']);
+
+        // Garante que o convite foi enviado
+        $newUser = User::where('email', 'employee@test.com')->first();
+        \Illuminate\Support\Facades\Notification::assertSentTo(
+            $newUser,
+            \App\Notifications\UserInvitedNotification::class
+        );
     }
 
     public function test_admin_cannot_create_user_beyond_plan_limit(): void
@@ -66,7 +73,6 @@ class UserControllerTest extends TestCase
 
         $response = $this->actingAs($admin)->post('/users', [
             'name' => 'E2', 'email' => 'e2@test.com',
-            'password' => 'password123', 'password_confirmation' => 'password123',
             'role' => 'employee',
         ]);
 

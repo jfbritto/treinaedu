@@ -16,7 +16,6 @@ class StoreUserRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed',
             'role' => 'required|in:instructor,employee',
             'groups' => 'nullable|array',
             'groups.*' => 'exists:groups,id',
