@@ -50,13 +50,27 @@ class CertificateController extends Controller
         return view('employee.certificates.show', compact('certificate'));
     }
 
-    public function download(Certificate $certificate)
+    public function download(Certificate $certificate, CertificateService $service)
     {
         if ($certificate->user_id !== auth()->id()) {
             abort(403);
         }
 
         $path = storage_path("app/{$certificate->pdf_path}");
+
+        // Regenerate when:
+        //  - file is missing
+        //  - user explicitly requested ?refresh=1
+        //  - cached PDF is older than the template blade (means template was updated)
+        $templatePath = resource_path('views/certificates/template.blade.php');
+        $needsRegen = !file_exists($path)
+            || request()->boolean('refresh')
+            || (file_exists($templatePath) && filemtime($templatePath) > filemtime($path));
+
+        if ($needsRegen) {
+            $service->regeneratePdf($certificate);
+        }
+
         if (!file_exists($path)) {
             abort(404, 'Arquivo não encontrado.');
         }
