@@ -141,8 +141,8 @@ class ReportsScreenTest extends TestCase
 
         // Check for KPI cards
         $this->assertStringContainsString('Registros totais', $content);
-        $this->assertStringContainsString('Concluídos (total)', $content);
-        $this->assertStringContainsString('Pendentes (total)', $content);
+        $this->assertStringContainsString('Concluídos', $content);
+        $this->assertStringContainsString('Pendentes', $content);
     }
 
     public function test_filter_endpoint_returns_valid_json()
