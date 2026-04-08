@@ -109,9 +109,16 @@
             {{-- Conteúdo do treinamento --}}
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                 <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-                    <div class="flex items-center gap-2">
-                        <div class="w-2 h-2 rounded-full bg-primary"></div>
-                        <h3 class="text-sm font-semibold text-gray-700">Estrutura do Conteúdo</h3>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-800">Estrutura do Conteúdo</h3>
+                            <p class="text-xs text-gray-500 mt-0.5">Módulos e aulas que compõem o treinamento</p>
+                        </div>
                     </div>
                 </div>
 
