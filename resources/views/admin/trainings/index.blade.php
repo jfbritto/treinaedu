@@ -12,7 +12,8 @@
         </a>
     </div>
 
-    @if($trainings->isEmpty())
+    @if($totalAll === 0)
+        {{-- Nenhum treinamento cadastrado no sistema --}}
         <div class="bg-white rounded-xl shadow-sm p-12 text-center">
             <div class="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,6 +112,19 @@
                 @endif
             </form>
 
+            @if($trainings->isEmpty())
+                {{-- Busca sem resultados --}}
+                <div class="px-6 py-12 text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-medium text-gray-500">Nenhum treinamento encontrado</p>
+                    <p class="text-xs text-gray-400 mt-1">Nenhum resultado para "<strong>{{ request('search') }}</strong>". Tente outro termo.</p>
+                    <a href="{{ route('trainings.index') }}" class="inline-block mt-3 text-xs font-medium text-primary hover:underline">Limpar busca</a>
+                </div>
+            @else
             <div class="overflow-x-auto">
             <table class="w-full">
                 <thead>
@@ -207,6 +221,7 @@
                 </div>
             @endif
             </div>
+            @endif
         </div>
     @endif
 
