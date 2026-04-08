@@ -98,7 +98,7 @@
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    {{ $training->duration_minutes }} min
+                                    {{ $training->calculatedDuration() }} min
                                 </span>
                             </td>
                             <td class="px-6 py-4 hidden md:table-cell">

@@ -66,7 +66,7 @@
                         </span>
                     </div>
                     <div class="flex items-center gap-3 mt-1 text-xs text-gray-400">
-                        <span>{{ $training->duration_minutes }} min</span>
+                        <span>{{ $training->calculatedDuration() }} min</span>
                         @if($training->has_quiz)
                             <span class="text-primary">Com quiz</span>
                         @endif

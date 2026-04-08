@@ -50,7 +50,7 @@
     </div>
 
     @php
-        $totalMin = $path->trainings->sum('duration_minutes');
+        $totalMin = $path->trainings->sum(fn ($t) => $t->calculatedDuration());
         $durLabel = $totalMin >= 60
             ? floor($totalMin/60).'h'.($totalMin%60 > 0 ? ' '.($totalMin%60).'min' : '')
             : $totalMin.'min';
@@ -109,7 +109,7 @@
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                             </svg>
-                                            {{ $training->duration_minutes }} min
+                                            {{ $training->calculatedDuration() }} min
                                         </span>
                                         @if($training->has_quiz)
                                             <span class="inline-flex items-center gap-1 text-primary">

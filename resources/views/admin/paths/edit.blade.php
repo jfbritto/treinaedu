@@ -142,7 +142,7 @@
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <p class="text-sm font-medium text-gray-700 truncate">{{ $training->title }}</p>
-                                        <p class="text-xs text-gray-400">{{ $training->duration_minutes }} min{{ $training->has_quiz ? ' · Com quiz' : '' }}</p>
+                                        <p class="text-xs text-gray-400">{{ $training->calculatedDuration() }} min{{ $training->has_quiz ? ' · Com quiz' : '' }}</p>
                                     </div>
                                 </label>
                             @endforeach
