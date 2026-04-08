@@ -74,6 +74,8 @@ Route::middleware(['auth', 'theme'])->group(function () {
             Route::resource('groups', GroupController::class);
             Route::resource('trainings', AdminTrainingController::class);
             Route::resource('paths', PathController::class);
+            Route::post('paths/{path}/move-up', [PathController::class, 'moveUp'])->name('paths.move-up');
+            Route::post('paths/{path}/move-down', [PathController::class, 'moveDown'])->name('paths.move-down');
             Route::post('trainings/{training}/assignments', [AdminTrainingController::class, 'storeAssignment'])
                 ->name('trainings.assignments.store');
             Route::delete('trainings/{training}/assignments/{assignment}', [AdminTrainingController::class, 'destroyAssignment'])

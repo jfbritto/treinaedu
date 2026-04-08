@@ -77,21 +77,13 @@
                             <p class="text-xs text-gray-400">A descrição ajuda os colaboradores a entenderem o objetivo da trilha.</p>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-1.5">
-                                <label for="color" class="block text-sm font-medium text-gray-700">Cor de destaque</label>
-                                <div class="flex items-center gap-3">
-                                    <input type="color" id="color" name="color"
-                                        x-model="color"
-                                        class="w-11 h-11 rounded-lg border border-gray-300 cursor-pointer p-0.5">
-                                    <span class="text-xs font-mono text-gray-500" x-text="color"></span>
-                                </div>
-                            </div>
-                            <div class="space-y-1.5">
-                                <label for="sort_order" class="block text-sm font-medium text-gray-700">Ordem de exibição</label>
-                                <input type="number" id="sort_order" name="sort_order"
-                                    value="{{ old('sort_order', $path->sort_order) }}" min="0"
-                                    class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        <div class="space-y-1.5">
+                            <label for="color" class="block text-sm font-medium text-gray-700">Cor de destaque</label>
+                            <div class="flex items-center gap-3">
+                                <input type="color" id="color" name="color"
+                                    x-model="color"
+                                    class="w-11 h-11 rounded-lg border border-gray-300 cursor-pointer p-0.5">
+                                <span class="text-xs font-mono text-gray-500" x-text="color"></span>
                             </div>
                         </div>
 

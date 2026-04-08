@@ -27,17 +27,19 @@ class PathController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
             'color' => 'nullable|string|max:7',
-            'sort_order' => 'nullable|integer|min:0',
             'active' => 'boolean',
             'trainings' => 'nullable|array',
             'trainings.*' => 'exists:trainings,id,company_id,' . auth()->user()->company_id,
         ]);
 
+        // Nova trilha sempre vai para o final da lista
+        $nextOrder = (Path::max('sort_order') ?? -1) + 1;
+
         $path = Path::create([
             'title' => $request->title,
             'description' => $request->description,
             'color' => $request->color ?? '#3B82F6',
-            'sort_order' => $request->sort_order ?? 0,
+            'sort_order' => $nextOrder,
             'active' => $request->boolean('active', true),
         ]);
 
@@ -69,7 +71,6 @@ class PathController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
             'color' => 'nullable|string|max:7',
-            'sort_order' => 'nullable|integer|min:0',
             'active' => 'boolean',
             'trainings' => 'nullable|array',
             'trainings.*' => 'exists:trainings,id,company_id,' . auth()->user()->company_id,
@@ -79,13 +80,46 @@ class PathController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'color' => $request->color ?? '#3B82F6',
-            'sort_order' => $request->sort_order ?? 0,
             'active' => $request->boolean('active', true),
         ]);
 
         $this->syncTrainings($path, $request->trainings ?? []);
 
         return redirect()->route('paths.show', $path)->with('success', 'Trilha atualizada.');
+    }
+
+    public function moveUp(Path $path)
+    {
+        $this->authorizeCompany($path);
+
+        $previous = Path::where('sort_order', '<', $path->sort_order)
+            ->orderBy('sort_order', 'desc')
+            ->first();
+
+        if ($previous) {
+            $temp = $path->sort_order;
+            $path->update(['sort_order' => $previous->sort_order]);
+            $previous->update(['sort_order' => $temp]);
+        }
+
+        return back();
+    }
+
+    public function moveDown(Path $path)
+    {
+        $this->authorizeCompany($path);
+
+        $next = Path::where('sort_order', '>', $path->sort_order)
+            ->orderBy('sort_order', 'asc')
+            ->first();
+
+        if ($next) {
+            $temp = $path->sort_order;
+            $path->update(['sort_order' => $next->sort_order]);
+            $next->update(['sort_order' => $temp]);
+        }
+
+        return back();
     }
 
     public function destroy(Path $path)

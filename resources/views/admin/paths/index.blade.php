@@ -37,7 +37,11 @@
 
         {{-- Grid de cards --}}
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
-            @foreach($paths as $path)
+            @foreach($paths as $index => $path)
+                @php
+                    $isFirst = $index === 0 && $paths->currentPage() === 1;
+                    $isLast = $index === $paths->count() - 1 && $paths->currentPage() === $paths->lastPage();
+                @endphp
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col">
                     <div class="h-1.5" style="background: {{ $path->color }}"></div>
                     <div class="p-5 flex-1 flex flex-col gap-4">
@@ -52,6 +56,31 @@
                                 @if($path->description)
                                     <p class="text-xs text-gray-400 mt-0.5 line-clamp-2">{{ $path->description }}</p>
                                 @endif
+                            </div>
+                            {{-- Setas de reordenação --}}
+                            <div class="flex flex-col gap-0.5 flex-shrink-0">
+                                <form method="POST" action="{{ route('paths.move-up', $path) }}">
+                                    @csrf
+                                    <button type="submit" @disabled($isFirst)
+                                        title="Mover para cima"
+                                        class="w-6 h-6 rounded flex items-center justify-center transition
+                                            {{ $isFirst ? 'text-gray-200 cursor-not-allowed' : 'text-gray-400 hover:text-primary hover:bg-primary/10' }}">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/>
+                                        </svg>
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ route('paths.move-down', $path) }}">
+                                    @csrf
+                                    <button type="submit" @disabled($isLast)
+                                        title="Mover para baixo"
+                                        class="w-6 h-6 rounded flex items-center justify-center transition
+                                            {{ $isLast ? 'text-gray-200 cursor-not-allowed' : 'text-gray-400 hover:text-primary hover:bg-primary/10' }}">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                                        </svg>
+                                    </button>
+                                </form>
                             </div>
                         </div>
 
