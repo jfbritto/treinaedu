@@ -93,13 +93,23 @@
                         <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Perfil</th>
                         <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider hidden md:table-cell">Grupos</th>
                         <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider hidden lg:table-cell">Último acesso</th>
                         <th class="px-6 py-3.5 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">Ações</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50">
                     @foreach($users as $user)
-                        <tr class="hover:bg-gray-50 transition cursor-pointer" onclick="window.location.href='{{ route('users.show', $user) }}'">
-                            <td class="px-6 py-4">
+                        @php
+                            $isPending = $user->isPendingInvite();
+                            $statusLabel = !$user->active ? 'Inativo' : ($isPending ? 'Pendente' : 'Ativo');
+                            $statusColors = !$user->active
+                                ? ['bg' => 'bg-red-400', 'text' => 'text-red-500']
+                                : ($isPending
+                                    ? ['bg' => 'bg-yellow-400', 'text' => 'text-yellow-700']
+                                    : ['bg' => 'bg-green-500', 'text' => 'text-green-700']);
+                        @endphp
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-6 py-4 cursor-pointer" onclick="window.location.href='{{ route('users.show', $user) }}'">
                                 <div class="flex items-center gap-3">
                                     <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0
                                         {{ $user->role === 'instructor' ? 'bg-purple-100' : 'bg-primary/10' }}">
@@ -113,13 +123,13 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="px-6 py-4 cursor-pointer" onclick="window.location.href='{{ route('users.show', $user) }}'">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                     {{ $user->role === 'instructor' ? 'bg-purple-100 text-purple-700' : 'bg-primary/15 text-primary' }}">
                                     {{ $user->role === 'instructor' ? 'Instrutor' : 'Colaborador' }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 hidden md:table-cell">
+                            <td class="px-6 py-4 hidden md:table-cell cursor-pointer" onclick="window.location.href='{{ route('users.show', $user) }}'">
                                 <div class="flex flex-wrap gap-1">
                                     @forelse($user->groups as $group)
                                         <span class="inline-block px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-600">{{ $group->name }}</span>
@@ -128,18 +138,48 @@
                                     @endforelse
                                 </div>
                             </td>
-                            <td class="px-6 py-4">
-                                <span class="inline-flex items-center gap-1.5 text-xs font-medium {{ $user->active ? 'text-green-700' : 'text-red-500' }}">
-                                    <span class="w-1.5 h-1.5 rounded-full {{ $user->active ? 'bg-green-500' : 'bg-red-400' }}"></span>
-                                    {{ $user->active ? 'Ativo' : 'Inativo' }}
-                                </span>
+                            <td class="px-6 py-4 cursor-pointer" onclick="window.location.href='{{ route('users.show', $user) }}'">
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="inline-flex items-center gap-1.5 text-xs font-medium {{ $statusColors['text'] }}">
+                                        <span class="w-1.5 h-1.5 rounded-full {{ $statusColors['bg'] }}"></span>
+                                        {{ $statusLabel }}
+                                    </span>
+                                    @if($isPending && $user->invited_at)
+                                        <span class="text-[10px] text-gray-400">Convidado há {{ $user->invited_at->diffForHumans(null, true) }}</span>
+                                    @endif
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 hidden lg:table-cell cursor-pointer" onclick="window.location.href='{{ route('users.show', $user) }}'">
+                                @if($user->last_login_at)
+                                    <div class="flex flex-col gap-0.5">
+                                        <span class="text-xs text-gray-700">{{ $user->last_login_at->diffForHumans() }}</span>
+                                        <span class="text-[10px] text-gray-400">{{ $user->last_login_at->format('d/m/Y H:i') }}</span>
+                                    </div>
+                                @else
+                                    <span class="text-xs text-gray-300">Nunca acessou</span>
+                                @endif
                             </td>
                             <td class="px-6 py-4">
-                                <div class="flex items-center justify-end">
-                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                    </svg>
+                                <div class="flex items-center justify-end gap-2">
+                                    @if($isPending)
+                                        <form method="POST" action="{{ route('users.resend-invite', $user) }}" onclick="event.stopPropagation();">
+                                            @csrf
+                                            <button type="submit"
+                                                class="inline-flex items-center gap-1 text-xs font-medium text-primary hover:bg-primary/10 px-2.5 py-1.5 rounded-lg transition"
+                                                title="Reenviar convite por email">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                                </svg>
+                                                Reenviar
+                                            </button>
+                                        </form>
+                                    @endif
+                                    <a href="{{ route('users.show', $user) }}" class="text-gray-400 hover:text-gray-600 transition" title="Visualizar">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                    </a>
                                 </div>
                             </td>
                         </tr>

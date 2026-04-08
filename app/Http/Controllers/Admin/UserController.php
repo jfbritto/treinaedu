@@ -68,6 +68,7 @@ class UserController extends Controller
             'company_id' => $company->id,
             'role' => $request->role,
             'active' => true,
+            'invited_at' => now(),
         ]);
 
         if ($request->has('groups')) {
@@ -80,6 +81,25 @@ class UserController extends Controller
 
         return redirect()->route('users.index')
             ->with('success', "Usuário criado! Um e-mail de convite foi enviado para {$user->email}.");
+    }
+
+    public function resendInvite(User $user)
+    {
+        $this->authorizeCompany($user);
+
+        if (!$user->isPendingInvite()) {
+            return back()->with('error', 'Este usuário já definiu sua senha.');
+        }
+
+        $admin = auth()->user();
+        $company = $admin->company;
+
+        $token = Password::broker('invites')->createToken($user);
+        $user->notify(new UserInvitedNotification($token, $admin, $company));
+
+        $user->update(['invited_at' => now()]);
+
+        return back()->with('success', "Convite reenviado para {$user->email}.");
     }
 
     public function show(User $user)

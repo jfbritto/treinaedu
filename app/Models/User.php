@@ -13,6 +13,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name', 'email', 'password', 'company_id', 'role', 'active',
+        'invited_at', 'last_login_at',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -23,7 +24,18 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'active' => 'boolean',
+            'invited_at' => 'datetime',
+            'last_login_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Verifica se o usuário ainda não definiu sua própria senha
+     * (foi convidado mas não aceitou).
+     */
+    public function isPendingInvite(): bool
+    {
+        return $this->invited_at !== null;
     }
 
     public function company()

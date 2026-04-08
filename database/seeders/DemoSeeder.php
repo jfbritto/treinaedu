@@ -76,15 +76,21 @@ class DemoSeeder extends Seeder
         ];
 
         foreach ($employeeData as $i => $data) {
+            // Últimos 2 colaboradores ficam como "pendentes" (aceitaram o convite recentemente)
+            $isPending = $i >= 8;
+            $hasLoggedIn = !$isPending && $i < 7;
+
             $employees[] = User::firstOrCreate(
                 ['email' => $data['email']],
                 [
-                    'name'       => $data['name'],
-                    'password'   => 'password',
-                    'company_id' => $company->id,
-                    'role'       => 'employee',
-                    'active'     => true,
-                    'created_at' => now()->subDays(rand(1, 60)),
+                    'name'          => $data['name'],
+                    'password'      => 'password',
+                    'company_id'    => $company->id,
+                    'role'          => 'employee',
+                    'active'        => true,
+                    'created_at'    => now()->subDays(rand(1, 60)),
+                    'invited_at'    => $isPending ? now()->subDays(rand(1, 5)) : null,
+                    'last_login_at' => $hasLoggedIn ? now()->subDays(rand(0, 30)) : null,
                 ]
             );
         }

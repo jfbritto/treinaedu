@@ -69,6 +69,8 @@ Route::middleware(['auth', 'theme'])->group(function () {
         // Admin routes
         Route::middleware('role:admin')->group(function () {
             Route::resource('users', UserController::class);
+            Route::post('users/{user}/resend-invite', [UserController::class, 'resendInvite'])
+                ->name('users.resend-invite');
             Route::resource('groups', GroupController::class);
             Route::resource('trainings', AdminTrainingController::class);
             Route::resource('paths', PathController::class);
