@@ -20,37 +20,71 @@
 
     {{-- Stats --}}
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div class="bg-white rounded-xl shadow-sm p-4 flex items-center gap-4">
-            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01-.372-.568 6.787 6.787 0 011.019-4.38z"/><path d="M5.082 14.254a8.287 8.287 0 00-1.308 5.135 9.687 9.687 0 01-1.764-.44l-.115-.04a.563.563 0 01-.373-.487l-.01-.121a3.75 3.75 0 013.57-4.047zM20.226 19.389a8.287 8.287 0 00-1.308-5.135 3.75 3.75 0 013.57 4.047l-.01.121a.563.563 0 01-.373.486l-.115.04c-.567.2-1.156.349-1.764.441z"/></svg>
+        {{-- Total de usuários --}}
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                </div>
             </div>
-            <div>
-                <p class="text-2xl font-bold text-gray-800">{{ $total }}</p>
-                <p class="text-xs text-gray-400">Total de usuários</p>
-            </div>
+            <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Total</p>
+            <p class="text-2xl font-bold text-gray-800 mt-1">{{ $total }}</p>
+            <p class="text-xs text-gray-400 mt-0.5">{{ $total === 1 ? 'usuário cadastrado' : 'usuários cadastrados' }}</p>
         </div>
-        <div class="bg-white rounded-xl shadow-sm p-4 flex items-center gap-4">
-            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>
+
+        {{-- Ativos --}}
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
             </div>
-            <div>
+            <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Ativos</p>
+            <div class="flex items-baseline gap-2 mt-1">
                 <p class="text-2xl font-bold text-gray-800">{{ $active }}</p>
-                <p class="text-xs text-gray-400">Ativos</p>
+                @if($total > 0)
+                    <span class="text-xs text-gray-400">de {{ $total }}</span>
+                @endif
             </div>
+            <p class="text-xs text-gray-400 mt-0.5">já definiram a senha</p>
         </div>
-        <div class="bg-white rounded-xl shadow-sm p-4 flex items-center gap-4">
-            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm14.024-.983a1.125 1.125 0 010 1.966l-5.603 3.113A1.125 1.125 0 019 15.113V8.887c0-.857.921-1.4 1.671-.983l5.603 3.113z" clip-rule="evenodd"/></svg>
+
+        {{-- Instrutores --}}
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                    </svg>
+                </div>
             </div>
-            <div>
-                <p class="text-2xl font-bold text-gray-800">{{ $instructors }}</p>
-                <p class="text-xs text-gray-400">Instrutores</p>
-            </div>
+            <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Instrutores</p>
+            <p class="text-2xl font-bold text-gray-800 mt-1">{{ $instructors }}</p>
+            <p class="text-xs text-gray-400 mt-0.5">{{ $instructors === 1 ? 'criador de treinamentos' : 'criadores de treinamentos' }}</p>
         </div>
     </div>
 
     {{-- Table with server-side filters --}}
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        {{-- Header do card --}}
+        <div class="px-6 py-4 border-b border-gray-100">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-800">Lista de Usuários</h3>
+                    <p class="text-xs text-gray-400">Busque, filtre e gerencie colaboradores e instrutores</p>
+                </div>
+            </div>
+        </div>
+
         {{-- Filters --}}
         <form method="GET" action="{{ route('users.index') }}" id="filter-form"
               x-data="{ timer: null }" class="px-6 py-4 border-b border-gray-100 flex flex-wrap items-center gap-3">
