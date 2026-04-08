@@ -48,14 +48,7 @@
 
         {{-- Senha --}}
         <div class="space-y-1.5">
-            <div class="flex items-center justify-between">
-                <label for="password" class="block text-sm font-medium text-gray-700">Senha</label>
-                @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" class="text-xs text-blue-600 hover:text-blue-700 font-medium hover:underline">
-                        Esqueceu a senha?
-                    </a>
-                @endif
-            </div>
+            <label for="password" class="block text-sm font-medium text-gray-700">Senha</label>
             <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,15 +73,22 @@
             @enderror
         </div>
 
-        {{-- Lembrar-me --}}
-        <label class="flex items-center gap-2 cursor-pointer select-none">
-            <input
-                type="checkbox"
-                name="remember"
-                class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-            >
-            <span class="text-sm text-gray-600">Lembrar de mim</span>
-        </label>
+        {{-- Lembrar-me + Esqueceu senha --}}
+        <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                    type="checkbox"
+                    name="remember"
+                    class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                >
+                <span class="text-sm text-gray-600">Lembrar de mim</span>
+            </label>
+            @if (Route::has('password.request'))
+                <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:text-blue-700 font-medium hover:underline">
+                    Esqueceu a senha?
+                </a>
+            @endif
+        </div>
 
         {{-- Botão --}}
         <button
