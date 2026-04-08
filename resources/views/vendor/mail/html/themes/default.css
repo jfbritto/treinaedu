@@ -138,36 +138,30 @@ body {
 .button {
     -webkit-text-size-adjust: none;
     border-radius: 8px;
-    color: #fff;
+    color: #ffffff !important;
     display: inline-block;
-    overflow: hidden;
     text-decoration: none;
+    padding: 14px 32px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
 }
 
 .button-primary {
     background-color: #3B82F6;
-    border-bottom: 8px solid #3B82F6;
-    border-left: 18px solid #3B82F6;
-    border-right: 18px solid #3B82F6;
-    border-top: 8px solid #3B82F6;
+    border: 1px solid #3B82F6;
 }
 
 .button-green,
 .button-success {
     background-color: #059669;
-    border-bottom: 8px solid #059669;
-    border-left: 18px solid #059669;
-    border-right: 18px solid #059669;
-    border-top: 8px solid #059669;
+    border: 1px solid #059669;
 }
 
 .button-red,
 .button-error {
     background-color: #DC2626;
-    border-bottom: 8px solid #DC2626;
-    border-left: 18px solid #DC2626;
-    border-right: 18px solid #DC2626;
-    border-top: 8px solid #DC2626;
+    border: 1px solid #DC2626;
 }
 
 /* Paragraphs */
