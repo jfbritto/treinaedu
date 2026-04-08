@@ -91,7 +91,12 @@ class TrainingController extends Controller
     public function show(Training $training)
     {
         $this->authorizeCompany($training);
-        $training->load(['assignments.group', 'modules.lessons']);
+        $training->load([
+            'assignments.group',
+            'modules.lessons.quiz',
+            'modules.quiz',
+            'trainingQuiz',
+        ]);
 
         $assignedGroupIds = $training->assignments->pluck('group_id');
         $availableGroups  = Group::whereNotIn('id', $assignedGroupIds)->get();

@@ -184,6 +184,7 @@
                                 @php
                                     $moduleLessons = $module->lessons->count();
                                     $moduleDuration = $module->lessons->sum('duration_minutes');
+                                    $lessonsWithQuiz = $module->lessons->filter(fn($l) => $l->quiz)->count();
                                 @endphp
                                 <div class="border border-gray-200 rounded-xl overflow-hidden hover:border-primary/30 transition">
                                     {{-- Cabeçalho do módulo --}}
@@ -195,7 +196,7 @@
                                             </div>
                                             <div class="flex-1 min-w-0">
                                                 <h4 class="text-sm font-semibold text-gray-800 truncate">{{ $module->title }}</h4>
-                                                <div class="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                                                <div class="flex items-center gap-3 mt-1 text-xs text-gray-500 flex-wrap">
                                                     <span class="inline-flex items-center gap-1">
                                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
@@ -221,6 +222,15 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        @if($module->quiz)
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-100 flex-shrink-0"
+                                                  title="Este módulo tem um quiz de avaliação">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                                </svg>
+                                                Quiz do módulo
+                                            </span>
+                                        @endif
                                     </div>
 
                                     {{-- Aulas do módulo --}}
@@ -243,6 +253,15 @@
                                                         </svg>
                                                     </div>
                                                     <span class="flex-1 text-sm text-gray-700 truncate">{{ $lesson->title }}</span>
+                                                    @if($lesson->quiz)
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-purple-50 text-purple-700 border border-purple-100 flex-shrink-0"
+                                                              title="Esta aula tem quiz de verificação">
+                                                            <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                                            </svg>
+                                                            Quiz
+                                                        </span>
+                                                    @endif
                                                     @if($lesson->duration_minutes)
                                                         <span class="text-xs text-gray-400 flex-shrink-0">{{ $lesson->duration_minutes }} min</span>
                                                     @endif
@@ -252,6 +271,45 @@
                                     @endif
                                 </div>
                             @endforeach
+
+                            {{-- Quiz final do treinamento --}}
+                            @if($training->trainingQuiz)
+                                <div class="border border-purple-200 rounded-xl overflow-hidden bg-gradient-to-br from-purple-50 to-white">
+                                    <div class="px-5 py-4 flex items-center gap-3">
+                                        <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-white shadow-sm"
+                                             style="background: linear-gradient(135deg, #9333ea, #7e22ce)">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <h4 class="text-sm font-semibold text-gray-800">Avaliação Final</h4>
+                                            <div class="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                                                <span class="inline-flex items-center gap-1">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                                    </svg>
+                                                    Quiz de conclusão do treinamento
+                                                </span>
+                                                @if($training->passing_score)
+                                                    <span class="inline-flex items-center gap-1">
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                        </svg>
+                                                        Nota mínima: {{ $training->passing_score }}%
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 border border-purple-200 flex-shrink-0">
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                            </svg>
+                                            Obrigatório
+                                        </span>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     @endif
                 </div>
