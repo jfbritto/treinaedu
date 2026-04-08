@@ -121,7 +121,18 @@
         {{-- Donut Chart (3/5) --}}
         <div class="lg:col-span-3 bg-white rounded-xl shadow-sm p-6">
             <div class="flex items-center justify-between mb-6">
-                <h3 class="text-sm font-semibold text-gray-700">Status dos Treinamentos</h3>
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-800">Status dos Treinamentos</h3>
+                        <p class="text-xs text-gray-400">Distribuição entre concluídos e em andamento</p>
+                    </div>
+                </div>
                 <a href="{{ route('reports.index') }}" class="text-xs text-primary hover:underline">Ver relatório →</a>
             </div>
             @if($metrics['trainings_completed'] + $metrics['trainings_pending'] > 0)
@@ -174,7 +185,17 @@
         {{-- Top Treinamentos (2/5) --}}
         <div class="lg:col-span-2 bg-white rounded-xl shadow-sm p-6">
             <div class="flex items-center justify-between mb-5">
-                <h3 class="text-sm font-semibold text-gray-700">Top Treinamentos</h3>
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-800">Top Treinamentos</h3>
+                        <p class="text-xs text-gray-400">Mais concluídos pela equipe</p>
+                    </div>
+                </div>
                 <a href="{{ route('trainings.index') }}" class="text-xs text-primary hover:underline">Ver todos →</a>
             </div>
             @if(empty($metrics['top_trainings']))
@@ -210,9 +231,16 @@
 
         <div class="bg-white rounded-xl shadow-sm overflow-hidden">
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-                <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-primary/60"></div>
-                    <h3 class="text-sm font-semibold text-gray-700">Últimos Colaboradores</h3>
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-800">Últimos Colaboradores</h3>
+                        <p class="text-xs text-gray-400">Novos cadastros na empresa</p>
+                    </div>
                 </div>
                 <a href="{{ route('users.index') }}" class="text-xs text-primary hover:underline">Ver todos →</a>
             </div>
@@ -238,9 +266,16 @@
 
         <div class="bg-white rounded-xl shadow-sm overflow-hidden">
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-                <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-green-400"></div>
-                    <h3 class="text-sm font-semibold text-gray-700">Conclusões Recentes</h3>
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-800">Conclusões Recentes</h3>
+                        <p class="text-xs text-gray-400">Treinamentos finalizados recentemente</p>
+                    </div>
                 </div>
                 <a href="{{ route('reports.index') }}" class="text-xs text-primary hover:underline">Ver relatório →</a>
             </div>
