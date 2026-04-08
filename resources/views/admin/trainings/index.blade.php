@@ -14,46 +14,85 @@
 
     @if($trainings->isEmpty())
         <div class="bg-white rounded-xl shadow-sm p-12 text-center">
-            <svg class="w-12 h-12 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-            </svg>
-            <p class="text-gray-400 text-sm font-medium">Nenhum treinamento cadastrado.</p>
-            <a href="{{ route('trainings.create') }}" class="inline-block mt-3 text-sm text-primary hover:underline">Criar primeiro treinamento →</a>
+            <div class="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <p class="text-gray-500 text-sm font-medium mb-1">Nenhum treinamento cadastrado</p>
+            <p class="text-xs text-gray-400 mb-4">Crie treinamentos em vídeo, texto ou documento para sua equipe.</p>
+            <a href="{{ route('trainings.create') }}" class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-secondary transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Criar primeiro treinamento
+            </a>
         </div>
     @else
         {{-- Stats --}}
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <div class="bg-white rounded-xl shadow-sm p-4 flex items-center gap-4">
-                <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>
+            {{-- Ativos --}}
+            <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
                 </div>
-                <div>
-                    <p class="text-2xl font-bold text-gray-800">{{ $totalActive }}</p>
-                    <p class="text-xs text-gray-400">Ativos</p>
-                </div>
+                <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Ativos</p>
+                <p class="text-2xl font-bold text-gray-800 mt-1">{{ $totalActive }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">{{ $totalActive === 1 ? 'treinamento publicado' : 'treinamentos publicados' }}</p>
             </div>
-            <div class="bg-white rounded-xl shadow-sm p-4 flex items-center gap-4">
-                <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V7.875L14.25 1.5H5.625zM7.5 15a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 017.5 15zm.75 2.25a.75.75 0 000 1.5H12a.75.75 0 000-1.5H8.25z" clip-rule="evenodd"/><path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z"/></svg>
+
+            {{-- Com quiz --}}
+            <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                    </div>
                 </div>
-                <div>
-                    <p class="text-2xl font-bold text-gray-800">{{ $totalWithQuiz }}</p>
-                    <p class="text-xs text-gray-400">Com quiz</p>
-                </div>
+                <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Com Avaliação</p>
+                <p class="text-2xl font-bold text-gray-800 mt-1">{{ $totalWithQuiz }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">{{ $totalWithQuiz === 1 ? 'treinamento com quiz' : 'treinamentos com quiz' }}</p>
             </div>
-            <div class="bg-white rounded-xl shadow-sm p-4 flex items-center gap-4">
-                <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z"/></svg>
+
+            {{-- Conclusão média --}}
+            <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
                 </div>
-                <div>
-                    <p class="text-2xl font-bold text-gray-800">{{ $avgRate }}%</p>
-                    <p class="text-xs text-gray-400">Conclusão média</p>
+                <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Conclusão Média</p>
+                <p class="text-2xl font-bold text-gray-800 mt-1">{{ $avgRate }}%</p>
+                <div class="mt-2 w-full bg-gray-100 rounded-full h-1.5">
+                    <div class="h-1.5 rounded-full bg-primary transition-all" style="width: {{ $avgRate }}%"></div>
                 </div>
             </div>
         </div>
 
         {{-- Table with server-side filter --}}
         <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+            {{-- Header do card --}}
+            <div class="px-6 py-4 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-800">Lista de Treinamentos</h3>
+                        <p class="text-xs text-gray-400">Busque, visualize e gerencie os treinamentos da empresa</p>
+                    </div>
+                </div>
+            </div>
+
             {{-- Search --}}
             <form method="GET" action="{{ route('trainings.index') }}" x-data="{ timer: null }"
                   class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
@@ -91,13 +130,17 @@
                         <tr class="hover:bg-gray-50 transition cursor-pointer" onclick="window.location.href='{{ route('trainings.show', $training) }}'">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                        <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                                         style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
+                                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
                                             <path fill-rule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clip-rule="evenodd"/>
                                         </svg>
                                     </div>
-                                    <div>
-                                        <p class="text-sm font-semibold text-gray-800">{{ $training->title }}</p>
+                                    <div class="min-w-0">
+                                        <p class="text-sm font-semibold text-gray-800 truncate">{{ $training->title }}</p>
+                                        @if($training->description)
+                                            <p class="text-xs text-gray-400 truncate">{{ $training->description }}</p>
+                                        @endif
                                     </div>
                                 </div>
                             </td>
@@ -106,26 +149,26 @@
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    {{ $training->duration_minutes }} min
+                                    {{ $training->calculatedDuration() }} min
                                 </span>
                             </td>
                             <td class="px-6 py-4 hidden md:table-cell">
-                                @if($training->assignments_count > 0)
-                                    <span class="inline-flex items-center gap-1 text-xs text-primary">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                                        {{ $training->assignments_count }} grupo{{ $training->assignments_count !== 1 ? 's' : '' }}
+                                @if($training->has_quiz)
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-100">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                        </svg>
+                                        Com Quiz
                                     </span>
                                 @else
-                                    <span class="text-xs text-gray-400">—</span>
+                                    <span class="text-xs text-gray-300">—</span>
                                 @endif
                             </td>
                             <td class="px-6 py-4 hidden md:table-cell">
-                                @if($training->has_quiz)
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                                        </svg>
-                                        Com Quiz
+                                @if($training->assignments_count > 0)
+                                    <span class="inline-flex items-center gap-1 text-xs text-gray-600">
+                                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                        {{ $training->assignments_count }} {{ $training->assignments_count !== 1 ? 'grupos' : 'grupo' }}
                                     </span>
                                 @else
                                     <span class="text-xs text-gray-300">—</span>
