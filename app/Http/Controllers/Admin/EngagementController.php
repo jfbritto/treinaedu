@@ -99,41 +99,70 @@ class EngagementController extends Controller
             ->sortByDesc('completion_rate')
             ->values();
 
-        // Users at risk (inactive for 30+ days, employees only)
-        $atRiskUsers = User::where('company_id', $companyId)
+        // Buscar employees ativos com seus training views e grupos atribuídos
+        $employeesWithData = User::where('company_id', $companyId)
             ->where('active', true)
             ->where('role', 'employee')
-            ->with(['trainingViews' => function ($q) use ($dateFrom, $dateTo) {
-                $q->orderBy('created_at', 'desc')->limit(1);
-                if ($dateFrom) {
-                    $q->where('created_at', '>=', $dateFrom);
-                }
-                if ($dateTo) {
-                    $q->where('created_at', '<=', $dateTo);
-                }
-            }])
-            ->get()
+            ->with([
+                'trainingViews' => function ($q) {
+                    $q->orderBy('created_at', 'desc')->limit(1);
+                },
+                'groups.trainings' => function ($q) {
+                    $q->where('active', true);
+                },
+            ])
+            ->get();
+
+        // Funcionários em Risco: tiveram atividade no passado mas estão inativos há 30+ dias.
+        // Excluímos quem nunca começou (pertencem à categoria 'Sem Engajamento').
+        $atRiskUsers = $employeesWithData
             ->filter(function ($user) {
                 if ($user->trainingViews->isEmpty()) {
-                    return true; // Never started
+                    return false;
                 }
                 $lastActivity = $user->trainingViews->first()->created_at;
                 return $lastActivity->diffInDays(now()) >= 30;
             })
             ->map(function ($user) {
-                $lastActivity = $user->trainingViews->isEmpty()
-                    ? null
-                    : $user->trainingViews->first()->created_at;
-
+                $lastActivity = $user->trainingViews->first()->created_at;
                 return [
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
                     'last_activity' => $lastActivity,
-                    'days_inactive' => $lastActivity ? $lastActivity->diffInDays(now()) : 999,
+                    'days_inactive' => (int) $lastActivity->diffInDays(now()),
                 ];
             })
             ->sortByDesc('days_inactive')
+            ->take(10)
+            ->values();
+
+        // Sem Engajamento: têm treinamentos atribuídos via grupo mas nunca iniciaram.
+        // Só inclui quem foi cadastrado há pelo menos 7 dias (evita alarme em novos cadastros).
+        $disengagedUsers = $employeesWithData
+            ->filter(function ($user) {
+                if ($user->trainingViews->isNotEmpty()) {
+                    return false;
+                }
+                // Precisa ter ao menos 1 treinamento atribuído via grupo
+                $hasAssignedTrainings = $user->groups->flatMap->trainings->isNotEmpty();
+                if (!$hasAssignedTrainings) {
+                    return false;
+                }
+                // Só alerta após 7 dias do cadastro (grace period)
+                return $user->created_at->diffInDays(now()) >= 7;
+            })
+            ->map(function ($user) {
+                $assignedCount = $user->groups->flatMap->trainings->unique('id')->count();
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'assigned_trainings' => $assignedCount,
+                    'days_since_registration' => (int) $user->created_at->diffInDays(now()),
+                ];
+            })
+            ->sortByDesc('days_since_registration')
             ->take(10)
             ->values();
 
@@ -182,6 +211,7 @@ class EngagementController extends Controller
             'topUsers',
             'groupRankings',
             'atRiskUsers',
+            'disengagedUsers',
             'stats',
             'dateFrom',
             'dateTo'

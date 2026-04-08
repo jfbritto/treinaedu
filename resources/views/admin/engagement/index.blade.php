@@ -178,13 +178,16 @@
     {{-- At Risk Users --}}
     @if(count($atRiskUsers) > 0)
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 bg-primary/5 border-b border-gray-100">
+            <div class="px-6 py-4 bg-orange-50 border-b border-orange-100">
                 <div class="flex items-center gap-2">
-                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                     </svg>
-                    <h3 class="text-sm font-semibold text-gray-800">Funcionários em Risco</h3>
-                    <span class="ml-auto inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary">
+                    <div class="flex-1">
+                        <h3 class="text-sm font-semibold text-gray-800">Funcionários em Risco</h3>
+                        <p class="text-xs text-gray-500 mt-0.5">Tinham atividade mas estão inativos há 30+ dias</p>
+                    </div>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-700">
                         {{ count($atRiskUsers) }}
                     </span>
                 </div>
@@ -210,18 +213,68 @@
                                     <p class="text-xs text-gray-600">{{ $user['email'] }}</p>
                                 </td>
                                 <td class="px-6 py-4">
-                                    @if($user['last_activity'])
-                                        <p class="text-xs text-gray-600">{{ $user['last_activity']->format('d/m/Y H:i') }}</p>
-                                    @else
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary">
-                                            Nunca iniciou
-                                        </span>
-                                    @endif
+                                    <p class="text-xs text-gray-600">{{ $user['last_activity']->format('d/m/Y H:i') }}</p>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full font-bold text-white {{ $user['days_inactive'] >= 60 ? 'bg-primary' : 'bg-primary/70' }}">
-                                        {{ min($user['days_inactive'], 99) }}
+                                    <span class="inline-flex items-center justify-center min-w-8 h-8 px-2 rounded-full font-bold text-white text-xs {{ $user['days_inactive'] >= 60 ? 'bg-red-500' : 'bg-orange-500' }}">
+                                        {{ $user['days_inactive'] }}
                                     </span>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @endif
+
+    {{-- Disengaged Users (nunca iniciaram) --}}
+    @if(count($disengagedUsers) > 0)
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mt-6">
+            <div class="px-6 py-4 bg-yellow-50 border-b border-yellow-100">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div class="flex-1">
+                        <h3 class="text-sm font-semibold text-gray-800">Sem Engajamento</h3>
+                        <p class="text-xs text-gray-500 mt-0.5">Têm treinamentos atribuídos mas nunca iniciaram</p>
+                    </div>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">
+                        {{ count($disengagedUsers) }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50 border-b border-gray-100">
+                        <tr>
+                            <th class="text-left px-6 py-3 font-semibold text-gray-700">Funcionário</th>
+                            <th class="text-left px-6 py-3 font-semibold text-gray-700">E-mail</th>
+                            <th class="text-center px-6 py-3 font-semibold text-gray-700">Treinamentos Atribuídos</th>
+                            <th class="text-center px-6 py-3 font-semibold text-gray-700">Dias desde cadastro</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        @foreach($disengagedUsers as $user)
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="px-6 py-4">
+                                    <p class="text-sm font-semibold text-gray-800">{{ $user['name'] }}</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-xs text-gray-600">{{ $user['email'] }}</p>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="inline-flex items-center gap-1 text-xs font-medium text-gray-700">
+                                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                        </svg>
+                                        {{ $user['assigned_trainings'] }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-xs text-gray-600">{{ $user['days_since_registration'] }} {{ $user['days_since_registration'] === 1 ? 'dia' : 'dias' }}</span>
                                 </td>
                             </tr>
                         @endforeach
