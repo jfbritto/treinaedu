@@ -13,28 +13,28 @@
 
 <table class="wrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation">
 <tr>
-<td align="center">
-<table class="content" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+<td align="center" style="padding: 24px 0;">
+
+<!-- Container fixo de 570px para alinhar header + body -->
+<table align="center" width="570" cellpadding="0" cellspacing="0" role="presentation" style="margin: 0 auto; width: 570px;">
+
 {{ $header ?? '' }}
 
-<!-- Email Body -->
+<!-- Spacer -->
+<tr><td height="24" style="line-height: 24px; font-size: 24px;">&nbsp;</td></tr>
+
+<!-- Body -->
 <tr>
-<td class="body" width="100%" cellpadding="0" cellspacing="0" style="border: hidden !important;">
-<table class="inner-body" align="center" width="570" cellpadding="0" cellspacing="0" role="presentation">
-<!-- Body content -->
-<tr>
-<td class="content-cell">
+<td class="inner-body" style="background-color: #ffffff; border-radius: 12px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); padding: 32px;">
 {{ Illuminate\Mail\Markdown::parse($slot) }}
 
 {{ $subcopy ?? '' }}
 </td>
 </tr>
-</table>
-</td>
-</tr>
 
 {{ $footer ?? '' }}
 </table>
+
 </td>
 </tr>
 </table>
