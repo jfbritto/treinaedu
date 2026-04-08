@@ -44,12 +44,17 @@
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     {{-- Duração --}}
+                    @php
+                        $totalMin = $training->calculatedDuration();
+                        $durValue = $totalMin >= 60 ? floor($totalMin/60) : $totalMin;
+                        $durUnit = $totalMin >= 60 ? ($totalMin%60 > 0 ? 'h '.($totalMin%60).'min' : 'horas') : 'minutos';
+                    @endphp
                     <div class="rounded-xl p-5 border-2 border-primary/25 bg-primary/5">
                         <div class="flex items-start justify-between gap-3">
                             <div>
                                 <p class="text-xs font-bold text-primary uppercase tracking-wider">Duração</p>
-                                <p class="text-3xl font-bold text-gray-800 mt-2">{{ $training->duration_minutes }}</p>
-                                <p class="text-sm text-gray-600 mt-1">minutos</p>
+                                <p class="text-3xl font-bold text-gray-800 mt-2">{{ $durValue }}</p>
+                                <p class="text-sm text-gray-600 mt-1">{{ $durUnit }}</p>
                             </div>
                             <div class="w-14 h-14 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0">
                                 <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
