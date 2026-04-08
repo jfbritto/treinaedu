@@ -179,6 +179,13 @@ class TrainingController extends Controller
 
         $canGenerateCertificate = $isCompleted && $allModuleQuizzesPassed && $allLessonQuizzesPassed && $trainingQuizPassed;
 
+        // Final training quiz is available when all prerequisites are done but the final quiz itself hasn't been passed
+        $canTakeTrainingQuiz = (bool) $training->trainingQuiz
+            && $allLessonsComplete
+            && $allLessonQuizzesPassed
+            && $allModuleQuizzesPassed
+            && !$trainingQuizPassed;
+
         // Get assignment info for due date
         $assignment = $training->assignments()
             ->whereIn('group_id', $user->groups()->pluck('groups.id'))
@@ -187,7 +194,8 @@ class TrainingController extends Controller
         return view('employee.trainings.show', compact(
             'training', 'currentLesson', 'lessonViews', 'unlockStates',
             'trainingView', 'trainingProgress', 'canComplete', 'isCompleted',
-            'canGenerateCertificate', 'assignment'
+            'canGenerateCertificate', 'canTakeTrainingQuiz',
+            'trainingQuizPassed', 'assignment'
         ));
     }
 

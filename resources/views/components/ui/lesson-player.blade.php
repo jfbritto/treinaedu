@@ -2,6 +2,17 @@
 
 @php
     $progress = $lessonView?->progress_percent ?? 0;
+    $lessonHasQuiz = (bool) $lesson->quiz;
+    $lessonQuizPassed = $lessonHasQuiz && auth()->user()->quizAttempts()
+        ->where('quiz_id', $lesson->quiz->id)
+        ->where('passed', true)
+        ->exists();
+    $quizUrl = $lessonHasQuiz
+        ? route('employee.quiz.show', ['training' => $training, 'lesson' => $lesson->id])
+        : null;
+    // When lesson has a pending quiz, block advancing to next lesson
+    $requiresQuiz = $lessonHasQuiz && !$lessonQuizPassed;
+    $effectiveNextUrl = $requiresQuiz ? null : $nextLessonUrl;
 @endphp
 
 <div>
@@ -12,7 +23,8 @@
             :provider="$lesson->video_provider"
             :training-id="$lesson->id"
             :initial-progress="$progress"
-            :next-lesson-url="$nextLessonUrl"
+            :next-lesson-url="$effectiveNextUrl"
+            :quiz-url="$requiresQuiz ? $quizUrl : null"
         />
 
         {{-- Control bar --}}
@@ -53,22 +65,34 @@
                 {{-- Next button --}}
                 <div class="w-32 text-right">
                     @if($nextLessonUrl)
-                        {{-- Enabled state --}}
-                        <a x-show="completed" href="{{ $nextLessonUrl }}" class="inline-flex items-center gap-1.5 text-sm font-semibold transition px-3 py-1.5 rounded-lg text-white" style="background-color: var(--primary)">
-                            Próxima
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </a>
-                        {{-- Disabled state --}}
-                        <span x-show="!completed" x-cloak
-                              @click="Swal.fire({ icon: 'info', title: 'Aula em andamento', text: 'Assista a aula atual antes de avançar para a próxima.', confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() })"
-                              class="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-lg text-gray-400 bg-gray-100 cursor-not-allowed">
-                            Próxima
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </span>
+                        @if($requiresQuiz)
+                            {{-- Blocked by pending quiz --}}
+                            <span
+                                @click="Swal.fire({ icon: 'info', title: 'Quiz pendente', text: 'Você precisa realizar e passar no quiz desta aula para avançar.', confirmButtonText: 'Fazer quiz', confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() }).then((r) => { if (r.isConfirmed) window.location.href = '{{ $quizUrl }}'; })"
+                                class="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-lg text-gray-400 bg-gray-100 cursor-not-allowed">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                                Próxima
+                            </span>
+                        @else
+                            {{-- Enabled state --}}
+                            <a x-show="completed" href="{{ $nextLessonUrl }}" class="inline-flex items-center gap-1.5 text-sm font-semibold transition px-3 py-1.5 rounded-lg text-white" style="background-color: var(--primary)">
+                                Próxima
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </a>
+                            {{-- Disabled state --}}
+                            <span x-show="!completed" x-cloak
+                                  @click="Swal.fire({ icon: 'info', title: 'Aula em andamento', text: 'Assista a aula atual antes de avançar para a próxima.', confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() })"
+                                  class="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-lg text-gray-400 bg-gray-100 cursor-not-allowed">
+                                Próxima
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </span>
+                        @endif
                     @endif
                 </div>
             </div>
@@ -107,9 +131,18 @@
                         Concluída
                     </span>
                     @if($nextLessonUrl)
-                        <a href="{{ $nextLessonUrl }}" class="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-lg text-white transition" style="background-color: var(--primary)">
-                            Próxima <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                        </a>
+                        @if($requiresQuiz)
+                            <span
+                                @click="Swal.fire({ icon: 'info', title: 'Quiz pendente', text: 'Você precisa realizar e passar no quiz desta aula para avançar.', confirmButtonText: 'Fazer quiz', confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() }).then((r) => { if (r.isConfirmed) window.location.href = '{{ $quizUrl }}'; })"
+                                class="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-lg text-gray-400 bg-gray-100 cursor-not-allowed">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                Próxima
+                            </span>
+                        @else
+                            <a href="{{ $nextLessonUrl }}" class="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-lg text-white transition" style="background-color: var(--primary)">
+                                Próxima <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                        @endif
                     @endif
                 </div>
             </div>
@@ -153,43 +186,83 @@
                     </span>
                     <span x-show="!completed" class="text-xs text-gray-400">Lendo...</span>
                     @if($nextLessonUrl)
-                        <a href="{{ $nextLessonUrl }}" class="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-lg text-white transition" style="background-color: var(--primary)">
-                            Próxima <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                        </a>
+                        @if($requiresQuiz)
+                            <span
+                                @click="Swal.fire({ icon: 'info', title: 'Quiz pendente', text: 'Você precisa realizar e passar no quiz desta aula para avançar.', confirmButtonText: 'Fazer quiz', confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() }).then((r) => { if (r.isConfirmed) window.location.href = '{{ $quizUrl }}'; })"
+                                class="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-lg text-gray-400 bg-gray-100 cursor-not-allowed">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                Próxima
+                            </span>
+                        @else
+                            <a href="{{ $nextLessonUrl }}" class="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-lg text-white transition" style="background-color: var(--primary)">
+                                Próxima <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                        @endif
                     @endif
                 </div>
             </div>
         </div>
     @endif
 
-    {{-- Lesson quiz button --}}
-    @if($lesson->quiz)
+    {{-- Lesson quiz CTA --}}
+    @if($lessonHasQuiz)
         @php
             $lessonProgress = $lessonView?->progress_percent ?? 0;
             $threshold = $lesson->completionThreshold();
             $lessonMeetsThreshold = $lessonProgress >= $threshold;
-            $lessonQuizPassed = auth()->user()->quizAttempts()
-                ->where('quiz_id', $lesson->quiz->id)
-                ->where('passed', true)->exists();
         @endphp
-        <div class="mt-2">
-            @if($lessonQuizPassed)
-                <span class="inline-flex items-center gap-1.5 text-xs text-green-600">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/>
+
+        @if($lessonQuizPassed)
+            {{-- Quiz passed --}}
+            <div class="mt-4 bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    Quiz aprovado
-                </span>
-            @elseif($lessonMeetsThreshold)
-                <a href="{{ route('employee.quiz.show', ['training' => $training, 'lesson' => $lesson->id]) }}"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition"
-                    style="background-color: var(--primary)">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-green-800">Quiz aprovado</p>
+                    <p class="text-xs text-green-700">{{ $nextLessonUrl ? 'Você pode avançar para a próxima aula.' : 'Confira o quadro ao lado para os próximos passos.' }}</p>
+                </div>
+            </div>
+        @elseif($lessonMeetsThreshold)
+            {{-- Quiz pending — lesson watched, blocking next lesson --}}
+            <div class="mt-4 rounded-xl p-5 text-white relative overflow-hidden"
+                 style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
+                <div class="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/10"></div>
+                <div class="relative flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center flex-shrink-0">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs text-white/70 uppercase tracking-wider mb-0.5">Quiz pendente</p>
+                        <p class="text-base font-bold">Complete o quiz para avançar</p>
+                        <p class="text-xs text-white/80 mt-0.5">Você precisa passar no quiz desta aula antes de ir para a próxima.</p>
+                    </div>
+                    <a href="{{ $quizUrl }}"
+                        class="flex-shrink-0 inline-flex items-center gap-1.5 bg-white text-primary px-4 py-2 rounded-lg text-sm font-semibold transition hover:scale-105 shadow-sm">
+                        Fazer quiz
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        @else
+            {{-- Quiz exists but lesson not yet completed --}}
+            <div class="mt-4 bg-gray-50 border border-gray-200 rounded-xl p-4 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                     </svg>
-                    Fazer quiz
-                </a>
-            @endif
-        </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-gray-700">Quiz disponível ao concluir a aula</p>
+                    <p class="text-xs text-gray-500">Assista toda a aula para liberar o quiz e poder avançar.</p>
+                </div>
+            </div>
+        @endif
     @endif
 </div>

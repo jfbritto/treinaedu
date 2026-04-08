@@ -11,7 +11,30 @@
                     :lesson-views="$lessonViews"
                     :unlock-states="$unlockStates"
                     :training-progress="$trainingProgress"
+                    :training-quiz-passed="$trainingQuizPassed"
+                    :can-take-training-quiz="$canTakeTrainingQuiz"
                 />
+
+                {{-- Final training quiz CTA --}}
+                @if($canTakeTrainingQuiz)
+                    <a href="{{ route('employee.quiz.show', $training) }}"
+                       class="block rounded-xl p-4 text-white relative overflow-hidden shadow-sm hover:shadow-md transition"
+                       style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
+                        <div class="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-white/10"></div>
+                        <div class="relative flex items-start gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-xs text-white/70 uppercase tracking-wider mb-0.5">Última etapa</p>
+                                <p class="text-sm font-bold leading-snug">Fazer Quiz Final</p>
+                                <p class="text-xs text-white/80 mt-0.5">Conclua para finalizar o treinamento</p>
+                            </div>
+                        </div>
+                    </a>
+                @endif
 
                 {{-- Completion / Certificate --}}
                 @if($canComplete)

@@ -1,4 +1,4 @@
-@props(['videoUrl', 'provider', 'trainingId', 'initialProgress' => 0, 'nextLessonUrl' => null])
+@props(['videoUrl', 'provider', 'trainingId', 'initialProgress' => 0, 'nextLessonUrl' => null, 'quizUrl' => null])
 
 @php
     $videoId = '';
@@ -11,7 +11,7 @@
     }
 @endphp
 
-<div x-data="videoPlayer(@js($trainingId), @js($provider), @js($videoId), @js((int) $initialProgress), @js($nextLessonUrl))">
+<div x-data="videoPlayer(@js($trainingId), @js($provider), @js($videoId), @js((int) $initialProgress), @js($nextLessonUrl), @js($quizUrl))">
     @if($provider === 'youtube')
         <div class="relative aspect-video rounded-xl overflow-hidden bg-black">
             <div id="yt-player-{{ $trainingId }}" class="absolute inset-0 w-full h-full"></div>
@@ -32,7 +32,7 @@
 
 @push('scripts')
 <script>
-    function videoPlayer(trainingId, provider, videoId, initialProgress, nextLessonUrl) {
+    function videoPlayer(trainingId, provider, videoId, initialProgress, nextLessonUrl, quizUrl) {
         return {
             progress: initialProgress,
             interval: null,
@@ -83,14 +83,31 @@
                                 // captura seek com pause, e fim do vídeo
                                 if (event.data === YT.PlayerState.ENDED) {
                                     if (self.progress < 100) self.updateProgress(100);
-                                    // Navigate to next lesson or show completion
-                                    setTimeout(() => {
-                                        if (nextLessonUrl) {
-                                            window.location.href = nextLessonUrl;
-                                        } else {
-                                            window.dispatchEvent(new CustomEvent('training-last-lesson-ended'));
-                                        }
-                                    }, 1000);
+                                    // If lesson has a pending quiz, prompt the user to take it
+                                    if (quizUrl) {
+                                        setTimeout(() => {
+                                            Swal.fire({
+                                                icon: 'info',
+                                                title: 'Aula concluída!',
+                                                text: 'Agora faça o quiz para avançar para a próxima aula.',
+                                                confirmButtonText: 'Fazer quiz agora',
+                                                confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--primary').trim(),
+                                                allowOutsideClick: false,
+                                                allowEscapeKey: false,
+                                            }).then(() => {
+                                                window.location.href = quizUrl;
+                                            });
+                                        }, 500);
+                                    } else {
+                                        // Navigate to next lesson or show completion
+                                        setTimeout(() => {
+                                            if (nextLessonUrl) {
+                                                window.location.href = nextLessonUrl;
+                                            } else {
+                                                window.dispatchEvent(new CustomEvent('training-last-lesson-ended'));
+                                            }
+                                        }, 1000);
+                                    }
                                 } else if (event.data === YT.PlayerState.PAUSED ||
                                     event.data === YT.PlayerState.BUFFERING) {
                                     self.checkYTProgress();

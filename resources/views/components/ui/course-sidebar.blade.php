@@ -1,4 +1,4 @@
-@props(['training', 'currentLesson', 'lessonViews', 'unlockStates', 'trainingProgress'])
+@props(['training', 'currentLesson', 'lessonViews', 'unlockStates', 'trainingProgress', 'trainingQuizPassed' => false, 'canTakeTrainingQuiz' => false])
 
 @php
     $moduleIds = $training->modules->pluck('id')->toArray();
@@ -93,5 +93,44 @@
                 @endforeach
             </div>
         @endforeach
+
+        {{-- Final training quiz --}}
+        @if($training->trainingQuiz)
+            <div class="border-t border-gray-50">
+                @if($trainingQuizPassed)
+                    <div class="flex items-center gap-2.5 px-4 py-3 text-sm">
+                        <div class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <span class="flex-1 text-xs font-semibold text-gray-600">Quiz Final</span>
+                        <span class="text-xs text-green-600 font-medium">Aprovado</span>
+                    </div>
+                @elseif($canTakeTrainingQuiz)
+                    <a href="{{ route('employee.quiz.show', $training) }}"
+                       class="flex items-center gap-2.5 px-4 py-3 text-sm hover:bg-primary/5 transition">
+                        <div class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                             style="background-color: color-mix(in srgb, var(--primary) 15%, transparent)">
+                            <svg class="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                        </div>
+                        <span class="flex-1 text-xs font-bold text-primary">Quiz Final</span>
+                        <span class="text-xs text-primary font-medium">Disponível</span>
+                    </a>
+                @else
+                    <div class="flex items-center gap-2.5 px-4 py-3 text-sm">
+                        <div class="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-3 h-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                        </div>
+                        <span class="flex-1 text-xs font-semibold text-gray-400">Quiz Final</span>
+                        <span class="text-xs text-gray-300">Bloqueado</span>
+                    </div>
+                @endif
+            </div>
+        @endif
     </div>
 </div>

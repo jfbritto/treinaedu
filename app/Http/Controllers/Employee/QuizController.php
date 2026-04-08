@@ -129,6 +129,9 @@ class QuizController extends Controller
 
         // Calculate next lesson URL if this was a lesson/module quiz
         $nextLessonUrl = null;
+        $nextQuizUrl = null;
+        $nextQuizLabel = null;
+
         if (($quizLevel === 'lesson' || $quizLevel === 'module') && $passed) {
             $allLessons = $training->modules->flatMap->lessons;
             $currentLesson = $lessonId ? TrainingLesson::find($lessonId) : $allLessons->first();
@@ -137,9 +140,79 @@ class QuizController extends Controller
             if ($nextLesson) {
                 $nextLessonUrl = route('employee.trainings.show', ['training' => $training, 'lesson' => $nextLesson->id, 'autoplay' => 1]);
             }
+
+            // If no next lesson, check if the training has a final quiz that is now available
+            if (!$nextLessonUrl && $training->trainingQuiz && $this->canTakeTrainingQuiz($user, $training)) {
+                $nextQuizUrl = route('employee.quiz.show', $training);
+                $nextQuizLabel = 'Fazer quiz final';
+            }
         }
 
-        return view('employee.quiz.result', compact('training', 'attempt', 'score', 'passed', 'moduleId', 'lessonId', 'quizLevel', 'nextLessonUrl'));
+        return view('employee.quiz.result', compact(
+            'training', 'attempt', 'score', 'passed', 'moduleId', 'lessonId',
+            'quizLevel', 'nextLessonUrl', 'nextQuizUrl', 'nextQuizLabel'
+        ));
+    }
+
+    /**
+     * Check if the user can now take the training-level (final) quiz.
+     * Returns false if training has no final quiz, user already passed it,
+     * or any prerequisite is missing.
+     */
+    private function canTakeTrainingQuiz($user, Training $training): bool
+    {
+        if (!$training->trainingQuiz) {
+            return false;
+        }
+
+        // Already passed?
+        $alreadyPassed = $user->quizAttempts()
+            ->where('quiz_id', $training->trainingQuiz->id)
+            ->where('passed', true)
+            ->exists();
+        if ($alreadyPassed) {
+            return false;
+        }
+
+        $modules = $training->modules()->with(['lessons.quiz', 'quiz'])->get();
+
+        foreach ($modules as $module) {
+            $lessonIds = $module->lessons->pluck('id');
+            if ($lessonIds->isNotEmpty()) {
+                $completedCount = LessonView::withoutGlobalScope('company')
+                    ->where('user_id', $user->id)
+                    ->whereIn('lesson_id', $lessonIds)
+                    ->whereNotNull('completed_at')
+                    ->count();
+                if ($completedCount < $lessonIds->count()) {
+                    return false;
+                }
+            }
+
+            foreach ($module->lessons as $lesson) {
+                if ($lesson->quiz) {
+                    $passed = $user->quizAttempts()
+                        ->where('quiz_id', $lesson->quiz->id)
+                        ->where('passed', true)
+                        ->exists();
+                    if (!$passed) {
+                        return false;
+                    }
+                }
+            }
+
+            if ($module->quiz) {
+                $passed = $user->quizAttempts()
+                    ->where('quiz_id', $module->quiz->id)
+                    ->where('passed', true)
+                    ->exists();
+                if (!$passed) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
