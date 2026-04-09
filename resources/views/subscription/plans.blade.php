@@ -39,7 +39,7 @@
                 @endphp
                 <div @if($isSelectable) @click="selectedPlan = {{ $plan->id }}; showCardForm = true" @endif
                      :class="selectedPlan === {{ $plan->id }} ? 'border-primary ring-2 ring-primary/20' : '{{ $isCurrent ? 'border-green-300' : ($isDowngrade ? 'border-gray-100 opacity-60' : 'border-gray-100 hover:border-gray-300') }}'"
-                     class="bg-white rounded-xl shadow-sm overflow-hidden border-2 {{ $isSelectable ? 'cursor-pointer' : '' }} transition relative">
+                     class="bg-white rounded-xl shadow-sm overflow-hidden border-2 {{ $isSelectable ? 'cursor-pointer' : '' }} transition relative flex flex-col">
 
                     @if($isCurrent)
                         <div class="text-center text-xs font-semibold py-1.5 uppercase tracking-wide text-white" style="background-color: var(--primary)">
@@ -47,7 +47,7 @@
                         </div>
                     @endif
 
-                    <div class="p-6">
+                    <div class="p-6 flex-1 flex flex-col">
                         <h3 class="text-lg font-bold text-gray-800">{{ $plan->name }}</h3>
                         <div class="mt-2 flex items-baseline gap-1">
                             <span class="text-3xl font-extrabold text-gray-900">R$ {{ number_format($plan->price, 2, ',', '.') }}</span>
@@ -90,7 +90,7 @@
                             </li>
                         </ul>
 
-                        <div class="mt-5">
+                        <div class="mt-auto pt-5">
                             @if($isCurrent)
                                 <span class="block text-center py-2.5 rounded-lg text-sm font-semibold bg-green-50 text-green-700 border border-green-200">
                                     Plano atual
