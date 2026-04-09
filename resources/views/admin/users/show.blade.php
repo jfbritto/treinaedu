@@ -25,6 +25,17 @@
             <span class="text-sm font-medium">Voltar</span>
         </a>
         <div class="flex items-center gap-2">
+            @if(!$user->last_login_at && $user->role !== 'admin')
+                <form method="POST" action="{{ route('users.resend-invite', $user) }}">
+                    @csrf
+                    <button type="submit" class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                        Reenviar convite
+                    </button>
+                </form>
+            @endif
             <a href="{{ route('users.edit', $user) }}"
                class="inline-flex items-center gap-2 bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
