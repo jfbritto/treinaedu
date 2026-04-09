@@ -33,10 +33,10 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $basicPlan = Plan::where('name', 'Basic')->first();
+        $basicPlan = Plan::where('name', 'Starter')->first();
 
         if (!$basicPlan) {
-            \Log::error('Plano Basic não encontrado durante registro de empresa', [
+            \Log::error('Plano Starter não encontrado durante registro de empresa', [
                 'company_name' => $request->company_name,
                 'email' => $request->email,
             ]);

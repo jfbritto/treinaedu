@@ -25,7 +25,7 @@ class RegistrationTest extends TestCase
 
     public function test_new_users_can_register(): void
     {
-        \App\Models\Plan::create(['name' => 'Basic', 'price' => 99.90, 'max_users' => 50, 'max_trainings' => 20, 'features' => ['certificates', 'reports']]);
+        \App\Models\Plan::create(['name' => 'Starter', 'price' => 199.00, 'max_users' => 20, 'max_trainings' => 30, 'features' => ['certificates', 'reports']]);
 
         $response = $this->post('/register', [
             'company_name' => 'Test Company',

@@ -19,7 +19,7 @@ class RegistrationFlowTest extends TestCase
 
     public function test_company_registration_creates_company_user_and_trial(): void
     {
-        Plan::create(['name' => 'Basic', 'price' => 99.90, 'max_users' => 50, 'max_trainings' => 20, 'features' => ['certificates', 'reports']]);
+        Plan::create(['name' => 'Starter', 'price' => 199.00, 'max_users' => 20, 'max_trainings' => 30, 'features' => ['certificates', 'reports']]);
 
         $response = $this->post('/register', [
             'company_name' => 'Minha Empresa',
