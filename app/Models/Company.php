@@ -60,6 +60,11 @@ class Company extends Model
 
     public function hasReachedUserLimit(): bool
     {
+        // Trial has no limits
+        if ($this->isOnTrial()) {
+            return false;
+        }
+
         $plan = $this->subscription?->plan;
 
         if (!$plan || !$plan->max_users) {
@@ -72,6 +77,11 @@ class Company extends Model
 
     public function hasReachedTrainingLimit(): bool
     {
+        // Trial has no limits
+        if ($this->isOnTrial()) {
+            return false;
+        }
+
         $plan = $this->subscription?->plan;
 
         if (!$plan || !$plan->max_trainings) {
@@ -85,6 +95,11 @@ class Company extends Model
 
     public function planHasFeature(string $feature): bool
     {
+        // During trial, all features are unlocked so the user can try everything
+        if ($this->isOnTrial()) {
+            return true;
+        }
+
         return $this->subscription?->plan?->hasFeature($feature) ?? false;
     }
 }
