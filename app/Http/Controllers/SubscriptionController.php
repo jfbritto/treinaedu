@@ -70,7 +70,23 @@ class SubscriptionController extends Controller
         $company = auth()->user()->company;
         $subscription = $company->subscription()->with('plan')->first();
         $payments = $subscription?->payments()->latest()->paginate(10) ?? collect();
+        $plan = $subscription?->plan;
 
-        return view('subscription.show', compact('subscription', 'payments'));
+        // Usage stats
+        $usersCount = $company->users()->whereIn('role', ['instructor', 'employee'])->count();
+        $trainingsCount = \App\Models\Training::withoutGlobalScopes()->where('company_id', $company->id)->count();
+        $certificatesCount = \App\Models\Certificate::withoutGlobalScopes()->where('company_id', $company->id)->count();
+
+        $usage = [
+            'users' => $usersCount,
+            'users_limit' => $plan?->max_users,
+            'users_pct' => $plan?->max_users ? min(100, round(($usersCount / $plan->max_users) * 100)) : 0,
+            'trainings' => $trainingsCount,
+            'trainings_limit' => $plan?->max_trainings,
+            'trainings_pct' => $plan?->max_trainings ? min(100, round(($trainingsCount / $plan->max_trainings) * 100)) : 0,
+            'certificates' => $certificatesCount,
+        ];
+
+        return view('subscription.show', compact('subscription', 'payments', 'plan', 'usage'));
     }
 }
