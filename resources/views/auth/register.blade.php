@@ -28,7 +28,7 @@
                 </div>
                 <input type="text" id="company_name" name="company_name" value="{{ old('company_name') }}" required autofocus
                     placeholder="Ex: Minha Empresa Ltda"
-                    class="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border @error('company_name') border-red-400 bg-red-50 @else border-gray-300 bg-white @enderror text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                    class="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border @error('company_name') border-red-400 bg-red-50 @else border-gray-300 bg-white @enderror text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
             </div>
             @error('company_name')
                 <p class="flex items-center gap-1 text-red-500 text-xs">
@@ -49,7 +49,7 @@
                 </div>
                 <input type="text" id="name" name="name" value="{{ old('name') }}" required
                     placeholder="Seu nome completo"
-                    class="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border @error('name') border-red-400 bg-red-50 @else border-gray-300 bg-white @enderror text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                    class="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border @error('name') border-red-400 bg-red-50 @else border-gray-300 bg-white @enderror text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
             </div>
             @error('name')
                 <p class="flex items-center gap-1 text-red-500 text-xs">
@@ -70,7 +70,7 @@
                 </div>
                 <input type="email" id="email" name="email" value="{{ old('email') }}" required
                     placeholder="seu@email.com"
-                    class="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border @error('email') border-red-400 bg-red-50 @else border-gray-300 bg-white @enderror text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                    class="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border @error('email') border-red-400 bg-red-50 @else border-gray-300 bg-white @enderror text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
             </div>
             @error('email')
                 <p class="flex items-center gap-1 text-red-500 text-xs">
@@ -92,7 +92,7 @@
                     </div>
                     <input type="password" id="password" name="password" required
                         placeholder="Min. 8 caracteres"
-                        class="w-full pl-10 pr-3 py-2.5 text-sm rounded-lg border @error('password') border-red-400 bg-red-50 @else border-gray-300 bg-white @enderror text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                        class="w-full pl-10 pr-3 py-2.5 text-sm rounded-lg border @error('password') border-red-400 bg-red-50 @else border-gray-300 bg-white @enderror text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
                 </div>
                 @error('password')
                     <p class="flex items-center gap-1 text-red-500 text-xs">
@@ -111,14 +111,15 @@
                     </div>
                     <input type="password" id="password_confirmation" name="password_confirmation" required
                         placeholder="Repita a senha"
-                        class="w-full pl-10 pr-3 py-2.5 text-sm rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                        class="w-full pl-10 pr-3 py-2.5 text-sm rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
                 </div>
             </div>
         </div>
 
         {{-- Botao --}}
         <button type="submit"
-            class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition-colors shadow-sm">
+            class="w-full flex items-center justify-center gap-2 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition-all shadow-sm hover:shadow-md"
+            style="background: linear-gradient(135deg, #4f46e5, #3730a3)"
             Criar Conta Gratuita
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
@@ -160,7 +161,7 @@
         {{-- Link de login --}}
         <p class="text-center text-sm text-gray-500">
             Já tem uma conta?
-            <a href="{{ route('login') }}" class="text-blue-600 hover:text-blue-700 font-medium hover:underline">
+            <a href="{{ route('login') }}" class="text-indigo-600 hover:text-indigo-700 font-medium hover:underline">
                 Entrar
             </a>
         </p>

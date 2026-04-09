@@ -35,7 +35,7 @@
                     autofocus
                     autocomplete="email"
                     placeholder="seu@email.com"
-                    class="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border @error('email') border-red-400 bg-red-50 @else border-gray-300 bg-white @enderror text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    class="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border @error('email') border-red-400 bg-red-50 @else border-gray-300 bg-white @enderror text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                 >
             </div>
             @error('email')
@@ -62,7 +62,7 @@
                     required
                     autocomplete="current-password"
                     placeholder="••••••••"
-                    class="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border @error('password') border-red-400 bg-red-50 @else border-gray-300 bg-white @enderror text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    class="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border @error('password') border-red-400 bg-red-50 @else border-gray-300 bg-white @enderror text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                 >
             </div>
             @error('password')
@@ -79,12 +79,12 @@
                 <input
                     type="checkbox"
                     name="remember"
-                    class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                    class="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
                 >
                 <span class="text-sm text-gray-600">Lembrar de mim</span>
             </label>
             @if (Route::has('password.request'))
-                <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:text-blue-700 font-medium hover:underline">
+                <a href="{{ route('password.request') }}" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium hover:underline">
                     Esqueceu a senha?
                 </a>
             @endif
@@ -93,7 +93,8 @@
         {{-- Botão --}}
         <button
             type="submit"
-            class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition-colors shadow-sm"
+            class="w-full flex items-center justify-center gap-2 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition-all shadow-sm hover:shadow-md"
+            style="background: linear-gradient(135deg, #4f46e5, #3730a3)"
         >
             Entrar
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,7 +115,7 @@
         {{-- Link de cadastro --}}
         <p class="text-center text-sm text-gray-500">
             Não tem conta?
-            <a href="{{ route('register') }}" class="text-blue-600 hover:text-blue-700 font-medium hover:underline">
+            <a href="{{ route('register') }}" class="text-indigo-600 hover:text-indigo-700 font-medium hover:underline">
                 Criar conta gratuita
             </a>
         </p>

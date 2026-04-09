@@ -28,7 +28,7 @@
                     autofocus
                     autocomplete="email"
                     placeholder="seu@email.com"
-                    class="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border @error('email') border-red-400 bg-red-50 @else border-gray-300 bg-white @enderror text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    class="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border @error('email') border-red-400 bg-red-50 @else border-gray-300 bg-white @enderror text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                 >
             </div>
             @error('email')
@@ -55,7 +55,7 @@
                     required
                     autocomplete="new-password"
                     placeholder="Minimo 8 caracteres"
-                    class="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border @error('password') border-red-400 bg-red-50 @else border-gray-300 bg-white @enderror text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    class="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border @error('password') border-red-400 bg-red-50 @else border-gray-300 bg-white @enderror text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                 >
             </div>
             @error('password')
@@ -82,7 +82,7 @@
                     required
                     autocomplete="new-password"
                     placeholder="Repita a nova senha"
-                    class="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    class="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                 >
             </div>
             @error('password_confirmation')
@@ -96,7 +96,7 @@
         {{-- Botao --}}
         <button
             type="submit"
-            class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition-colors shadow-sm"
+            class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition-colors shadow-sm"
         >
             Redefinir senha
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,7 +106,7 @@
 
         {{-- Voltar ao login --}}
         <p class="text-center text-sm text-gray-500">
-            <a href="{{ route('login') }}" class="text-blue-600 hover:text-blue-700 font-medium hover:underline">
+            <a href="{{ route('login') }}" class="text-indigo-600 hover:text-indigo-700 font-medium hover:underline">
                 Voltar ao login
             </a>
         </p>
