@@ -2,8 +2,8 @@
 
     @php
         $totalPaths = $paths->count();
-        $completedPaths = $paths->where('progress_percent', 100)->count();
-        $inProgressPaths = $paths->filter(fn ($p) => $p->progress_percent > 0 && $p->progress_percent < 100)->count();
+        $completedPaths = $paths->filter(fn ($p) => (int) $p->progress_percent >= 100)->count();
+        $inProgressPaths = $paths->filter(fn ($p) => (int) $p->progress_percent > 0 && (int) $p->progress_percent < 100)->count();
     @endphp
 
     <p class="text-sm text-gray-500 mb-6">Jornadas de aprendizagem atribuídas a você</p>
@@ -80,8 +80,9 @@
             <div class="p-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 @foreach($paths as $path)
                     @php
-                        $isComplete = $path->progress_percent === 100;
-                        $isStarted = $path->progress_percent > 0;
+                        $pct = (int) $path->progress_percent;
+                        $isComplete = $pct >= 100;
+                        $isStarted = $pct > 0 && $pct < 100;
                     @endphp
                     <a href="{{ route('employee.paths.show', $path) }}"
                        class="border border-gray-100 rounded-xl overflow-hidden hover:shadow-md hover:border-primary/20 transition flex flex-col group">

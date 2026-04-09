@@ -25,7 +25,7 @@ class PathController extends Controller
                     ->count();
                 $path->completed_trainings = $completed;
                 $path->progress_percent = $trainingIds->count() > 0
-                    ? round(($completed / $trainingIds->count()) * 100)
+                    ? (int) round(($completed / $trainingIds->count()) * 100)
                     : 0;
                 return $path;
             });
