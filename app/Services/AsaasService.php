@@ -126,15 +126,23 @@ class AsaasService
             return;
         }
 
-        // Idempotency: skip if this payment was already processed
         $asaasPaymentId = $payment['id'] ?? null;
-        if ($asaasPaymentId && Payment::withoutGlobalScopes()->where('asaas_payment_id', $asaasPaymentId)->exists()) {
+
+        // Events that UPDATE an existing payment (don't need idempotency on creation)
+        $updateEvents = ['PAYMENT_REFUNDED', 'PAYMENT_DELETED', 'PAYMENT_CHARGEBACK_REQUESTED', 'PAYMENT_REPROVED_BY_RISK_ANALYSIS'];
+
+        // For creation events, skip if already processed (idempotency)
+        if (!in_array($event, $updateEvents) && $asaasPaymentId && Payment::withoutGlobalScopes()->where('asaas_payment_id', $asaasPaymentId)->exists()) {
             return;
         }
 
         match ($event) {
             'PAYMENT_CONFIRMED', 'PAYMENT_RECEIVED' => $this->handlePaymentConfirmed($subscription, $payment),
             'PAYMENT_OVERDUE' => $this->handlePaymentOverdue($subscription, $payment),
+            'PAYMENT_REFUNDED' => $this->handlePaymentRefunded($subscription, $payment),
+            'PAYMENT_DELETED' => $this->handlePaymentDeleted($payment),
+            'PAYMENT_CHARGEBACK_REQUESTED' => $this->handleChargeback($subscription, $payment),
+            'PAYMENT_REPROVED_BY_RISK_ANALYSIS' => $this->handlePaymentReproved($subscription, $payment),
             default => null,
         };
     }
@@ -258,6 +266,83 @@ class AsaasService
         } catch (\Exception $e) {
             Log::error('Asaas webhook: payment record creation failed', ['error' => $e->getMessage()]);
         }
+
+        $admin = \App\Models\User::withoutGlobalScopes()
+            ->where('company_id', $subscription->company_id)
+            ->where('role', 'admin')
+            ->first();
+        $admin?->notify(new \App\Notifications\PaymentOverdueNotification());
+    }
+
+    private function handlePaymentRefunded(Subscription $subscription, array $payment): void
+    {
+        $asaasPaymentId = $payment['id'] ?? null;
+
+        // Update existing payment record to refunded
+        if ($asaasPaymentId) {
+            Payment::withoutGlobalScopes()
+                ->where('asaas_payment_id', $asaasPaymentId)
+                ->update(['status' => 'refunded']);
+        }
+
+        Log::info('Asaas webhook: payment refunded', [
+            'company_id' => $subscription->company_id,
+            'payment_id' => $asaasPaymentId,
+        ]);
+
+        $admin = \App\Models\User::withoutGlobalScopes()
+            ->where('company_id', $subscription->company_id)
+            ->where('role', 'admin')
+            ->first();
+        $admin?->notify(new \App\Notifications\PaymentRefundedNotification($payment['value'] ?? 0));
+    }
+
+    private function handlePaymentDeleted(array $payment): void
+    {
+        $asaasPaymentId = $payment['id'] ?? null;
+
+        if ($asaasPaymentId) {
+            Payment::withoutGlobalScopes()
+                ->where('asaas_payment_id', $asaasPaymentId)
+                ->where('status', 'pending')
+                ->delete();
+        }
+    }
+
+    private function handleChargeback(Subscription $subscription, array $payment): void
+    {
+        // Chargeback is critical — suspend subscription immediately
+        $subscription->update(['status' => 'past_due']);
+
+        $asaasPaymentId = $payment['id'] ?? null;
+        if ($asaasPaymentId) {
+            Payment::withoutGlobalScopes()
+                ->where('asaas_payment_id', $asaasPaymentId)
+                ->update(['status' => 'refunded']);
+        }
+
+        Log::warning('Asaas webhook: CHARGEBACK requested', [
+            'company_id' => $subscription->company_id,
+            'payment_id' => $asaasPaymentId,
+            'amount' => $payment['value'] ?? 0,
+        ]);
+
+        $admin = \App\Models\User::withoutGlobalScopes()
+            ->where('company_id', $subscription->company_id)
+            ->where('role', 'admin')
+            ->first();
+        $admin?->notify(new \App\Notifications\PaymentChargebackNotification($payment['value'] ?? 0));
+    }
+
+    private function handlePaymentReproved(Subscription $subscription, array $payment): void
+    {
+        // Card reproved by risk analysis — treat like overdue
+        $subscription->update(['status' => 'past_due']);
+
+        Log::warning('Asaas webhook: payment reproved by risk analysis', [
+            'company_id' => $subscription->company_id,
+            'payment_id' => $payment['id'] ?? null,
+        ]);
 
         $admin = \App\Models\User::withoutGlobalScopes()
             ->where('company_id', $subscription->company_id)
