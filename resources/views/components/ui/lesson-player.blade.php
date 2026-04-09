@@ -1,4 +1,4 @@
-@props(['lesson', 'lessonView', 'training', 'nextLessonUrl' => null, 'prevLessonUrl' => null, 'currentNum' => 1, 'totalLessons' => 1])
+@props(['lesson', 'lessonView', 'training', 'nextLessonUrl' => null, 'prevLessonUrl' => null, 'currentNum' => 1, 'totalLessons' => 1, 'trainingQuizUrl' => null])
 
 @php
     $progress = $lessonView?->progress_percent ?? 0;
@@ -24,7 +24,7 @@
             :training-id="$lesson->id"
             :initial-progress="$progress"
             :next-lesson-url="$effectiveNextUrl"
-            :quiz-url="$requiresQuiz ? $quizUrl : null"
+            :quiz-url="$requiresQuiz ? $quizUrl : $trainingQuizUrl"
         />
 
         {{-- Control bar --}}

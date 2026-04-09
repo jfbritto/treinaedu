@@ -82,6 +82,14 @@
                     $currentNum = $currentIndex !== false ? $currentIndex + 1 : 1;
                     $totalLessons = $allLessons->count();
                     $isLastLesson = !$nextLesson;
+
+                    // When it's the last lesson and training has a final quiz not yet passed,
+                    // pass the quiz URL so the player redirects there instead of celebrating.
+                    // We check loosely (not $canTakeTrainingQuiz) because lessons complete
+                    // asynchronously via API — by the time the video ends, they'll be done.
+                    $trainingQuizUrl = ($isLastLesson && $training->trainingQuiz && !$trainingQuizPassed)
+                        ? route('employee.quiz.show', $training)
+                        : null;
                 @endphp
 
                 {{-- Lesson player (hidden when celebration shows) --}}
@@ -94,6 +102,7 @@
                         :prev-lesson-url="$prevLessonUrl"
                         :current-num="$currentNum"
                         :total-lessons="$totalLessons"
+                        :training-quiz-url="$trainingQuizUrl"
                     />
                 </div>
 
@@ -118,7 +127,17 @@
                             <p class="text-white font-bold text-xl mb-8">{{ $training->title }}</p>
 
                             <div class="flex flex-col items-center gap-3">
-                                @if($canComplete)
+                                @if($training->trainingQuiz && !$trainingQuizPassed)
+                                    {{-- Training has a final quiz pending --}}
+                                    <a href="{{ route('employee.quiz.show', $training) }}"
+                                       class="inline-flex items-center gap-2 bg-white font-bold px-8 py-3 rounded-xl text-sm transition shadow-lg hover:shadow-xl hover:scale-105" style="color: var(--primary)">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                        </svg>
+                                        Fazer Quiz Final
+                                    </a>
+                                    <p class="text-white/60 text-xs">Último passo antes de concluir o treinamento</p>
+                                @elseif($canComplete)
                                     <form method="POST" action="{{ route('employee.trainings.complete', $training) }}">
                                         @csrf
                                         <button type="submit" class="inline-flex items-center gap-2 bg-white font-bold px-8 py-3 rounded-xl text-sm transition shadow-lg hover:shadow-xl hover:scale-105" style="color: var(--primary)">

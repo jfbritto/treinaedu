@@ -9,6 +9,7 @@ use App\Models\QuizAttempt;
 use App\Models\Training;
 use App\Models\TrainingLesson;
 use App\Models\TrainingModule;
+use App\Models\TrainingView;
 use Illuminate\Http\Request;
 
 class QuizController extends Controller
@@ -67,7 +68,7 @@ class QuizController extends Controller
             $quiz = $training->quiz()->with('questions.options')->firstOrFail();
         }
 
-        $request->validate([
+        $validated = $request->validate([
             'answers' => 'required|array',
             'answers.*' => 'required|integer',
         ]);
@@ -75,8 +76,14 @@ class QuizController extends Controller
         $totalQuestions = $quiz->questions->count();
 
         // Ensure all questions were answered
-        if (count($request->answers) !== $totalQuestions) {
+        if (count($validated['answers']) !== $totalQuestions) {
             return back()->withErrors(['answers' => 'Responda todas as perguntas.']);
+        }
+
+        // Normalize answers to an int-keyed/int-valued map
+        $answers = [];
+        foreach ($validated['answers'] as $qId => $optId) {
+            $answers[(int) $qId] = (int) $optId;
         }
 
         $alreadyPassed = QuizAttempt::where('quiz_id', $quiz->id)
@@ -104,15 +111,23 @@ class QuizController extends Controller
         $correctAnswers = 0;
 
         foreach ($quiz->questions as $question) {
-            $selectedOptionId = $request->answers[$question->id] ?? null;
-            $correctOption = $question->options->where('is_correct', true)->first();
+            $selectedOptionId = $answers[(int) $question->id] ?? null;
+            if ($selectedOptionId === null) {
+                continue;
+            }
 
-            if ($correctOption && (int) $selectedOptionId === $correctOption->id) {
+            // Find the selected option among this question's options and check if it's correct.
+            // Using first(callback) with explicit int cast avoids any type coercion surprises.
+            $selectedOption = $question->options->first(
+                fn ($opt) => (int) $opt->id === $selectedOptionId
+            );
+
+            if ($selectedOption && $selectedOption->is_correct) {
                 $correctAnswers++;
             }
         }
 
-        $score = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100) : 0;
+        $score = $totalQuestions > 0 ? (int) round(($correctAnswers / $totalQuestions) * 100) : 0;
         $passed = $score >= ($training->passing_score ?? 70);
 
         $attempt = QuizAttempt::create([
@@ -126,6 +141,18 @@ class QuizController extends Controller
 
         // Determine quiz level and next action
         $quizLevel = $lessonId ? 'lesson' : ($moduleId ? 'module' : 'training');
+
+        // Auto-complete the training when the final quiz is passed
+        if ($quizLevel === 'training' && $passed) {
+            $trainingView = TrainingView::withoutGlobalScope('company')
+                ->where('training_id', $training->id)
+                ->where('user_id', $user->id)
+                ->first();
+
+            if ($trainingView && !$trainingView->completed_at) {
+                $trainingView->update(['completed_at' => now(), 'progress_percent' => 100]);
+            }
+        }
 
         // Calculate next lesson URL if this was a lesson/module quiz
         $nextLessonUrl = null;
