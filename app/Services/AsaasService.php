@@ -16,17 +16,20 @@ class AsaasService
 
     public function __construct()
     {
-        $this->baseUrl = config('services.asaas.base_url', 'https://sandbox.asaas.com/api/v3');
-        $this->apiKey = config('services.asaas.api_key', '');
+        $this->baseUrl = config('services.asaas.base_url') ?? 'https://sandbox.asaas.com/api/v3';
+        $this->apiKey = config('services.asaas.api_key') ?? '';
     }
 
+    /**
+     * Create a customer in Asaas and store the customer ID in the company.
+     */
     public function createCustomer(Company $company, string $email): ?string
     {
         $response = Http::withHeaders(['access_token' => $this->apiKey])
             ->post("{$this->baseUrl}/customers", [
                 'name' => $company->name,
                 'email' => $email,
-                'externalReference' => $company->id,
+                'externalReference' => (string) $company->id,
             ]);
 
         if ($response->successful()) {
@@ -35,28 +38,44 @@ class AsaasService
             return $customerId;
         }
 
-        Log::error('Asaas createCustomer failed', ['response' => $response->json()]);
+        Log::error('Asaas createCustomer failed', [
+            'status' => $response->status(),
+            'response' => $response->json(),
+        ]);
         return null;
     }
 
-    public function createSubscription(Company $company, Plan $plan, string $paymentMethod): ?string
+    /**
+     * Create a credit card subscription in Asaas.
+     */
+    public function createSubscription(Company $company, Plan $plan, array $cardData): ?string
     {
-        $billingType = match ($paymentMethod) {
-            'boleto' => 'BOLETO',
-            'pix' => 'PIX',
-            'credit_card' => 'CREDIT_CARD',
-            default => 'PIX',
-        };
+        $payload = [
+            'customer' => $company->asaas_customer_id,
+            'billingType' => 'CREDIT_CARD',
+            'value' => (float) $plan->price,
+            'cycle' => 'MONTHLY',
+            'description' => "TreinaEdu - Plano {$plan->name}",
+            'externalReference' => (string) $company->id,
+            'creditCard' => [
+                'holderName' => $cardData['holder_name'],
+                'number' => preg_replace('/\D/', '', $cardData['number']),
+                'expiryMonth' => $cardData['expiry_month'],
+                'expiryYear' => $cardData['expiry_year'],
+                'ccv' => $cardData['ccv'],
+            ],
+            'creditCardHolderInfo' => [
+                'name' => $cardData['holder_name'],
+                'email' => $cardData['holder_email'],
+                'cpfCnpj' => preg_replace('/\D/', '', $cardData['cpf_cnpj']),
+                'postalCode' => preg_replace('/\D/', '', $cardData['postal_code']),
+                'addressNumber' => $cardData['address_number'],
+                'phone' => preg_replace('/\D/', '', $cardData['phone']),
+            ],
+        ];
 
         $response = Http::withHeaders(['access_token' => $this->apiKey])
-            ->post("{$this->baseUrl}/subscriptions", [
-                'customer' => $company->asaas_customer_id,
-                'billingType' => $billingType,
-                'value' => $plan->price,
-                'cycle' => 'MONTHLY',
-                'description' => "TreinaEdu - Plano {$plan->name}",
-                'externalReference' => $company->id,
-            ]);
+            ->post("{$this->baseUrl}/subscriptions", $payload);
 
         if ($response->successful()) {
             $subscriptionId = $response->json('id');
@@ -69,13 +88,26 @@ class AsaasService
                 'current_period_end' => now()->addMonth(),
             ]);
 
+            // Notify admin about subscription creation
+            $admin = \App\Models\User::withoutGlobalScopes()
+                ->where('company_id', $company->id)
+                ->where('role', 'admin')
+                ->first();
+            $admin?->notify(new \App\Notifications\SubscriptionCreatedNotification($plan));
+
             return $subscriptionId;
         }
 
-        Log::error('Asaas createSubscription failed', ['response' => $response->json()]);
+        Log::error('Asaas createSubscription failed', [
+            'status' => $response->status(),
+            'response' => $response->json(),
+        ]);
         return null;
     }
 
+    /**
+     * Process an Asaas webhook event.
+     */
     public function handleWebhook(array $payload): void
     {
         $event = $payload['event'] ?? null;
@@ -94,7 +126,7 @@ class AsaasService
             return;
         }
 
-        // Idempotency check
+        // Idempotency: skip if this payment was already processed
         $asaasPaymentId = $payment['id'] ?? null;
         if ($asaasPaymentId && Payment::withoutGlobalScopes()->where('asaas_payment_id', $asaasPaymentId)->exists()) {
             return;
@@ -107,14 +139,35 @@ class AsaasService
         };
     }
 
-    private function mapPaymentMethod(string $billingType): string
+    /**
+     * Cancel an active subscription in Asaas.
+     */
+    public function cancelSubscription(Subscription $subscription): bool
     {
-        return match (strtolower($billingType)) {
-            'boleto' => 'boleto',
-            'pix' => 'pix',
-            'credit_card' => 'credit_card',
-            default => 'pix',
-        };
+        if (!$subscription->asaas_subscription_id) {
+            return false;
+        }
+
+        $response = Http::withHeaders(['access_token' => $this->apiKey])
+            ->delete("{$this->baseUrl}/subscriptions/{$subscription->asaas_subscription_id}");
+
+        if ($response->successful()) {
+            $subscription->update(['status' => 'cancelled']);
+
+            $admin = \App\Models\User::withoutGlobalScopes()
+                ->where('company_id', $subscription->company_id)
+                ->where('role', 'admin')
+                ->first();
+            $admin?->notify(new \App\Notifications\SubscriptionCancelledNotification());
+
+            return true;
+        }
+
+        Log::error('Asaas cancelSubscription failed', [
+            'status' => $response->status(),
+            'response' => $response->json(),
+        ]);
+        return false;
     }
 
     private function handlePaymentConfirmed(Subscription $subscription, array $payment): void
@@ -132,15 +185,14 @@ class AsaasService
                 'asaas_payment_id' => $payment['id'] ?? null,
                 'amount' => $payment['value'] ?? 0,
                 'status' => 'confirmed',
-                'payment_method' => $this->mapPaymentMethod($payment['billingType'] ?? 'PIX'),
+                'payment_method' => 'credit_card',
                 'paid_at' => now(),
                 'due_date' => $payment['dueDate'] ?? now()->toDateString(),
             ]);
         } catch (\Exception $e) {
-            Log::error('Asaas webhook payment create failed', ['error' => $e->getMessage()]);
+            Log::error('Asaas webhook: payment record creation failed', ['error' => $e->getMessage()]);
         }
 
-        // Notify admin
         $admin = \App\Models\User::withoutGlobalScopes()
             ->where('company_id', $subscription->company_id)
             ->where('role', 'admin')
@@ -159,35 +211,17 @@ class AsaasService
                 'asaas_payment_id' => $payment['id'] ?? null,
                 'amount' => $payment['value'] ?? 0,
                 'status' => 'overdue',
-                'payment_method' => $this->mapPaymentMethod($payment['billingType'] ?? 'PIX'),
+                'payment_method' => 'credit_card',
                 'due_date' => $payment['dueDate'] ?? now()->toDateString(),
             ]);
         } catch (\Exception $e) {
-            Log::error('Asaas webhook payment create failed', ['error' => $e->getMessage()]);
+            Log::error('Asaas webhook: payment record creation failed', ['error' => $e->getMessage()]);
         }
 
-        // Notify admin
         $admin = \App\Models\User::withoutGlobalScopes()
             ->where('company_id', $subscription->company_id)
             ->where('role', 'admin')
             ->first();
         $admin?->notify(new \App\Notifications\PaymentOverdueNotification());
-    }
-
-    public function cancelSubscription(Subscription $subscription): bool
-    {
-        if (!$subscription->asaas_subscription_id) {
-            return false;
-        }
-
-        $response = Http::withHeaders(['access_token' => $this->apiKey])
-            ->delete("{$this->baseUrl}/subscriptions/{$subscription->asaas_subscription_id}");
-
-        if ($response->successful()) {
-            $subscription->update(['status' => 'cancelled']);
-            return true;
-        }
-
-        return false;
     }
 }
