@@ -10,18 +10,33 @@ class PlanSeeder extends Seeder
     public function run(): void
     {
         Plan::firstOrCreate(
-            ['name' => 'Basic'],
-            ['price' => 99.90, 'max_users' => 50, 'max_trainings' => 20]
+            ['name' => 'Starter'],
+            [
+                'price' => 199.00,
+                'max_users' => 20,
+                'max_trainings' => 30,
+                'features' => ['certificates', 'basic_reports'],
+            ]
         );
 
         Plan::firstOrCreate(
-            ['name' => 'Pro'],
-            ['price' => 199.90, 'max_users' => 200, 'max_trainings' => 100]
+            ['name' => 'Business'],
+            [
+                'price' => 499.00,
+                'max_users' => 50,
+                'max_trainings' => 100,
+                'features' => ['certificates', 'basic_reports', 'ai_quiz', 'learning_paths', 'export_reports'],
+            ]
         );
 
         Plan::firstOrCreate(
-            ['name' => 'Enterprise'],
-            ['price' => 499.90, 'max_users' => null, 'max_trainings' => null]
+            ['name' => 'Professional'],
+            [
+                'price' => 999.00,
+                'max_users' => 100,
+                'max_trainings' => null,
+                'features' => ['certificates', 'basic_reports', 'ai_quiz', 'learning_paths', 'export_reports', 'engagement'],
+            ]
         );
     }
 }
