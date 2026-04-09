@@ -96,9 +96,10 @@
                                     Plano atual
                                 </span>
                             @elseif($isSelectable)
-                                <span :class="selectedPlan === {{ $plan->id }} ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
-                                      class="block text-center py-2.5 rounded-lg text-sm font-semibold transition cursor-pointer">
-                                    <span x-text="selectedPlan === {{ $plan->id }} ? 'Selecionado' : '{{ $onTrial ? 'Assinar este plano' : 'Fazer upgrade' }}'"></span>
+                                <span :class="selectedPlan === {{ $plan->id }} ? 'text-white shadow-md' : 'text-white hover:opacity-90'"
+                                      class="block text-center py-2.5 rounded-lg text-sm font-semibold transition cursor-pointer"
+                                      :style="selectedPlan === {{ $plan->id }} ? 'background: linear-gradient(135deg, var(--primary), var(--secondary))' : 'background: linear-gradient(135deg, var(--primary), var(--secondary)); opacity: 0.85'">
+                                    <span x-text="selectedPlan === {{ $plan->id }} ? 'Selecionado ✓' : '{{ $onTrial ? 'Assinar este plano' : 'Fazer upgrade' }}'"></span>
                                 </span>
                             @endif
                         </div>
