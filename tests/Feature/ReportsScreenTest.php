@@ -39,6 +39,7 @@ class ReportsScreenTest extends TestCase
             'name' => 'Test Plan',
             'price' => 99.00,
             'active' => true,
+            'features' => ['certificates', 'basic_reports', 'export_reports'],
         ]);
 
         \App\Models\Subscription::create([

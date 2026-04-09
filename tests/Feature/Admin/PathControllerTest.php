@@ -24,7 +24,7 @@ class PathControllerTest extends TestCase
 
     private function createAdmin(): User
     {
-        $plan = Plan::factory()->create();
+        $plan = Plan::factory()->create(['features' => ['certificates', 'basic_reports', 'learning_paths', 'export_reports']]);
         $company = Company::factory()->create(['slug' => 'test-' . uniqid()]);
         Subscription::factory()->create(['company_id' => $company->id, 'plan_id' => $plan->id, 'status' => 'active']);
 

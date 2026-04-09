@@ -69,4 +69,22 @@ class Company extends Model
         return $this->users()->whereIn('role', ['instructor', 'employee'])->count()
             >= $plan->max_users;
     }
+
+    public function hasReachedTrainingLimit(): bool
+    {
+        $plan = $this->subscription?->plan;
+
+        if (!$plan || !$plan->max_trainings) {
+            return false;
+        }
+
+        return Training::withoutGlobalScopes()
+            ->where('company_id', $this->id)
+            ->count() >= $plan->max_trainings;
+    }
+
+    public function planHasFeature(string $feature): bool
+    {
+        return $this->subscription?->plan?->hasFeature($feature) ?? false;
+    }
 }

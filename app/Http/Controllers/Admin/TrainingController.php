@@ -48,6 +48,12 @@ class TrainingController extends Controller
 
     public function store(StoreTrainingRequest $request)
     {
+        $company = auth()->user()->company;
+        if ($company->hasReachedTrainingLimit()) {
+            $limit = $company->subscription?->plan?->max_trainings ?? 0;
+            return back()->withInput()->with('error', "Você atingiu o limite de {$limit} treinamentos do seu plano. Faça upgrade para criar mais.");
+        }
+
         DB::transaction(function () use ($request) {
             $companyId = auth()->user()->company_id;
 

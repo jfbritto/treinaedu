@@ -163,7 +163,10 @@
                     </a>
                     <a href="{{ route('paths.index') }}" @click="sidebarOpen = false" class="flex items-center gap-2 px-3 py-2.5 rounded-md text-sm hover:bg-white/10 transition {{ request()->routeIs('paths.*') ? 'bg-white/20' : '' }}">
                         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
-                        Trilhas
+                        <span class="flex-1">Trilhas</span>
+                        @if(!auth()->user()->company->planHasFeature('learning_paths'))
+                            <span class="text-[10px] bg-white/20 px-1.5 py-0.5 rounded-full">PRO</span>
+                        @endif
                     </a>
                     <a href="{{ route('reports.index') }}" @click="sidebarOpen = false" class="flex items-center gap-2 px-3 py-2.5 rounded-md text-sm hover:bg-white/10 transition {{ request()->routeIs('reports.*') ? 'bg-white/20' : '' }}">
                         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -171,7 +174,10 @@
                     </a>
                     <a href="{{ route('engagement.index') }}" @click="sidebarOpen = false" class="flex items-center gap-2 px-3 py-2.5 rounded-md text-sm hover:bg-white/10 transition {{ request()->routeIs('engagement.*') ? 'bg-white/20' : '' }}">
                         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                        Desafios
+                        <span class="flex-1">Desafios</span>
+                        @if(!auth()->user()->company->planHasFeature('engagement'))
+                            <span class="text-[10px] bg-white/20 px-1.5 py-0.5 rounded-full">PRO</span>
+                        @endif
                     </a>
                     <a href="{{ route('company.settings') }}" @click="sidebarOpen = false" class="flex items-center gap-2 px-3 py-2.5 rounded-md text-sm hover:bg-white/10 transition {{ request()->routeIs('company.settings') ? 'bg-white/20' : '' }}">
                         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>

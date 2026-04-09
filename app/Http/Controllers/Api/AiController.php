@@ -11,6 +11,14 @@ class AiController extends Controller
 {
     public function generateQuiz(Request $request, GeminiService $gemini): JsonResponse
     {
+        $company = $request->user()?->company;
+        if ($company && !$company->planHasFeature('ai_quiz')) {
+            return response()->json([
+                'error' => 'Quiz com IA está disponível a partir do plano Business.',
+                'upgrade_url' => route('subscription.plans'),
+            ], 403);
+        }
+
         $validated = $request->validate([
             'lesson_title' => 'required|string|max:255',
             'content' => 'required|string|max:15000',
@@ -36,6 +44,11 @@ class AiController extends Controller
 
     public function generateDescription(Request $request, GeminiService $gemini): JsonResponse
     {
+        $company = $request->user()?->company;
+        if ($company && !$company->planHasFeature('ai_quiz')) {
+            return response()->json(['error' => 'IA está disponível a partir do plano Business.'], 403);
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'context' => 'nullable|string|max:5000',

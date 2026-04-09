@@ -19,6 +19,11 @@ class Plan extends Model
         ];
     }
 
+    public function hasFeature(string $feature): bool
+    {
+        return in_array($feature, $this->features ?? []);
+    }
+
     public function subscriptions()
     {
         return $this->hasMany(Subscription::class);
