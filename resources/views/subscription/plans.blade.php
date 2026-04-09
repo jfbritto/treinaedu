@@ -27,7 +27,7 @@
     }" class="space-y-6">
 
         {{-- Plans grid --}}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             @foreach($plans as $plan)
                 @php
                     $onTrial = auth()->user()->company->isOnTrial();
@@ -106,6 +106,46 @@
                     </div>
                 </div>
             @endforeach
+
+            {{-- Enterprise --}}
+            <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl shadow-sm overflow-hidden text-white flex flex-col">
+                <div class="p-6 flex-1 flex flex-col">
+                    <h3 class="text-lg font-bold">Enterprise</h3>
+                    <div class="mt-2">
+                        <span class="text-2xl font-extrabold">Sob consulta</span>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1">Acima de 200 usuários</p>
+
+                    <ul class="mt-5 space-y-2.5 text-sm text-gray-300">
+                        <li class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            <strong class="text-white">Usuários ilimitados</strong>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            Tudo do Professional
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            Preço negociado
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            SLA dedicado
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            Gerente de conta
+                        </li>
+                    </ul>
+
+                    <div class="mt-auto pt-5">
+                        <a href="mailto:contato@treinaedu.com.br" class="block text-center py-2.5 rounded-lg text-sm font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/20 transition">
+                            Falar com vendas
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
 
         {{-- Card form --}}
