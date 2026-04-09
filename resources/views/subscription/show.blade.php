@@ -221,7 +221,7 @@
                         </div>
                     </dl>
 
-                    @if($subscription->asaas_subscription_id)
+                    @if($subscription->status !== 'cancelled')
                         <div class="mt-4 pt-4 border-t border-gray-100" x-data="{ showCardForm: false }">
                             <button @click="showCardForm = !showCardForm" type="button"
                                 class="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-secondary transition">
@@ -349,7 +349,7 @@
     </div>
 
     {{-- Cancel --}}
-    @if($subscription && $subscription->asaas_subscription_id && $subscription->status !== 'cancelled')
+    @if($subscription && $subscription->status !== 'cancelled')
         <div class="mt-6 pt-6 border-t border-gray-200">
             <div class="flex items-center justify-between">
                 <div>
