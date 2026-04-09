@@ -172,7 +172,8 @@
                 </div>
             </div>
 
-            <form method="POST" action="{{ route('subscription.subscribe') }}" class="p-6">
+            <form method="POST" action="{{ route('subscription.subscribe') }}" class="p-6"
+                  x-data="{ submitting: false }" @submit="if(submitting) { $event.preventDefault(); return; } submitting = true;">
                 @csrf
                 <input type="hidden" name="plan_id" :value="selectedPlan">
 
@@ -266,14 +267,19 @@
                 </div>
 
                 <div class="mt-6 flex items-center gap-4">
-                    <button type="submit"
+                    <button type="submit" :disabled="submitting"
+                        :class="submitting ? 'opacity-75 cursor-not-allowed' : ''"
                         class="inline-flex items-center gap-2 bg-primary hover:bg-secondary text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg x-show="!submitting" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                         </svg>
-                        Assinar com Cartão de Crédito
+                        <svg x-show="submitting" x-cloak class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                        </svg>
+                        <span x-text="submitting ? 'Processando pagamento...' : 'Assinar com Cartão de Crédito'"></span>
                     </button>
-                    <button type="button" @click="showCardForm = false; selectedPlan = null"
+                    <button type="button" x-show="!submitting" @click="showCardForm = false; selectedPlan = null"
                         class="text-sm text-gray-500 hover:text-gray-700 transition">Cancelar</button>
                 </div>
             </form>
