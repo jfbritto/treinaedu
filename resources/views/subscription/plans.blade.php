@@ -13,10 +13,14 @@
         {{-- Plans grid --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             @foreach($plans as $plan)
-                @php $isCurrent = $currentSubscription && $currentSubscription->plan_id === $plan->id; @endphp
-                <div @if(!$isCurrent) @click="selectedPlan = {{ $plan->id }}; showCardForm = true" @endif
-                     :class="selectedPlan === {{ $plan->id }} ? 'border-primary ring-2 ring-primary/20' : '{{ $isCurrent ? 'border-green-300' : 'border-gray-100 hover:border-gray-300' }}'"
-                     class="bg-white rounded-xl shadow-sm overflow-hidden border-2 {{ $isCurrent ? '' : 'cursor-pointer' }} transition relative">
+                @php
+                    $isCurrent = $currentSubscription && $currentSubscription->plan_id === $plan->id;
+                    $isUpgrade = $currentSubscription && $plan->price > ($currentSubscription->plan->price ?? 0);
+                    $isDowngrade = $currentSubscription && !$isCurrent && !$isUpgrade;
+                @endphp
+                <div @if($isUpgrade) @click="selectedPlan = {{ $plan->id }}; showCardForm = true" @endif
+                     :class="selectedPlan === {{ $plan->id }} ? 'border-primary ring-2 ring-primary/20' : '{{ $isCurrent ? 'border-green-300' : ($isDowngrade ? 'border-gray-100 opacity-60' : 'border-gray-100 hover:border-gray-300') }}'"
+                     class="bg-white rounded-xl shadow-sm overflow-hidden border-2 {{ $isUpgrade ? 'cursor-pointer' : '' }} transition relative">
 
                     @if($isCurrent)
                         <div class="text-center text-xs font-semibold py-1.5 uppercase tracking-wide text-white" style="background-color: var(--primary)">
@@ -72,7 +76,7 @@
                                 <span class="block text-center py-2.5 rounded-lg text-sm font-semibold bg-green-50 text-green-700 border border-green-200">
                                     Plano atual
                                 </span>
-                            @else
+                            @elseif($isUpgrade)
                                 <span :class="selectedPlan === {{ $plan->id }} ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
                                       class="block text-center py-2.5 rounded-lg text-sm font-semibold transition cursor-pointer">
                                     <span x-text="selectedPlan === {{ $plan->id }} ? 'Selecionado' : 'Fazer upgrade'"></span>
