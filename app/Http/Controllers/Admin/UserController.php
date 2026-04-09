@@ -115,15 +115,27 @@ class UserController extends Controller
                 $total = $views->count();
                 $latestView = $views->sortByDesc('created_at')->first();
 
+                $progressPercent = $latestView ? (int) $latestView->progress_percent : 0;
+                $isCompleted = $completed > 0;
+
+                // Determine readable status
+                $status = match (true) {
+                    $isCompleted => 'completed',
+                    $progressPercent >= 100 => 'pending_completion', // lessons done, awaiting quiz or "Concluir"
+                    $total > 0 => 'in_progress',
+                    default => 'not_started',
+                };
+
                 return [
                     'id' => $training->id,
                     'title' => $training->title,
                     'description' => $training->description,
                     'duration_minutes' => $training->calculatedDuration(),
                     'total_views' => $total,
-                    'completed' => $completed > 0,
+                    'completed' => $isCompleted || $progressPercent >= 100,
+                    'status' => $status,
                     'completion_rate' => $total > 0 ? round(($completed / $total) * 100, 2) : 0,
-                    'progress_percent' => $latestView ? $latestView->progress_percent : 0,
+                    'progress_percent' => $progressPercent,
                     'last_accessed' => $latestView ? $latestView->created_at : null,
                     'completed_at' => $views->where('completed_at', '!=', null)->first()?->completed_at,
                     'due_date' => $training->assignments->first()?->due_date,
