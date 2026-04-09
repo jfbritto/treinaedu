@@ -356,11 +356,11 @@
                     <p class="text-sm text-gray-500">Deseja cancelar sua assinatura?</p>
                     <p class="text-xs text-gray-400">Você mantém acesso até o fim do período atual. Dados preservados por 30 dias.</p>
                 </div>
-                <form method="POST" action="{{ route('subscription.cancel') }}"
-                      onsubmit="return confirm('Tem certeza que deseja cancelar sua assinatura? Você perderá acesso aos recursos do plano atual.')">
+                <form id="cancel-subscription-form" method="POST" action="{{ route('subscription.cancel') }}">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="text-xs font-medium text-red-500 hover:text-red-700 transition">
+                    <button type="button" onclick="Swal.fire({ icon: 'warning', title: 'Cancelar assinatura?', text: 'Você perderá acesso aos recursos do plano atual ao fim do período. Tem certeza?', showCancelButton: true, confirmButtonText: 'Sim, cancelar', cancelButtonText: 'Manter assinatura', confirmButtonColor: '#DC2626', reverseButtons: true }).then((r) => { if (r.isConfirmed) document.getElementById('cancel-subscription-form').submit(); })"
+                        class="text-xs font-medium text-red-500 hover:text-red-700 transition">
                         Cancelar assinatura
                     </button>
                 </form>
