@@ -23,10 +23,6 @@ class PathController extends Controller
 
     public function store(Request $request)
     {
-        if (!auth()->user()->company->planHasFeature('learning_paths')) {
-            return back()->with('error', 'Trilhas de aprendizagem estão disponíveis a partir do plano Business. Faça upgrade para desbloquear.');
-        }
-
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',

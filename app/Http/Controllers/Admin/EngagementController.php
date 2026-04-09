@@ -12,11 +12,6 @@ class EngagementController extends Controller
 {
     public function index()
     {
-        if (!auth()->user()->company->planHasFeature('engagement')) {
-            return redirect()->route('subscription.plans')
-                ->with('error', 'Engajamento e desafios estão disponíveis a partir do plano Professional. Faça upgrade para desbloquear.');
-        }
-
         $companyId = auth()->user()->company_id;
 
         // Get filter parameters (default to current month)

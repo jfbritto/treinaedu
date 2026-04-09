@@ -86,10 +86,6 @@ class ReportController extends Controller
 
     public function exportPdf(Request $request)
     {
-        if (!auth()->user()->company->planHasFeature('export_reports')) {
-            return back()->with('error', 'Exportação de relatórios está disponível a partir do plano Business.');
-        }
-
         $companyId = auth()->user()->company_id;
         $query = TrainingView::with(['user', 'training'])
             ->where('company_id', $companyId)
@@ -117,10 +113,6 @@ class ReportController extends Controller
 
     public function exportExcel(Request $request)
     {
-        if (!auth()->user()->company->planHasFeature('export_reports')) {
-            return back()->with('error', 'Exportação de relatórios está disponível a partir do plano Business.');
-        }
-
         return Excel::download(new TrainingCompletionExport($request), 'relatorio-treinamentos.xlsx');
     }
 }

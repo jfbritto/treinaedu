@@ -74,9 +74,9 @@ Route::middleware(['auth', 'theme'])->group(function () {
                 ->name('users.resend-invite');
             Route::resource('groups', GroupController::class);
             Route::resource('trainings', AdminTrainingController::class);
-            Route::resource('paths', PathController::class);
-            Route::post('paths/{path}/move-up', [PathController::class, 'moveUp'])->name('paths.move-up');
-            Route::post('paths/{path}/move-down', [PathController::class, 'moveDown'])->name('paths.move-down');
+            Route::resource('paths', PathController::class)->middleware('plan.feature:learning_paths');
+            Route::post('paths/{path}/move-up', [PathController::class, 'moveUp'])->name('paths.move-up')->middleware('plan.feature:learning_paths');
+            Route::post('paths/{path}/move-down', [PathController::class, 'moveDown'])->name('paths.move-down')->middleware('plan.feature:learning_paths');
             Route::post('trainings/{training}/assignments', [AdminTrainingController::class, 'storeAssignment'])
                 ->name('trainings.assignments.store');
             Route::delete('trainings/{training}/assignments/{assignment}', [AdminTrainingController::class, 'destroyAssignment'])
@@ -86,11 +86,11 @@ Route::middleware(['auth', 'theme'])->group(function () {
             Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
             Route::get('reports/filter', [ReportController::class, 'filter'])->name('reports.filter');
             Route::get('reports/export/pdf', [ReportController::class, 'exportPdf'])
-                ->name('reports.export.pdf');
+                ->name('reports.export.pdf')->middleware('plan.feature:export_reports');
             Route::get('reports/export/excel', [ReportController::class, 'exportExcel'])
-                ->name('reports.export.excel');
+                ->name('reports.export.excel')->middleware('plan.feature:export_reports');
             Route::get('engagement', [EngagementController::class, 'index'])
-                ->name('engagement.index');
+                ->name('engagement.index')->middleware('plan.feature:engagement');
             Route::get('subscription', [SubscriptionController::class, 'show'])
                 ->name('subscription.show');
             Route::get('company/settings', [CompanySettingsController::class, 'edit'])
