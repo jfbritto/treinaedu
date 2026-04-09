@@ -8,7 +8,19 @@
         </div>
     @endif
 
-    <div x-data="{ selectedPlan: null, showCardForm: false }" class="space-y-6">
+    <div x-data="{
+        selectedPlan: null,
+        showCardForm: false,
+        cardNumber: '',
+        cpf: '',
+        phone: '',
+        cep: '',
+        maskCard(v) { return v.replace(/\D/g,'').replace(/(\d{4})(?=\d)/g,'$1 ').substring(0,19); },
+        maskCpf(v) { v=v.replace(/\D/g,''); if(v.length<=11) return v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2'); return v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{1,2})/,'$1.$2.$3/$4-$5'); },
+        maskPhone(v) { v=v.replace(/\D/g,''); return v.length<=10 ? v.replace(/(\d{2})(\d)/,'($1) $2').replace(/(\d{4})(\d)/,'$1-$2') : v.replace(/(\d{2})(\d)/,'($1) $2').replace(/(\d{5})(\d)/,'$1-$2'); },
+        maskCep(v) { return v.replace(/\D/g,'').replace(/(\d{5})(\d)/,'$1-$2').substring(0,9); },
+        cardBrand() { const n=this.cardNumber.replace(/\D/g,''); if(/^4/.test(n)) return 'Visa'; if(/^5[1-5]/.test(n)||/^2[2-7]/.test(n)) return 'Mastercard'; if(/^3[47]/.test(n)) return 'Amex'; if(/^6/.test(n)) return 'Elo'; return ''; }
+    }" class="space-y-6">
 
         {{-- Plans grid --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -115,64 +127,89 @@
                 <input type="hidden" name="plan_id" :value="selectedPlan">
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {{-- Card info --}}
+                    {{-- Card number --}}
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Nome no cartão <span class="text-red-500">*</span></label>
-                        <input type="text" name="holder_name" value="{{ old('holder_name') }}" required placeholder="Nome como está no cartão"
-                            class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-                        @error('holder_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                    </div>
-
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Número do cartão <span class="text-red-500">*</span></label>
-                        <input type="text" name="card_number" value="{{ old('card_number') }}" required placeholder="0000 0000 0000 0000" maxlength="19"
-                            class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Número do cartão</label>
+                        <div class="relative">
+                            <input type="text" name="card_number" required
+                                x-model="cardNumber" @input="cardNumber = maskCard($event.target.value)"
+                                placeholder="0000 0000 0000 0000" maxlength="19"
+                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm tracking-widest focus:outline-none focus:ring-2 focus:ring-primary pr-20"
+                                autocomplete="cc-number" inputmode="numeric">
+                            <span x-show="cardBrand()" x-text="cardBrand()" class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded"></span>
+                        </div>
                         @error('card_number') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Validade (mês) <span class="text-red-500">*</span></label>
-                        <input type="text" name="expiry_month" value="{{ old('expiry_month') }}" required placeholder="MM" maxlength="2"
-                            class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                    {{-- Holder name --}}
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Nome no cartão</label>
+                        <input type="text" name="holder_name" value="{{ old('holder_name') }}" required placeholder="Nome como está no cartão"
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                            autocomplete="cc-name">
+                        @error('holder_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
+                    {{-- Expiry --}}
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Validade (ano) <span class="text-red-500">*</span></label>
-                        <input type="text" name="expiry_year" value="{{ old('expiry_year') }}" required placeholder="AAAA" maxlength="4"
-                            class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Validade</label>
+                        <div class="flex gap-2">
+                            <input type="text" name="expiry_month" value="{{ old('expiry_month') }}" required placeholder="MM" maxlength="2"
+                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary"
+                                autocomplete="cc-exp-month" inputmode="numeric">
+                            <span class="flex items-center text-gray-300">/</span>
+                            <input type="text" name="expiry_year" value="{{ old('expiry_year') }}" required placeholder="AAAA" maxlength="4"
+                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary"
+                                autocomplete="cc-exp-year" inputmode="numeric">
+                        </div>
                     </div>
 
+                    {{-- CVV --}}
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">CVV <span class="text-red-500">*</span></label>
-                        <input type="text" name="ccv" value="{{ old('ccv') }}" required placeholder="123" maxlength="4"
-                            class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        <label class="block text-xs font-medium text-gray-500 mb-1">CVV</label>
+                        <div class="relative">
+                            <input type="password" name="ccv" value="{{ old('ccv') }}" required placeholder="•••" maxlength="4"
+                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                autocomplete="cc-csc" inputmode="numeric">
+                            <svg class="w-4 h-4 text-gray-300 absolute right-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        </div>
                     </div>
 
                     {{-- Separator --}}
                     <div class="md:col-span-2 border-t border-gray-100 pt-5">
-                        <p class="text-sm font-medium text-gray-700 mb-3">Dados do titular</p>
+                        <p class="text-xs font-medium text-gray-500 mb-3">Dados do titular</p>
+                    </div>
+
+                    {{-- CPF --}}
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1">CPF/CNPJ</label>
+                        <input type="text" name="cpf_cnpj" required
+                            x-model="cpf" @input="cpf = maskCpf($event.target.value)"
+                            placeholder="000.000.000-00" maxlength="18"
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                            inputmode="numeric">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">CPF/CNPJ <span class="text-red-500">*</span></label>
-                        <input type="text" name="cpf_cnpj" value="{{ old('cpf_cnpj') }}" required placeholder="000.000.000-00"
-                            class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Telefone</label>
+                        <input type="text" name="phone" required
+                            x-model="phone" @input="phone = maskPhone($event.target.value)"
+                            placeholder="(11) 99999-9999" maxlength="15"
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                            inputmode="numeric">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Telefone <span class="text-red-500">*</span></label>
-                        <input type="text" name="phone" value="{{ old('phone') }}" required placeholder="(11) 99999-9999"
-                            class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        <label class="block text-xs font-medium text-gray-500 mb-1">CEP</label>
+                        <input type="text" name="postal_code" required
+                            x-model="cep" @input="cep = maskCep($event.target.value)"
+                            placeholder="00000-000" maxlength="9"
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                            inputmode="numeric">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">CEP <span class="text-red-500">*</span></label>
-                        <input type="text" name="postal_code" value="{{ old('postal_code') }}" required placeholder="00000-000" maxlength="9"
-                            class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Número do endereço <span class="text-red-500">*</span></label>
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Nº endereço</label>
                         <input type="text" name="address_number" value="{{ old('address_number') }}" required placeholder="123"
                             class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
