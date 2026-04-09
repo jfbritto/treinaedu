@@ -133,13 +133,15 @@ class SubscriptionController extends Controller
         $trainingsCount = \App\Models\Training::withoutGlobalScopes()->where('company_id', $company->id)->count();
         $certificatesCount = \App\Models\Certificate::withoutGlobalScopes()->where('company_id', $company->id)->count();
 
+        $isOnTrial = $company->isOnTrial();
+
         $usage = [
             'users' => $usersCount,
-            'users_limit' => $plan?->max_users,
-            'users_pct' => $plan?->max_users ? min(100, round(($usersCount / $plan->max_users) * 100)) : 0,
+            'users_limit' => $isOnTrial ? null : $plan?->max_users,
+            'users_pct' => (!$isOnTrial && $plan?->max_users) ? min(100, round(($usersCount / $plan->max_users) * 100)) : 0,
             'trainings' => $trainingsCount,
-            'trainings_limit' => $plan?->max_trainings,
-            'trainings_pct' => $plan?->max_trainings ? min(100, round(($trainingsCount / $plan->max_trainings) * 100)) : 0,
+            'trainings_limit' => $isOnTrial ? null : $plan?->max_trainings,
+            'trainings_pct' => (!$isOnTrial && $plan?->max_trainings) ? min(100, round(($trainingsCount / $plan->max_trainings) * 100)) : 0,
             'certificates' => $certificatesCount,
         ];
 

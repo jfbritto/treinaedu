@@ -33,22 +33,35 @@
                         </svg>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2 mb-1">
-                            <p class="text-xs text-white/70 uppercase tracking-wider">Seu plano</p>
-                            <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-white/20 backdrop-blur">
-                                <span class="w-1.5 h-1.5 rounded-full {{ $statusColors[$subscription->status] ?? 'bg-gray-300' }}"></span>
-                                {{ $statusLabels[$subscription->status] ?? ucfirst($subscription->status) }}
-                            </span>
-                        </div>
-                        <h1 class="text-2xl font-bold mb-1">{{ $plan?->name ?? 'Sem plano' }}</h1>
-                        <p class="text-sm text-white/80">
-                            <span class="text-xl font-bold">R$ {{ number_format($plan?->price ?? 0, 2, ',', '.') }}</span>/mês
-                            @if($subscription->current_period_end)
-                                · Próxima cobrança em {{ $subscription->current_period_end->format('d/m/Y') }}
-                            @elseif($subscription->trial_ends_at)
-                                · Trial expira em {{ $subscription->trial_ends_at->format('d/m/Y') }}
-                            @endif
-                        </p>
+                        @if(auth()->user()->company->isOnTrial())
+                            <div class="flex items-center gap-2 mb-1">
+                                <p class="text-xs text-white/70 uppercase tracking-wider">Período de teste</p>
+                                <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-white/20 backdrop-blur">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-green-300"></span>
+                                    Acesso completo
+                                </span>
+                            </div>
+                            <h1 class="text-2xl font-bold mb-1">Trial Gratuito</h1>
+                            <p class="text-sm text-white/80">
+                                Todos os recursos liberados · Expira em <strong>{{ $subscription->trial_ends_at->format('d/m/Y') }}</strong>
+                                <span class="text-white/60">({{ $subscription->trial_ends_at->diffForHumans() }})</span>
+                            </p>
+                        @else
+                            <div class="flex items-center gap-2 mb-1">
+                                <p class="text-xs text-white/70 uppercase tracking-wider">Seu plano</p>
+                                <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-white/20 backdrop-blur">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $statusColors[$subscription->status] ?? 'bg-gray-300' }}"></span>
+                                    {{ $statusLabels[$subscription->status] ?? ucfirst($subscription->status) }}
+                                </span>
+                            </div>
+                            <h1 class="text-2xl font-bold mb-1">{{ $plan?->name ?? 'Sem plano' }}</h1>
+                            <p class="text-sm text-white/80">
+                                <span class="text-xl font-bold">R$ {{ number_format($plan?->price ?? 0, 2, ',', '.') }}</span>/mês
+                                @if($subscription->current_period_end)
+                                    · Próxima cobrança em {{ $subscription->current_period_end->format('d/m/Y') }}
+                                @endif
+                            </p>
+                        @endif
                     </div>
                 </div>
                 <a href="{{ route('subscription.plans') }}"
@@ -56,7 +69,7 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                     </svg>
-                    Alterar plano
+                    {{ auth()->user()->company->isOnTrial() ? 'Escolher plano' : 'Alterar plano' }}
                 </a>
             </div>
         </div>
@@ -130,14 +143,14 @@
                             </svg>
                         </div>
                         <div class="flex-1">
-                            <h3 class="text-sm font-semibold text-gray-800">Recursos do plano</h3>
-                            <p class="text-xs text-gray-400">O que está incluso</p>
+                            <h3 class="text-sm font-semibold text-gray-800">{{ auth()->user()->company->isOnTrial() ? 'Recursos disponíveis' : 'Recursos do plano' }}</h3>
+                            <p class="text-xs text-gray-400">{{ auth()->user()->company->isOnTrial() ? 'Tudo liberado durante o trial' : 'O que está incluso' }}</p>
                         </div>
                     </div>
                 </div>
                 <div class="p-5 space-y-3">
                     @foreach($featureLabels as $key => $label)
-                        @php $has = $plan?->hasFeature($key) ?? false; @endphp
+                        @php $has = auth()->user()->company->isOnTrial() || ($plan?->hasFeature($key) ?? false); @endphp
                         <div class="flex items-center gap-2.5 text-sm {{ $has ? 'text-gray-700' : 'text-gray-300' }}">
                             @if($has)
                                 <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
