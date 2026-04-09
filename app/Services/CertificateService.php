@@ -50,8 +50,8 @@ class CertificateService
         $company = $user->company;
         $modules = $training->modules()->with('lessons', 'quiz')->orderBy('sort_order')->get();
 
-        $primaryColor = $this->safeColor($company->primary_color ?? null, '#3B82F6');
-        $secondaryColor = $this->safeColor($company->secondary_color ?? null, '#1E40AF');
+        $primaryColor = $this->safeColor($company->primary_color ?? null, '#4f46e5');
+        $secondaryColor = $this->safeColor($company->secondary_color ?? null, '#3730a3');
 
         $verifyUrl = route('certificate.verify') . '?code=' . $code;
         $qrCodeDataUri = $this->fetchQrCodeDataUri($verifyUrl, $primaryColor);
@@ -106,8 +106,8 @@ class CertificateService
         $company = $certificate->company;
         $modules = $training->modules()->with('lessons', 'quiz')->orderBy('sort_order')->get();
 
-        $primaryColor = $this->safeColor($company->primary_color ?? null, '#3B82F6');
-        $secondaryColor = $this->safeColor($company->secondary_color ?? null, '#1E40AF');
+        $primaryColor = $this->safeColor($company->primary_color ?? null, '#4f46e5');
+        $secondaryColor = $this->safeColor($company->secondary_color ?? null, '#3730a3');
 
         $verifyUrl = route('certificate.verify') . '?code=' . $certificate->certificate_code;
         $qrCodeDataUri = $this->fetchQrCodeDataUri($verifyUrl, $primaryColor);

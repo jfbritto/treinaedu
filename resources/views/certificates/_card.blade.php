@@ -289,7 +289,7 @@
         const qrcodeContainer = document.getElementById('qrcode');
         if (!qrcodeContainer) return;
         const verifyUrl = '{{ url("/certificate/verify") }}?code={{ $certificate->certificate_code }}';
-        const primary = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#3B82F6';
+        const primary = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#4f46e5';
         new QRCode(qrcodeContainer, {
             text: verifyUrl,
             width: 90,

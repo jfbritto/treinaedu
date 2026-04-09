@@ -11,7 +11,7 @@
 
     {{-- Hero --}}
     <div class="rounded-xl p-6 mb-6 text-white relative overflow-hidden"
-         style="background: linear-gradient(135deg, {{ $company->primary_color ?? '#3B82F6' }}, {{ $company->secondary_color ?? '#1E40AF' }})">
+         style="background: linear-gradient(135deg, {{ $company->primary_color ?? '#4f46e5' }}, {{ $company->secondary_color ?? '#3730a3' }})">
         <div class="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-white/10"></div>
         <div class="relative flex items-start gap-4">
             <div class="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center flex-shrink-0">

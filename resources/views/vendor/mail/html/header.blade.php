@@ -1,5 +1,5 @@
 <tr>
-<td align="center" style="background-color: #1E40AF; background-image: linear-gradient(135deg, #1E40AF, #3B82F6); border-radius: 12px; padding: 28px 16px;">
+<td align="center" style="background-color: #3730a3; background-image: linear-gradient(135deg, #3730a3, #4f46e5); border-radius: 12px; padding: 28px 16px;">
 <table cellpadding="0" cellspacing="0" role="presentation" style="margin: 0 auto;">
 <tr>
 <td align="center" style="padding-bottom: 8px;">

@@ -26,8 +26,8 @@
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     @php
-        $safePrimary = preg_match('/^#[0-9A-Fa-f]{3,6}$/', $certificate->company->primary_color ?? '') ? $certificate->company->primary_color : '#3B82F6';
-        $safeSecondary = preg_match('/^#[0-9A-Fa-f]{3,6}$/', $certificate->company->secondary_color ?? '') ? $certificate->company->secondary_color : '#1E40AF';
+        $safePrimary = preg_match('/^#[0-9A-Fa-f]{3,6}$/', $certificate->company->primary_color ?? '') ? $certificate->company->primary_color : '#4f46e5';
+        $safeSecondary = preg_match('/^#[0-9A-Fa-f]{3,6}$/', $certificate->company->secondary_color ?? '') ? $certificate->company->secondary_color : '#3730a3';
     @endphp
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');

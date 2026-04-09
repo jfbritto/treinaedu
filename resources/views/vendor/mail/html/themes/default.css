@@ -146,8 +146,8 @@ body {
 }
 
 .button-primary {
-    background-color: #3B82F6;
-    border: 1px solid #3B82F6;
+    background-color: #4f46e5;
+    border: 1px solid #4f46e5;
 }
 
 .button-green,
@@ -192,7 +192,7 @@ h1 {
 
 /* Panel */
 .panel {
-    border-left: #3B82F6 solid 4px;
+    border-left: #4f46e5 solid 4px;
     margin: 20px 0;
 }
 

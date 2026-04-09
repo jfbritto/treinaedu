@@ -339,7 +339,7 @@
 
                 // Resolve CSS variables to actual hex colors (Chart.js doesn't parse CSS vars)
                 const rootStyles = getComputedStyle(document.documentElement);
-                const primary = rootStyles.getPropertyValue('--primary').trim() || '#3B82F6';
+                const primary = rootStyles.getPropertyValue('--primary').trim() || '#4f46e5';
 
                 // Convert hex → rgba with alpha for the area fill
                 const hexToRgba = (hex, alpha) => {

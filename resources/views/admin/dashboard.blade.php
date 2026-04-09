@@ -311,7 +311,7 @@
     (function () {
         const ctx = document.getElementById('trainingStatusChart');
         if (!ctx) return;
-        const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#3B82F6';
+        const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#4f46e5';
         new Chart(ctx, {
             type: 'doughnut',
             data: {

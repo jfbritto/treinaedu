@@ -6,15 +6,15 @@
 <table cellpadding="0" cellspacing="0" role="presentation" align="center" style="margin: 0 auto;">
 <tr>
 <td style="padding: 0 8px;">
-<a href="{{ url('/') }}" style="color: #3B82F6; font-size: 12px; text-decoration: none; font-weight: 500;">Site</a>
+<a href="{{ url('/') }}" style="color: #4f46e5; font-size: 12px; text-decoration: none; font-weight: 500;">Site</a>
 </td>
 <td style="color: #D1D5DB; font-size: 12px;">|</td>
 <td style="padding: 0 8px;">
-<a href="{{ url('/termos-de-uso') }}" style="color: #3B82F6; font-size: 12px; text-decoration: none; font-weight: 500;">Termos de Uso</a>
+<a href="{{ url('/termos-de-uso') }}" style="color: #4f46e5; font-size: 12px; text-decoration: none; font-weight: 500;">Termos de Uso</a>
 </td>
 <td style="color: #D1D5DB; font-size: 12px;">|</td>
 <td style="padding: 0 8px;">
-<a href="{{ url('/politica-de-privacidade') }}" style="color: #3B82F6; font-size: 12px; text-decoration: none; font-weight: 500;">Privacidade</a>
+<a href="{{ url('/politica-de-privacidade') }}" style="color: #4f46e5; font-size: 12px; text-decoration: none; font-weight: 500;">Privacidade</a>
 </td>
 </tr>
 </table>
