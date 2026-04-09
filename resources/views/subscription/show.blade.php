@@ -246,50 +246,50 @@
                                 @method('PUT')
 
                                 {{-- Card info --}}
-                                <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-5 mb-4 text-white">
-                                    <div class="flex items-center justify-between mb-4">
-                                        <div class="flex items-center gap-1.5">
-                                            <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                                            <span class="text-xs text-white/60">Pagamento seguro</span>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-xs font-medium text-gray-500 mb-1">Número do cartão</label>
+                                        <div class="relative">
+                                            <input type="text" name="card_number" required
+                                                x-model="cardNumber" @input="cardNumber = maskCard($event.target.value)"
+                                                placeholder="0000 0000 0000 0000" maxlength="19"
+                                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm tracking-widest focus:outline-none focus:ring-2 focus:ring-primary pr-20"
+                                                autocomplete="cc-number" inputmode="numeric">
+                                            <span x-show="cardBrand()" x-text="cardBrand()" class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded"></span>
                                         </div>
-                                        <span x-show="cardBrand()" x-text="cardBrand()" class="text-xs font-bold text-white/80 bg-white/10 px-2 py-0.5 rounded"></span>
                                     </div>
-                                    <div class="mb-4">
-                                        <input type="text" name="card_number" required
-                                            x-model="cardNumber" @input="cardNumber = maskCard($event.target.value)"
-                                            placeholder="0000 0000 0000 0000" maxlength="19"
-                                            class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2.5 text-white placeholder-white/40 text-sm tracking-widest focus:outline-none focus:ring-2 focus:ring-white/30"
-                                            autocomplete="cc-number" inputmode="numeric">
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-xs font-medium text-gray-500 mb-1">Nome no cartão</label>
+                                        <input type="text" name="holder_name" required placeholder="Nome como está no cartão"
+                                            class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                            autocomplete="cc-name">
                                     </div>
-                                    <div class="grid grid-cols-3 gap-3">
-                                        <div>
-                                            <label class="text-[10px] text-white/50 uppercase tracking-wide mb-1 block">Nome no cartão</label>
-                                            <input type="text" name="holder_name" required placeholder="NOME SOBRENOME"
-                                                class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/40 text-xs uppercase focus:outline-none focus:ring-2 focus:ring-white/30"
-                                                autocomplete="cc-name">
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-500 mb-1">Validade</label>
+                                        <div class="flex gap-2">
+                                            <input type="text" name="expiry_month" required placeholder="MM" maxlength="2"
+                                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary"
+                                                autocomplete="cc-exp-month" inputmode="numeric">
+                                            <span class="flex items-center text-gray-300">/</span>
+                                            <input type="text" name="expiry_year" required placeholder="AAAA" maxlength="4"
+                                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary"
+                                                autocomplete="cc-exp-year" inputmode="numeric">
                                         </div>
-                                        <div>
-                                            <label class="text-[10px] text-white/50 uppercase tracking-wide mb-1 block">Validade</label>
-                                            <div class="flex gap-1">
-                                                <input type="text" name="expiry_month" required placeholder="MM" maxlength="2"
-                                                    class="w-full bg-white/10 border border-white/20 rounded-lg px-2 py-2 text-white placeholder-white/40 text-xs text-center focus:outline-none focus:ring-2 focus:ring-white/30"
-                                                    autocomplete="cc-exp-month" inputmode="numeric">
-                                                <input type="text" name="expiry_year" required placeholder="AA" maxlength="4"
-                                                    class="w-full bg-white/10 border border-white/20 rounded-lg px-2 py-2 text-white placeholder-white/40 text-xs text-center focus:outline-none focus:ring-2 focus:ring-white/30"
-                                                    autocomplete="cc-exp-year" inputmode="numeric">
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label class="text-[10px] text-white/50 uppercase tracking-wide mb-1 block">CVV</label>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-500 mb-1">CVV</label>
+                                        <div class="relative">
                                             <input type="password" name="ccv" required placeholder="•••" maxlength="4"
-                                                class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/40 text-xs text-center focus:outline-none focus:ring-2 focus:ring-white/30"
+                                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                                                 autocomplete="cc-csc" inputmode="numeric">
+                                            <svg class="w-4 h-4 text-gray-300 absolute right-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                                         </div>
                                     </div>
                                 </div>
 
                                 {{-- Holder info --}}
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4 pt-3 border-t border-gray-100">
+                                    <p class="sm:col-span-2 text-xs font-medium text-gray-500">Dados do titular</p>
                                     <div>
                                         <label class="block text-xs font-medium text-gray-500 mb-1">CPF/CNPJ</label>
                                         <input type="text" name="cpf_cnpj" required
