@@ -93,6 +93,10 @@ Route::middleware(['auth', 'theme'])->group(function () {
                 ->name('engagement.index')->middleware('plan.feature:engagement');
             Route::get('subscription', [SubscriptionController::class, 'show'])
                 ->name('subscription.show');
+            Route::put('subscription/card', [SubscriptionController::class, 'updateCard'])
+                ->name('subscription.update-card');
+            Route::delete('subscription/cancel', [SubscriptionController::class, 'cancel'])
+                ->name('subscription.cancel');
             Route::get('company/settings', [CompanySettingsController::class, 'edit'])
                 ->name('company.settings');
             Route::put('company/settings', [CompanySettingsController::class, 'update'])

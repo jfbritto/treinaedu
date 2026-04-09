@@ -65,6 +65,62 @@ class SubscriptionController extends Controller
         return back()->withInput()->with('error', 'Erro ao processar pagamento. Verifique os dados do cartão e tente novamente.');
     }
 
+    public function updateCard(Request $request, AsaasService $asaas)
+    {
+        $request->validate([
+            'holder_name' => 'required|string|max:255',
+            'card_number' => 'required|string|min:13|max:19',
+            'expiry_month' => 'required|string|size:2',
+            'expiry_year' => 'required|string|size:4',
+            'ccv' => 'required|string|min:3|max:4',
+            'cpf_cnpj' => 'required|string|min:11|max:18',
+            'phone' => 'required|string|min:10|max:15',
+            'postal_code' => 'required|string|min:8|max:9',
+            'address_number' => 'required|string|max:10',
+        ]);
+
+        $subscription = auth()->user()->company->subscription;
+
+        if (!$subscription || !$subscription->asaas_subscription_id) {
+            return back()->with('error', 'Nenhuma assinatura ativa encontrada.');
+        }
+
+        $cardData = [
+            'holder_name' => $request->holder_name,
+            'number' => $request->card_number,
+            'expiry_month' => $request->expiry_month,
+            'expiry_year' => $request->expiry_year,
+            'ccv' => $request->ccv,
+            'holder_email' => auth()->user()->email,
+            'cpf_cnpj' => $request->cpf_cnpj,
+            'phone' => $request->phone,
+            'postal_code' => $request->postal_code,
+            'address_number' => $request->address_number,
+        ];
+
+        if ($asaas->updateCreditCard($subscription, $cardData)) {
+            return back()->with('success', 'Cartão atualizado com sucesso! As próximas cobranças serão feitas no novo cartão.');
+        }
+
+        return back()->with('error', 'Erro ao atualizar o cartão. Verifique os dados e tente novamente.');
+    }
+
+    public function cancel(AsaasService $asaas)
+    {
+        $subscription = auth()->user()->company->subscription;
+
+        if (!$subscription) {
+            return back()->with('error', 'Nenhuma assinatura encontrada.');
+        }
+
+        if ($asaas->cancelSubscription($subscription)) {
+            return redirect()->route('subscription.plans')
+                ->with('success', 'Assinatura cancelada. Você ainda tem acesso até o fim do período atual.');
+        }
+
+        return back()->with('error', 'Erro ao cancelar. Entre em contato com o suporte.');
+    }
+
     public function show()
     {
         $company = auth()->user()->company;

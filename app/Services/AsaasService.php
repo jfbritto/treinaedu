@@ -140,6 +140,47 @@ class AsaasService
     }
 
     /**
+     * Update the credit card on an existing subscription.
+     */
+    public function updateCreditCard(Subscription $subscription, array $cardData): bool
+    {
+        if (!$subscription->asaas_subscription_id) {
+            return false;
+        }
+
+        $payload = [
+            'creditCard' => [
+                'holderName' => $cardData['holder_name'],
+                'number' => preg_replace('/\D/', '', $cardData['number']),
+                'expiryMonth' => $cardData['expiry_month'],
+                'expiryYear' => $cardData['expiry_year'],
+                'ccv' => $cardData['ccv'],
+            ],
+            'creditCardHolderInfo' => [
+                'name' => $cardData['holder_name'],
+                'email' => $cardData['holder_email'],
+                'cpfCnpj' => preg_replace('/\D/', '', $cardData['cpf_cnpj']),
+                'postalCode' => preg_replace('/\D/', '', $cardData['postal_code']),
+                'addressNumber' => $cardData['address_number'],
+                'phone' => preg_replace('/\D/', '', $cardData['phone']),
+            ],
+        ];
+
+        $response = Http::withHeaders(['access_token' => $this->apiKey])
+            ->put("{$this->baseUrl}/subscriptions/{$subscription->asaas_subscription_id}", $payload);
+
+        if ($response->successful()) {
+            return true;
+        }
+
+        Log::error('Asaas updateCreditCard failed', [
+            'status' => $response->status(),
+            'response' => $response->json(),
+        ]);
+        return false;
+    }
+
+    /**
      * Cancel an active subscription in Asaas.
      */
     public function cancelSubscription(Subscription $subscription): bool

@@ -240,6 +240,139 @@
         </div>
     @endif
 
+    @if($subscription && $subscription->asaas_subscription_id)
+        {{-- Update Card + Cancel --}}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6" x-data="{ showCardForm: false }">
+
+            {{-- Update Card --}}
+            <div class="lg:col-span-2 bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-sm font-semibold text-gray-800">Cartão de crédito</h3>
+                            <p class="text-xs text-gray-400">Cartão usado na cobrança recorrente</p>
+                        </div>
+                        <button @click="showCardForm = !showCardForm" type="button"
+                            class="text-xs font-medium text-primary hover:text-secondary transition">
+                            <span x-text="showCardForm ? 'Cancelar' : 'Trocar cartão'"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <div x-show="!showCardForm" class="p-6">
+                    <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                        <div class="w-12 h-8 bg-gradient-to-br from-gray-700 to-gray-900 rounded-md flex items-center justify-center">
+                            <svg class="w-6 h-3 text-white" fill="currentColor" viewBox="0 0 24 12"><rect width="24" height="12" rx="2" fill="currentColor" opacity="0.3"/><circle cx="8" cy="6" r="3" fill="white" opacity="0.6"/><circle cx="13" cy="6" r="3" fill="white" opacity="0.4"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-gray-800">Cartão de crédito cadastrado</p>
+                            <p class="text-xs text-gray-400">As cobranças são processadas automaticamente via Asaas</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form x-show="showCardForm" x-cloak method="POST" action="{{ route('subscription.update-card') }}" class="p-6">
+                    @csrf
+                    @method('PUT')
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="sm:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nome no cartão</label>
+                            <input type="text" name="holder_name" required placeholder="Nome como está no cartão"
+                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Número do cartão</label>
+                            <input type="text" name="card_number" required placeholder="0000 0000 0000 0000" maxlength="19"
+                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Validade (mês)</label>
+                            <input type="text" name="expiry_month" required placeholder="MM" maxlength="2"
+                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Validade (ano)</label>
+                            <input type="text" name="expiry_year" required placeholder="AAAA" maxlength="4"
+                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                            <input type="text" name="ccv" required placeholder="123" maxlength="4"
+                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div class="sm:col-span-2 border-t border-gray-100 pt-4 mt-1">
+                            <p class="text-xs font-medium text-gray-500 mb-3">Dados do titular</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">CPF/CNPJ</label>
+                            <input type="text" name="cpf_cnpj" required placeholder="000.000.000-00"
+                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+                            <input type="text" name="phone" required placeholder="(11) 99999-9999"
+                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">CEP</label>
+                            <input type="text" name="postal_code" required placeholder="00000-000" maxlength="9"
+                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Número</label>
+                            <input type="text" name="address_number" required placeholder="123"
+                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                    </div>
+                    <div class="mt-5 flex items-center gap-3">
+                        <button type="submit" class="inline-flex items-center gap-2 bg-primary hover:bg-secondary text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Salvar novo cartão
+                        </button>
+                        <button type="button" @click="showCardForm = false" class="text-sm text-gray-500 hover:text-gray-700 transition">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+
+            {{-- Cancel subscription --}}
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-sm font-semibold text-gray-800">Cancelar assinatura</h3>
+                            <p class="text-xs text-gray-400">Ação irreversível</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <p class="text-sm text-gray-500 mb-4">Ao cancelar, você mantém acesso até o fim do período atual. Após isso, a plataforma será bloqueada e seus dados serão mantidos por 30 dias.</p>
+                    <form method="POST" action="{{ route('subscription.cancel') }}"
+                          onsubmit="return confirm('Tem certeza que deseja cancelar sua assinatura? Você perderá acesso aos recursos do plano atual.')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="w-full inline-flex items-center justify-center gap-2 text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 px-4 py-2.5 rounded-lg text-sm font-semibold transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                            </svg>
+                            Cancelar minha assinatura
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    @endif
+
     {{-- Payment History --}}
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100">
