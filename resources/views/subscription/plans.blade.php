@@ -1,6 +1,10 @@
 <x-layout.app title="Escolha seu Plano">
 
-    <p class="text-sm text-gray-500 mb-6">Selecione o plano ideal para sua empresa</p>
+    @if(auth()->user()->company->isOnTrial())
+        <p class="text-sm text-gray-500 mb-6">Seu trial gratuito está ativo. Escolha um plano para continuar após o período de teste.</p>
+    @else
+        <p class="text-sm text-gray-500 mb-6">Selecione o plano ideal para sua empresa</p>
+    @endif
 
     @if(session('error'))
         <div class="mb-4 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
@@ -26,13 +30,16 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             @foreach($plans as $plan)
                 @php
-                    $isCurrent = $currentSubscription && $currentSubscription->plan_id === $plan->id;
-                    $isUpgrade = $currentSubscription && $plan->price > ($currentSubscription->plan->price ?? 0);
-                    $isDowngrade = $currentSubscription && !$isCurrent && !$isUpgrade;
+                    $onTrial = auth()->user()->company->isOnTrial();
+                    // During trial, no plan is "current" — all are selectable
+                    $isCurrent = !$onTrial && $currentSubscription && $currentSubscription->plan_id === $plan->id;
+                    $isUpgrade = !$onTrial && $currentSubscription && $plan->price > ($currentSubscription->plan->price ?? 0);
+                    $isDowngrade = !$onTrial && $currentSubscription && !$isCurrent && !$isUpgrade;
+                    $isSelectable = $onTrial || $isUpgrade;
                 @endphp
-                <div @if($isUpgrade) @click="selectedPlan = {{ $plan->id }}; showCardForm = true" @endif
+                <div @if($isSelectable) @click="selectedPlan = {{ $plan->id }}; showCardForm = true" @endif
                      :class="selectedPlan === {{ $plan->id }} ? 'border-primary ring-2 ring-primary/20' : '{{ $isCurrent ? 'border-green-300' : ($isDowngrade ? 'border-gray-100 opacity-60' : 'border-gray-100 hover:border-gray-300') }}'"
-                     class="bg-white rounded-xl shadow-sm overflow-hidden border-2 {{ $isUpgrade ? 'cursor-pointer' : '' }} transition relative">
+                     class="bg-white rounded-xl shadow-sm overflow-hidden border-2 {{ $isSelectable ? 'cursor-pointer' : '' }} transition relative">
 
                     @if($isCurrent)
                         <div class="text-center text-xs font-semibold py-1.5 uppercase tracking-wide text-white" style="background-color: var(--primary)">
@@ -88,10 +95,10 @@
                                 <span class="block text-center py-2.5 rounded-lg text-sm font-semibold bg-green-50 text-green-700 border border-green-200">
                                     Plano atual
                                 </span>
-                            @elseif($isUpgrade)
+                            @elseif($isSelectable)
                                 <span :class="selectedPlan === {{ $plan->id }} ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
                                       class="block text-center py-2.5 rounded-lg text-sm font-semibold transition cursor-pointer">
-                                    <span x-text="selectedPlan === {{ $plan->id }} ? 'Selecionado' : 'Fazer upgrade'"></span>
+                                    <span x-text="selectedPlan === {{ $plan->id }} ? 'Selecionado' : '{{ $onTrial ? 'Assinar este plano' : 'Fazer upgrade' }}'"></span>
                                 </span>
                             @endif
                         </div>
