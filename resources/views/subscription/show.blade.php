@@ -167,7 +167,24 @@
                 </div>
             </div>
 
-            {{-- Detalhes da assinatura --}}
+            {{-- Detalhes da assinatura / CTA trial --}}
+            @if(auth()->user()->company->isOnTrial())
+            <div class="lg:col-span-2 bg-white rounded-xl shadow-sm overflow-hidden flex flex-col items-center justify-center p-8 text-center">
+                <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-5" style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-2">Seu trial expira em {{ $subscription->trial_ends_at->diffForHumans() }}</h3>
+                <p class="text-sm text-gray-500 mb-6 max-w-sm">Escolha um plano antes do fim do período de teste para não perder acesso à plataforma.</p>
+                <a href="{{ route('subscription.plans') }}"
+                   class="inline-flex items-center gap-2 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition shadow-sm hover:shadow-md"
+                   style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
+                    Escolher plano
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+            @else
             <div class="lg:col-span-2 bg-white rounded-xl shadow-sm overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100">
                     <div class="flex items-center gap-3">
@@ -343,6 +360,7 @@
                     @endif
                 </div>
             </div>
+            @endif
         </div>
 
     @else
