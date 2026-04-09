@@ -11,6 +11,39 @@
 
     <p class="text-sm text-gray-500 mb-6">Todas as empresas cadastradas na plataforma</p>
 
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5"/></svg>
+                </div>
+            </div>
+            <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Total</p>
+            <p class="text-2xl font-bold text-gray-800 mt-1">{{ $stats['total'] }}</p>
+            <p class="text-xs text-gray-400 mt-0.5">{{ $stats['total'] === 1 ? 'empresa' : 'empresas' }}</p>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+            </div>
+            <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Ativas</p>
+            <p class="text-2xl font-bold text-gray-800 mt-1">{{ $stats['active'] }}</p>
+            <p class="text-xs text-gray-400 mt-0.5">com assinatura ativa</p>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+            </div>
+            <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Em Trial</p>
+            <p class="text-2xl font-bold text-gray-800 mt-1">{{ $stats['trial'] }}</p>
+            <p class="text-xs text-gray-400 mt-0.5">período de teste</p>
+        </div>
+    </div>
+
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100">
             <div class="flex items-center gap-3">

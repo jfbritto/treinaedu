@@ -14,6 +14,13 @@ class SubscriptionController extends Controller
             ->latest()
             ->paginate(20);
 
-        return view('super-admin.subscriptions.index', compact('subscriptions'));
+        $stats = [
+            'total' => Subscription::withoutGlobalScopes()->count(),
+            'active' => Subscription::withoutGlobalScopes()->where('status', 'active')->count(),
+            'trial' => Subscription::withoutGlobalScopes()->where('status', 'trial')->count(),
+            'past_due' => Subscription::withoutGlobalScopes()->where('status', 'past_due')->count(),
+        ];
+
+        return view('super-admin.subscriptions.index', compact('subscriptions', 'stats'));
     }
 }

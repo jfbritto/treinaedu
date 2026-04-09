@@ -14,6 +14,13 @@ class PaymentController extends Controller
             ->latest()
             ->paginate(20);
 
-        return view('super-admin.payments.index', compact('payments'));
+        $stats = [
+            'total_revenue' => Payment::withoutGlobalScopes()->where('status', 'confirmed')->sum('amount'),
+            'this_month' => Payment::withoutGlobalScopes()->where('status', 'confirmed')->whereMonth('paid_at', now()->month)->whereYear('paid_at', now()->year)->sum('amount'),
+            'pending' => Payment::withoutGlobalScopes()->where('status', 'pending')->count(),
+            'confirmed' => Payment::withoutGlobalScopes()->where('status', 'confirmed')->count(),
+        ];
+
+        return view('super-admin.payments.index', compact('payments', 'stats'));
     }
 }
