@@ -111,45 +111,66 @@
                      x-transition:enter="transition ease-out duration-500"
                      x-transition:enter-start="opacity-0 scale-95"
                      x-transition:enter-end="opacity-100 scale-100"
-                     class="rounded-xl overflow-hidden text-center py-16 px-8"
-                     style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
+                     class="bg-white rounded-xl shadow-sm overflow-hidden">
 
-                    {{-- Confetti animation --}}
-                    <div class="relative" x-init="$watch('showCelebration', val => { if (val) startConfetti() })">
+                    {{-- Top gradient bar --}}
+                    <div class="h-2" style="background: linear-gradient(90deg, var(--primary), var(--secondary))"></div>
+
+                    <div class="relative py-16 px-8 text-center" x-init="$watch('showCelebration', val => { if (val) startConfetti() })">
                         <canvas id="confetti-canvas" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 1"></canvas>
 
                         <div class="relative" style="z-index: 2">
-                            {{-- Star icon --}}
-                            <div class="text-6xl mb-6">🎉</div>
+                            {{-- Icon --}}
+                            <div class="w-20 h-20 rounded-2xl mx-auto mb-6 flex items-center justify-center"
+                                 style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
+                                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                                </svg>
+                            </div>
 
-                            <h2 class="text-3xl font-bold text-white mb-3">Parabéns!</h2>
-                            <p class="text-white/80 text-lg mb-2">Você concluiu todas as aulas de</p>
-                            <p class="text-white font-bold text-xl mb-8">{{ $training->title }}</p>
+                            <p class="text-xs font-medium uppercase tracking-wider mb-2" style="color: var(--primary)">Treinamento concluído</p>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-2">Parabéns!</h2>
+                            <p class="text-gray-500 mb-1">Você concluiu todas as aulas de</p>
+                            <p class="text-lg font-bold text-gray-800 mb-8">{{ $training->title }}</p>
 
-                            <div class="flex flex-col items-center gap-3">
-                                @if($training->trainingQuiz && !$trainingQuizPassed)
-                                    {{-- Training has a final quiz pending --}}
-                                    <a href="{{ route('employee.quiz.show', $training) }}"
-                                       class="inline-flex items-center gap-2 bg-white font-bold px-8 py-3 rounded-xl text-sm transition shadow-lg hover:shadow-xl hover:scale-105" style="color: var(--primary)">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                                        </svg>
-                                        Fazer Quiz Final
-                                    </a>
-                                    <p class="text-white/60 text-xs">Último passo antes de concluir o treinamento</p>
-                                @elseif($canComplete)
-                                    <form method="POST" action="{{ route('employee.trainings.complete', $training) }}">
-                                        @csrf
-                                        <button type="submit" class="inline-flex items-center gap-2 bg-white font-bold px-8 py-3 rounded-xl text-sm transition shadow-lg hover:shadow-xl hover:scale-105" style="color: var(--primary)">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                            @if($training->trainingQuiz && !$trainingQuizPassed)
+                                {{-- Training has a final quiz pending --}}
+                                <div class="max-w-sm mx-auto mb-4 p-4 rounded-xl border border-gray-100 bg-gray-50">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background-color: color-mix(in srgb, var(--primary) 10%, transparent)">
+                                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                                             </svg>
-                                            Concluir Treinamento
-                                        </button>
-                                    </form>
-                                @endif
+                                        </div>
+                                        <div class="text-left flex-1">
+                                            <p class="text-sm font-semibold text-gray-800">Quiz Final disponível</p>
+                                            <p class="text-xs text-gray-500">Último passo para concluir</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{{ route('employee.quiz.show', $training) }}"
+                                   class="inline-flex items-center gap-2 font-bold px-8 py-3 rounded-xl text-sm text-white transition shadow-lg hover:shadow-xl hover:scale-105"
+                                   style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
+                                    Fazer Quiz Final
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </a>
+                            @elseif($canComplete)
+                                <form method="POST" action="{{ route('employee.trainings.complete', $training) }}">
+                                    @csrf
+                                    <button type="submit" class="inline-flex items-center gap-2 font-bold px-8 py-3 rounded-xl text-sm text-white transition shadow-lg hover:shadow-xl hover:scale-105"
+                                            style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        Concluir Treinamento
+                                    </button>
+                                </form>
+                            @endif
 
-                                <button @click="showCelebration = false" class="text-white/60 hover:text-white text-sm transition">
+                            <div class="mt-4">
+                                <button @click="showCelebration = false" class="text-sm text-gray-400 hover:text-gray-600 transition">
                                     Voltar para a aula
                                 </button>
                             </div>
