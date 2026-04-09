@@ -33,7 +33,7 @@ class PlanSeeder extends Seeder
             ['name' => 'Professional'],
             [
                 'price' => 999.00,
-                'max_users' => 100,
+                'max_users' => 200,
                 'max_trainings' => null,
                 'features' => ['certificates', 'basic_reports', 'ai_quiz', 'learning_paths', 'export_reports', 'engagement'],
             ]

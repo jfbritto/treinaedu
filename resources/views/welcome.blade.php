@@ -247,11 +247,11 @@
                             <span class="text-4xl font-extrabold text-gray-900">R$999</span>
                             <span class="text-sm text-gray-400">/mês</span>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1">~R$10 por usuário</p>
+                        <p class="text-xs text-gray-400 mt-1">~R$5 por usuário</p>
                         <a href="{{ route('register') }}" class="mt-6 block text-center py-3 px-4 text-sm font-semibold text-brand-600 bg-brand-50 hover:bg-brand-100 border border-brand-200 rounded-xl transition">Começar grátis</a>
                     </div>
                     <div class="px-8 pb-8 space-y-3 text-sm text-gray-600">
-                        <div class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>Até <strong>100 usuários</strong></div>
+                        <div class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>Até <strong>200 usuários</strong></div>
                         <div class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg><strong>Treinamentos ilimitados</strong></div>
                         <div class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>Engajamento e desafios</div>
                         <div class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>Onboarding dedicado</div>
@@ -267,7 +267,7 @@
                         <div class="mt-5">
                             <span class="text-2xl font-extrabold">Sob consulta</span>
                         </div>
-                        <p class="text-xs text-gray-500 mt-1">A partir de 200 usuários</p>
+                        <p class="text-xs text-gray-500 mt-1">Acima de 200 usuários</p>
                         <a href="mailto:contato@treinaedu.com.br" class="mt-6 block text-center py-3 px-4 text-sm font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl transition">Falar com vendas</a>
                     </div>
                     <div class="px-8 pb-8 space-y-3 text-sm text-gray-300">
