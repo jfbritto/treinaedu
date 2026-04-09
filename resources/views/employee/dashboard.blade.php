@@ -131,7 +131,7 @@
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
                         <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                         </svg>
                     </div>
                     <div class="flex-1">
@@ -336,6 +336,26 @@
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const ctx = document.getElementById('progressChart').getContext('2d');
+
+                // Resolve CSS variables to actual hex colors (Chart.js doesn't parse CSS vars)
+                const rootStyles = getComputedStyle(document.documentElement);
+                const primary = rootStyles.getPropertyValue('--primary').trim() || '#3B82F6';
+
+                // Convert hex → rgba with alpha for the area fill
+                const hexToRgba = (hex, alpha) => {
+                    const h = hex.replace('#', '');
+                    const full = h.length === 3 ? h.split('').map(c => c + c).join('') : h;
+                    const r = parseInt(full.substring(0, 2), 16);
+                    const g = parseInt(full.substring(2, 4), 16);
+                    const b = parseInt(full.substring(4, 6), 16);
+                    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                };
+
+                // Create a vertical gradient for the area fill
+                const gradient = ctx.createLinearGradient(0, 0, 0, 250);
+                gradient.addColorStop(0, hexToRgba(primary, 0.25));
+                gradient.addColorStop(1, hexToRgba(primary, 0));
+
                 new Chart(ctx, {
                     type: 'line',
                     data: {
@@ -343,16 +363,19 @@
                         datasets: [{
                             label: 'Certificados emitidos',
                             data: @json($chartData['data']),
-                            borderColor: 'var(--primary)',
-                            backgroundColor: 'color-mix(in srgb, var(--primary) 10%, transparent)',
-                            borderWidth: 2,
+                            borderColor: primary,
+                            backgroundColor: gradient,
+                            borderWidth: 2.5,
                             fill: true,
                             tension: 0.4,
                             pointRadius: 4,
-                            pointBackgroundColor: 'var(--primary)',
+                            pointBackgroundColor: primary,
                             pointBorderColor: '#fff',
                             pointBorderWidth: 2,
                             pointHoverRadius: 6,
+                            pointHoverBackgroundColor: primary,
+                            pointHoverBorderColor: '#fff',
+                            pointHoverBorderWidth: 3,
                         }]
                     },
                     options: {
@@ -360,14 +383,32 @@
                         maintainAspectRatio: false,
                         plugins: {
                             legend: {
-                                display: true,
-                                position: 'bottom',
+                                display: false,
+                            },
+                            tooltip: {
+                                backgroundColor: '#1f2937',
+                                titleColor: '#fff',
+                                bodyColor: '#fff',
+                                padding: 10,
+                                cornerRadius: 8,
+                                displayColors: false,
                             }
                         },
                         scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: '#9ca3af', font: { size: 11 } },
+                                border: { display: false },
+                            },
                             y: {
                                 beginAtZero: true,
-                                ticks: { stepSize: 1 }
+                                ticks: {
+                                    stepSize: 1,
+                                    color: '#9ca3af',
+                                    font: { size: 11 },
+                                },
+                                grid: { color: '#f3f4f6' },
+                                border: { display: false },
                             }
                         }
                     }
