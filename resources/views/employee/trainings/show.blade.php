@@ -64,7 +64,17 @@
         </div>
 
         {{-- Content area (3/4) --}}
-        <div class="lg:col-span-3 order-1 lg:order-2" x-data="{ showCelebration: false }" @training-last-lesson-ended.window="showCelebration = true">
+        <div class="lg:col-span-3 order-1 lg:order-2"
+             x-data="{ showCelebration: false, autoCompleted: false }"
+             @training-last-lesson-ended.window="
+                showCelebration = true;
+                @if(!$training->trainingQuiz && !($trainingView?->completed_at))
+                    fetch('{{ route('employee.trainings.complete', $training) }}', {
+                        method: 'POST',
+                        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content }
+                    }).then(() => { autoCompleted = true; });
+                @endif
+             ">
             @if($currentLesson)
                 @php
                     $allLessons = $training->modules->flatMap->lessons;
@@ -156,17 +166,30 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                     </svg>
                                 </a>
-                            @elseif($canComplete)
-                                <form method="POST" action="{{ route('employee.trainings.complete', $training) }}">
-                                    @csrf
-                                    <button type="submit" class="inline-flex items-center gap-2 font-bold px-8 py-3 rounded-xl text-sm text-white transition shadow-lg hover:shadow-xl hover:scale-105"
-                                            style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            @else
+                                {{-- No quiz — auto-completed or can complete --}}
+                                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                                    <a href="{{ route('employee.trainings.index') }}"
+                                       class="inline-flex items-center gap-2 font-bold px-8 py-3 rounded-xl text-sm text-white transition shadow-lg hover:shadow-xl hover:scale-105"
+                                       style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
+                                        Voltar aos meus treinamentos
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                         </svg>
-                                        Concluir Treinamento
-                                    </button>
-                                </form>
+                                    </a>
+                                    @if($canGenerateCertificate || !$training->trainingQuiz)
+                                        <form method="POST" action="{{ route('employee.certificates.generate', $training) }}">
+                                            @csrf
+                                            <button type="submit" class="inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-xl text-sm border-2 transition hover:scale-105"
+                                                    style="border-color: var(--primary); color: var(--primary)">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                                                </svg>
+                                                Gerar Certificado
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
                             @endif
 
                             <div class="mt-4">
