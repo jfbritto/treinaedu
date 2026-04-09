@@ -14,9 +14,9 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             @foreach($plans as $plan)
                 @php $isCurrent = $currentSubscription && $currentSubscription->plan_id === $plan->id; @endphp
-                <div @click="selectedPlan = {{ $plan->id }}; showCardForm = true"
-                     :class="selectedPlan === {{ $plan->id }} ? 'border-primary ring-2 ring-primary/20' : 'border-gray-100 hover:border-gray-300'"
-                     class="bg-white rounded-xl shadow-sm overflow-hidden border-2 cursor-pointer transition relative">
+                <div @if(!$isCurrent) @click="selectedPlan = {{ $plan->id }}; showCardForm = true" @endif
+                     :class="selectedPlan === {{ $plan->id }} ? 'border-primary ring-2 ring-primary/20' : '{{ $isCurrent ? 'border-green-300' : 'border-gray-100 hover:border-gray-300' }}'"
+                     class="bg-white rounded-xl shadow-sm overflow-hidden border-2 {{ $isCurrent ? '' : 'cursor-pointer' }} transition relative">
 
                     @if($isCurrent)
                         <div class="text-center text-xs font-semibold py-1.5 uppercase tracking-wide text-white" style="background-color: var(--primary)">
@@ -31,42 +31,53 @@
                             <span class="text-sm text-gray-400">/mês</span>
                         </div>
 
+                        @php
+                            $featureLabels = [
+                                'certificates' => 'Certificados em PDF',
+                                'basic_reports' => 'Relatórios básicos',
+                                'ai_quiz' => 'Quiz com IA',
+                                'learning_paths' => 'Trilhas de aprendizagem',
+                                'export_reports' => 'Exportação PDF e Excel',
+                                'engagement' => 'Engajamento e desafios',
+                            ];
+                        @endphp
+
                         <ul class="mt-5 space-y-2.5 text-sm text-gray-600">
                             <li class="flex items-center gap-2">
-                                <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                                </svg>
-                                {{ $plan->max_users ? 'Até ' . $plan->max_users . ' usuários' : 'Usuários ilimitados' }}
+                                <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                <strong>{{ $plan->max_users ? 'Até ' . $plan->max_users . ' usuários' : 'Usuários ilimitados' }}</strong>
                             </li>
                             <li class="flex items-center gap-2">
-                                <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                                </svg>
+                                <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                                 {{ $plan->max_trainings ? 'Até ' . $plan->max_trainings . ' treinamentos' : 'Treinamentos ilimitados' }}
                             </li>
                             @if($plan->features)
                                 @foreach($plan->features as $feature)
-                                    <li class="flex items-center gap-2">
-                                        <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                                        </svg>
-                                        {{ ucfirst($feature) }}
-                                    </li>
+                                    @if(isset($featureLabels[$feature]))
+                                        <li class="flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                            {{ $featureLabels[$feature] }}
+                                        </li>
+                                    @endif
                                 @endforeach
                             @endif
                             <li class="flex items-center gap-2">
-                                <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                                </svg>
+                                <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                                 Cobrança no cartão de crédito
                             </li>
                         </ul>
 
                         <div class="mt-5">
-                            <span :class="selectedPlan === {{ $plan->id }} ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600'"
-                                  class="block text-center py-2.5 rounded-lg text-sm font-semibold transition">
-                                <span x-text="selectedPlan === {{ $plan->id }} ? 'Selecionado' : '{{ $isCurrent ? 'Renovar' : 'Selecionar' }}'"></span>
-                            </span>
+                            @if($isCurrent)
+                                <span class="block text-center py-2.5 rounded-lg text-sm font-semibold bg-green-50 text-green-700 border border-green-200">
+                                    Plano atual
+                                </span>
+                            @else
+                                <span :class="selectedPlan === {{ $plan->id }} ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+                                      class="block text-center py-2.5 rounded-lg text-sm font-semibold transition cursor-pointer">
+                                    <span x-text="selectedPlan === {{ $plan->id }} ? 'Selecionado' : 'Fazer upgrade'"></span>
+                                </span>
+                            @endif
                         </div>
                     </div>
                 </div>
