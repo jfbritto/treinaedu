@@ -36,6 +36,64 @@
         });
     </script>
     <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        window.__aiGenerateLessonQuiz = async function(ctx, mi, li) {
+            const lesson = ctx.modules[mi].lessons[li];
+            let content = lesson.type === 'text' ? lesson.content : '';
+            if (!lesson.title && !content) {
+                Swal.fire({ icon: 'warning', title: 'Conteúdo necessário', text: 'Preencha o título e/ou conteúdo da aula antes de gerar o quiz.' });
+                return;
+            }
+            lesson._aiLoading = true;
+            try {
+                const res = await fetch('/api/ai/generate-quiz', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                    body: JSON.stringify({ lesson_title: lesson.title, content: content || lesson.title, num_questions: 3 }),
+                });
+                const data = await res.json();
+                if (data.questions) {
+                    lesson.questions = data.questions;
+                    Swal.fire({ icon: 'success', title: 'Quiz gerado!', text: data.questions.length + ' questões criadas pela IA. Revise e ajuste se necessário.', timer: 3000, showConfirmButton: false });
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Erro', text: data.error || 'Não foi possível gerar o quiz.' });
+                }
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Erro de conexão', text: 'Verifique sua conexão e tente novamente.' });
+            } finally {
+                lesson._aiLoading = false;
+            }
+        };
+        window.__aiGenerateTrainingQuiz = async function(ctx) {
+            const title = document.querySelector('input[name="title"]')?.value || '';
+            const desc = document.querySelector('textarea[name="description"]')?.value || '';
+            let content = desc;
+            ctx.modules.forEach(function(m) { m.lessons.forEach(function(l) { content += '\nAula: ' + l.title; if (l.content) content += '\n' + l.content; }); });
+            if (!title) {
+                Swal.fire({ icon: 'warning', title: 'Título necessário', text: 'Preencha o título do treinamento antes de gerar o quiz.' });
+                return;
+            }
+            ctx._aiLoading = true;
+            try {
+                const res = await fetch('/api/ai/generate-quiz', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                    body: JSON.stringify({ lesson_title: title, content: content || title, num_questions: 5 }),
+                });
+                const data = await res.json();
+                if (data.questions) {
+                    ctx.questions = data.questions;
+                    Swal.fire({ icon: 'success', title: 'Quiz gerado!', text: data.questions.length + ' questões criadas pela IA.', timer: 3000, showConfirmButton: false });
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Erro', text: data.error || 'Não foi possível gerar o quiz.' });
+                }
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Erro de conexão', text: 'Verifique sua conexão e tente novamente.' });
+            } finally {
+                ctx._aiLoading = false;
+            }
+        };
+    </script>
 
     <div x-data="{
         modules: [
@@ -103,6 +161,7 @@
         },
         hasQuiz: false,
         questions: [{ text: '', options: [{ text: '' }, { text: '' }], correct: 0 }],
+        _aiLoading: false,
         addQuestion() {
             this.questions.push({ text: '', options: [{ text: '' }, { text: '' }], correct: 0 });
         },
@@ -115,6 +174,8 @@
         removeOption(qi, oi) {
             if (this.questions[qi].options.length > 2) this.questions[qi].options.splice(oi, 1);
         },
+        aiGenerateLessonQuiz(mi, li) { window.__aiGenerateLessonQuiz(this, mi, li); },
+        aiGenerateTrainingQuiz() { window.__aiGenerateTrainingQuiz(this); },
         get totalDuration() {
             return this.modules.reduce((sum, m) => sum + m.lessons.reduce((s, l) => s + (parseInt(l.duration_minutes) || 0), 0), 0);
         },
@@ -421,6 +482,20 @@
 
                                         {{-- Lesson quiz builder --}}
                                         <div x-show="lesson.hasQuiz" x-cloak class="mt-3 space-y-3">
+                                            <div class="flex items-center justify-between mb-1">
+                                                <span class="text-xs font-medium text-gray-500">Questões do quiz</span>
+                                                <button type="button" @click="aiGenerateLessonQuiz(mi, li)" :disabled="lesson._aiLoading"
+                                                    class="inline-flex items-center gap-1.5 text-xs font-medium text-purple-600 hover:text-purple-800 transition disabled:opacity-50">
+                                                    <svg x-show="!lesson._aiLoading" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                                    </svg>
+                                                    <svg x-show="lesson._aiLoading" x-cloak class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                                    </svg>
+                                                    <span x-text="lesson._aiLoading ? 'Gerando...' : 'Gerar com IA'"></span>
+                                                </button>
+                                            </div>
                                             <template x-for="(q, qi) in lesson.questions" :key="qi">
                                                 <div class="border border-gray-200 rounded-lg p-3 space-y-2 bg-white">
                                                     <div class="flex items-center justify-between">
@@ -509,6 +584,20 @@
                     </div>
 
                     <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-gray-700">Questões</span>
+                            <button type="button" @click="aiGenerateTrainingQuiz()" :disabled="_aiLoading"
+                                class="inline-flex items-center gap-1.5 text-xs font-medium text-purple-600 hover:text-purple-800 transition disabled:opacity-50">
+                                <svg x-show="!_aiLoading" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                </svg>
+                                <svg x-show="_aiLoading" x-cloak class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                </svg>
+                                <span x-text="_aiLoading ? 'Gerando...' : 'Gerar com IA'"></span>
+                            </button>
+                        </div>
                         <template x-for="(q, qi) in questions" :key="qi">
                             <div class="border border-gray-200 rounded-xl p-4 space-y-3 bg-gray-50">
                                 <div class="flex items-center justify-between">

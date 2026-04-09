@@ -41,4 +41,9 @@ return [
         'webhook_token' => env('ASAAS_WEBHOOK_TOKEN'),
     ],
 
+    'gemini' => [
+        'api_key' => env('GEMINI_API_KEY'),
+        'model' => env('GEMINI_MODEL', 'gemini-2.5-flash'),
+    ],
+
 ];

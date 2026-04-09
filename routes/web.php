@@ -15,6 +15,7 @@ use App\Http\Controllers\Instructor\TrainingController as InstructorTrainingCont
 use App\Http\Controllers\Employee\TrainingController as EmployeeTrainingController;
 use App\Http\Controllers\Employee\CertificateController as EmployeeCertificateController;
 use App\Http\Controllers\Employee\QuizController;
+use App\Http\Controllers\Api\AiController;
 use App\Http\Controllers\Api\TrainingProgressController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\CertificateVerificationController;
@@ -142,6 +143,14 @@ Route::middleware('auth')->prefix('api')->group(function () {
     Route::post('lesson-progress', \App\Http\Controllers\Api\LessonProgressController::class)
         ->name('api.lesson-progress')
         ->middleware('throttle:30,1');
+
+    // AI endpoints (admin only, rate limited)
+    Route::post('ai/generate-quiz', [AiController::class, 'generateQuiz'])
+        ->name('api.ai.generate-quiz')
+        ->middleware(['role:admin', 'throttle:10,1']);
+    Route::post('ai/generate-description', [AiController::class, 'generateDescription'])
+        ->name('api.ai.generate-description')
+        ->middleware(['role:admin', 'throttle:15,1']);
 });
 
 // Super Admin routes
