@@ -80,13 +80,30 @@ class AsaasService
         if ($response->successful()) {
             $subscriptionId = $response->json('id');
 
-            $company->subscription()->update([
+            $subscription = $company->subscription;
+            $subscription->update([
                 'plan_id' => $plan->id,
                 'asaas_subscription_id' => $subscriptionId,
                 'status' => 'active',
                 'current_period_start' => now(),
                 'current_period_end' => now()->addMonth(),
             ]);
+
+            // Create initial payment record (credit card is charged immediately)
+            try {
+                Payment::create([
+                    'company_id' => $company->id,
+                    'subscription_id' => $subscription->id,
+                    'asaas_payment_id' => null, // Will be updated by webhook
+                    'amount' => (float) $plan->price,
+                    'status' => 'confirmed',
+                    'payment_method' => 'credit_card',
+                    'paid_at' => now(),
+                    'due_date' => now()->toDateString(),
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Failed to create initial payment record', ['error' => $e->getMessage()]);
+            }
 
             // Notify admin about subscription creation
             $admin = \App\Models\User::withoutGlobalScopes()
