@@ -28,10 +28,10 @@
         .certificate-inner td {
             vertical-align: middle;
             text-align: center;
-            padding: 30mm 32mm 45mm 32mm;
+            padding: 28mm 32mm 50mm 32mm;
         }
 
-        /* Decorative borders — fixed so they stay on the single page */
+        /* Decorative borders */
         .border-top,
         .border-bottom {
             position: fixed;
@@ -66,99 +66,99 @@
         .corner-br { bottom: 14mm; right: 14mm; border-bottom: 1.5px solid {{ $primaryColor }}; border-right: 1.5px solid {{ $primaryColor }}; }
 
         .logo {
-            max-height: 56px;
-            max-width: 180px;
+            max-height: 48px;
+            max-width: 160px;
         }
 
         .company-name {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             color: {{ $secondaryColor }};
             letter-spacing: 0.5px;
         }
 
         .separator-wrap {
-            margin-top: 14px;
-            margin-bottom: 14px;
+            margin-top: 10px;
+            margin-bottom: 10px;
             text-align: center;
         }
         .separator-line {
             display: inline-block;
-            width: 90px;
+            width: 70px;
             height: 1px;
             background: {{ $primaryColor }};
             vertical-align: middle;
         }
         .separator-label {
             display: inline-block;
-            font-size: 10px;
+            font-size: 9px;
             color: {{ $secondaryColor }};
             letter-spacing: 4px;
-            padding: 0 14px;
+            padding: 0 12px;
             vertical-align: middle;
         }
 
         .title {
-            font-size: 60px;
+            font-size: 52px;
             font-weight: bold;
             color: {{ $secondaryColor }};
             letter-spacing: 4px;
             line-height: 1.1;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .subtitle {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: normal;
             font-style: italic;
             color: {{ $primaryColor }};
             letter-spacing: 1.5px;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
 
         .certifies {
-            font-size: 12px;
+            font-size: 11px;
             color: #6b7280;
             letter-spacing: 2px;
             text-transform: uppercase;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .recipient {
-            font-size: 42px;
+            font-size: 36px;
             font-weight: bold;
             color: {{ $secondaryColor }};
-            margin-bottom: 20px;
+            margin-bottom: 14px;
             letter-spacing: 0.5px;
         }
 
         .highlight-box {
             margin: 0 auto;
             max-width: 200mm;
-            padding: 16px 24px;
+            padding: 12px 20px;
             border-top: 2px solid {{ $primaryColor }};
             border-bottom: 2px solid {{ $primaryColor }};
             background-color: #f5f9ff;
         }
 
         .completed {
-            font-size: 11px;
+            font-size: 10px;
             color: #6b7280;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .training-title {
-            font-size: 26px;
+            font-size: 22px;
             font-weight: bold;
             color: #1f2937;
             line-height: 1.3;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .meta {
-            font-size: 12px;
+            font-size: 11px;
             color: #6b7280;
         }
         .meta strong {
@@ -166,81 +166,75 @@
             font-weight: bold;
         }
 
-        /* Footer — fixed to the bottom of the single page */
+        /* Footer — fixed to the bottom */
         .footer {
             position: fixed;
-            left: 32mm;
-            right: 32mm;
-            bottom: 18mm;
+            left: 28mm;
+            right: 28mm;
+            bottom: 16mm;
         }
         .footer-table {
             width: 100%;
             border-collapse: collapse;
         }
         .footer-cell {
-            width: 33.333%;
             text-align: center;
-            vertical-align: top;
-            padding: 0 10px;
+            vertical-align: bottom;
+            padding: 0 6px;
+        }
+        .footer-cell-side {
+            width: 28%;
+        }
+        .footer-cell-center {
+            width: 44%;
         }
         .footer-label {
-            font-size: 9px;
+            font-size: 8px;
             color: #9ca3af;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
         .footer-value {
-            font-size: 13px;
+            font-size: 12px;
             color: {{ $secondaryColor }};
             font-weight: bold;
         }
         .footer-code {
             font-family: 'Courier New', monospace;
-            font-size: 12px;
+            font-size: 11px;
             color: #4b5563;
             font-weight: bold;
         }
         .qrcode {
-            width: 80px;
-            height: 80px;
+            width: 60px;
+            height: 60px;
         }
 
-        .signer-section {
-            margin-top: 20px;
-        }
-        .signer-table {
-            margin: 0 auto;
-            border-collapse: collapse;
-        }
-        .signer-cell {
-            text-align: center;
-            padding: 0 30px;
-            vertical-align: bottom;
-        }
+        /* Signer in footer center */
         .signer-signature {
-            max-height: 50px;
-            max-width: 160px;
+            max-height: 36px;
+            max-width: 140px;
         }
         .signer-line {
-            width: 160px;
+            width: 140px;
             height: 1px;
             background: #9ca3af;
-            margin: 6px auto 6px auto;
+            margin: 4px auto 4px auto;
         }
         .signer-name {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             color: #1f2937;
         }
         .signer-role {
-            font-size: 10px;
+            font-size: 9px;
             color: #6b7280;
         }
         .signer-registry {
-            font-size: 9px;
+            font-size: 8px;
             color: #9ca3af;
-            margin-top: 2px;
+            margin-top: 1px;
         }
 
         .verified-by {
@@ -280,7 +274,7 @@
                         <div class="company-name">{{ $companyName }}</div>
                     @endif
 
-                    {{-- Apresenta separator --}}
+                    {{-- Separator --}}
                     <div class="separator-wrap">
                         <span class="separator-line"></span>
                         <span class="separator-label">APRESENTA</span>
@@ -321,45 +315,43 @@
                         @endif
                     </div>
 
-                    @if(!empty($signerName))
-                        <div class="signer-section">
-                            <table class="signer-table">
-                                <tr>
-                                    <td class="signer-cell">
-                                        @if(!empty($signerSignaturePath))
-                                            <img src="{{ $signerSignaturePath }}" class="signer-signature" alt="Assinatura">
-                                        @endif
-                                        <div class="signer-line"></div>
-                                        <div class="signer-name">{{ $signerName }}</div>
-                                        @if(!empty($signerRole))
-                                            <div class="signer-role">{{ $signerRole }}</div>
-                                        @endif
-                                        @if(!empty($signerRegistry))
-                                            <div class="signer-registry">{{ $signerRegistry }}</div>
-                                        @endif
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    @endif
-
                 </td>
             </tr>
         </table>
 
-        {{-- Footer --}}
+        {{-- Footer with signer in center --}}
         <div class="footer">
             <table class="footer-table">
                 <tr>
-                    <td class="footer-cell">
+                    {{-- Left: emission date + code --}}
+                    <td class="footer-cell footer-cell-side">
                         <div class="footer-label">Emitido em</div>
                         <div class="footer-value">{{ $completionDate }}</div>
+                        <div style="margin-top: 6px;">
+                            <div class="footer-label">Código</div>
+                            <div class="footer-code">{{ $certificateCode }}</div>
+                        </div>
                     </td>
-                    <td class="footer-cell">
-                        <div class="footer-label">Código</div>
-                        <div class="footer-code">{{ $certificateCode }}</div>
+
+                    {{-- Center: signer --}}
+                    <td class="footer-cell footer-cell-center">
+                        @if(!empty($signerName))
+                            @if(!empty($signerSignaturePath))
+                                <img src="{{ $signerSignaturePath }}" class="signer-signature" alt="Assinatura">
+                            @endif
+                            <div class="signer-line"></div>
+                            <div class="signer-name">{{ $signerName }}</div>
+                            @if(!empty($signerRole))
+                                <div class="signer-role">{{ $signerRole }}</div>
+                            @endif
+                            @if(!empty($signerRegistry))
+                                <div class="signer-registry">{{ $signerRegistry }}</div>
+                            @endif
+                        @endif
                     </td>
-                    <td class="footer-cell">
+
+                    {{-- Right: QR code --}}
+                    <td class="footer-cell footer-cell-side">
                         <div class="footer-label">Verificar</div>
                         @if(!empty($qrCodeDataUri))
                             <img src="{{ $qrCodeDataUri }}" class="qrcode" alt="QR Code">
