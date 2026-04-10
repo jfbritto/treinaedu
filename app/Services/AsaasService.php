@@ -23,14 +23,20 @@ class AsaasService
     /**
      * Create a customer in Asaas and store the customer ID in the company.
      */
-    public function createCustomer(Company $company, string $email): ?string
+    public function createCustomer(Company $company, string $email, ?string $cpfCnpj = null): ?string
     {
+        $payload = [
+            'name' => $company->name,
+            'email' => $email,
+            'externalReference' => (string) $company->id,
+        ];
+
+        if ($cpfCnpj) {
+            $payload['cpfCnpj'] = preg_replace('/\D/', '', $cpfCnpj);
+        }
+
         $response = Http::withHeaders(['access_token' => $this->apiKey])
-            ->post("{$this->baseUrl}/customers", [
-                'name' => $company->name,
-                'email' => $email,
-                'externalReference' => (string) $company->id,
-            ]);
+            ->post("{$this->baseUrl}/customers", $payload);
 
         if ($response->successful()) {
             $customerId = $response->json('id');

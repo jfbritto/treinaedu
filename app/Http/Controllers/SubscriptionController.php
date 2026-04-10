@@ -37,7 +37,7 @@ class SubscriptionController extends Controller
 
         // Create Asaas customer if needed
         if (!$company->asaas_customer_id) {
-            $customerId = $asaas->createCustomer($company, auth()->user()->email);
+            $customerId = $asaas->createCustomer($company, auth()->user()->email, $request->cpf_cnpj);
             if (!$customerId) {
                 return back()->withInput()->with('error', 'Erro ao criar cliente. Tente novamente.');
             }
