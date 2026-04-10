@@ -39,9 +39,11 @@ class SubscriptionController extends Controller
         if (!$company->asaas_customer_id) {
             $customerId = $asaas->createCustomer($company, auth()->user()->email, $request->cpf_cnpj);
             if (!$customerId) {
-                return back()->withInput()->with('error', 'Erro ao criar cliente. Tente novamente.');
+                return back()->withInput()->with('error', 'Erro ao criar cliente no gateway de pagamento. Verifique o CPF/CNPJ e tente novamente.');
             }
         }
+        // Refresh company in case customer was found/created
+        $company->refresh();
 
         $cardData = [
             'holder_name' => $request->holder_name,

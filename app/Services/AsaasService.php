@@ -25,6 +25,13 @@ class AsaasService
      */
     public function createCustomer(Company $company, string $email, ?string $cpfCnpj = null): ?string
     {
+        // Check if customer already exists by externalReference
+        $existing = $this->findCustomerByReference((string) $company->id);
+        if ($existing) {
+            $company->update(['asaas_customer_id' => $existing]);
+            return $existing;
+        }
+
         $payload = [
             'name' => $company->name,
             'email' => $email,
@@ -47,7 +54,26 @@ class AsaasService
         Log::error('Asaas createCustomer failed', [
             'status' => $response->status(),
             'response' => $response->json(),
+            'payload' => array_diff_key($payload, ['cpfCnpj' => '']),
         ]);
+        return null;
+    }
+
+    private function findCustomerByReference(string $reference): ?string
+    {
+        try {
+            $response = Http::withHeaders(['access_token' => $this->apiKey])
+                ->get("{$this->baseUrl}/customers", ['externalReference' => $reference]);
+
+            if ($response->successful()) {
+                $customers = $response->json('data', []);
+                if (!empty($customers)) {
+                    return $customers[0]['id'];
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Asaas findCustomer failed', ['error' => $e->getMessage()]);
+        }
         return null;
     }
 
