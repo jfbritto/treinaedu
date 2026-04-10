@@ -11,6 +11,15 @@
     <meta property="og:description" content="Certificado de conclusão emitido por {{ $certificate->company->name }} via TreinaEdu. Emitido em {{ $certificate->generated_at->format('d/m/Y') }}.">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:type" content="website">
+    <meta property="og:image" content="{{ route('certificate.og-image', $certificate->certificate_code) }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    {{-- Twitter Card --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $certificate->user->name }} concluiu {{ $certificate->training->title }}">
+    <meta name="twitter:description" content="Certificado emitido por {{ $certificate->company->name }} via TreinaEdu.">
+    <meta name="twitter:image" content="{{ route('certificate.og-image', $certificate->certificate_code) }}">
 
     <script>
         tailwind.config = {

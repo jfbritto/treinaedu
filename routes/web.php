@@ -43,6 +43,8 @@ Route::post('/certificate/verify', [CertificateVerificationController::class, 'v
     ->name('certificate.verify.post');
 Route::get('/certificate/{code}', [CertificateVerificationController::class, 'showByCode'])
     ->name('certificate.show');
+Route::get('/certificate/{code}/og-image', [CertificateVerificationController::class, 'ogImage'])
+    ->name('certificate.og-image');
 
 // Asaas Webhook (excluded from CSRF)
 Route::post('/asaas/webhook', [AsaasWebhookController::class, 'handle'])
