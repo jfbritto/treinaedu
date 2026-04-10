@@ -36,6 +36,41 @@
         .float-animation { animation: float 6s ease-in-out infinite; }
         .float-delay { animation: float 6s ease-in-out 2s infinite; }
         html { scroll-behavior: smooth; }
+
+        /* Scroll animations */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+        .reveal-scale { opacity: 0; transform: scale(0.95); transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal-scale.visible { opacity: 1; transform: scale(1); }
+
+        /* Counter animation */
+        @keyframes count-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .count-animate { animation: count-up 0.5s ease-out forwards; }
+
+        /* Gradient border hover */
+        .gradient-border { position: relative; }
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 2px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #6366f1);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .gradient-border:hover::before { opacity: 1; }
+
+        /* Typing cursor */
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        .typing-cursor { animation: blink 1s step-end infinite; }
     </style>
 </head>
 <body class="font-sans antialiased bg-white text-gray-900">
@@ -138,9 +173,9 @@
     <section id="funcionalidades" class="py-24 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <p class="text-sm font-semibold text-brand-600 uppercase tracking-wider mb-2">Funcionalidades</p>
-                <h2 class="text-3xl sm:text-4xl font-extrabold mb-4">Tudo que sua empresa precisa para capacitar</h2>
-                <p class="text-lg text-gray-500 max-w-2xl mx-auto">Uma plataforma completa com ferramentas profissionais para cada etapa do aprendizado corporativo.</p>
+                <p class="reveal text-sm font-semibold text-brand-600 uppercase tracking-wider mb-2">Funcionalidades</p>
+                <h2 class="reveal reveal-delay-1 text-3xl sm:text-4xl font-extrabold mb-4">Tudo que sua empresa precisa para capacitar</h2>
+                <p class="reveal reveal-delay-2 text-lg text-gray-500 max-w-2xl mx-auto">Uma plataforma completa com ferramentas profissionais para cada etapa do aprendizado corporativo.</p>
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -171,7 +206,7 @@
 
                 @foreach($features as $f)
                     @php $c = $colorMap[$f['color']]; @endphp
-                    <div class="group p-8 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300">
+                    <div class="group reveal reveal-scale p-8 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300 gradient-border">
                         <div class="w-12 h-12 {{ $c['bg'] }} {{ $c['hover'] }} rounded-xl flex items-center justify-center mb-5 transition-colors duration-300">
                             <svg class="w-6 h-6 {{ $c['text'] }} {{ $c['htext'] }} transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="{{ $f['icon'] }}"/>
@@ -185,13 +220,41 @@
         </div>
     </section>
 
+    {{-- Numbers / Social proof --}}
+    <section class="py-20 bg-gradient-to-r from-brand-600 to-brand-800 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -translate-y-1/2 translate-x-1/2"></div>
+            <div class="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full translate-y-1/2 -translate-x-1/2"></div>
+        </div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
+                <div class="reveal">
+                    <p class="text-4xl md:text-5xl font-black counter" data-target="500">0</p>
+                    <p class="text-sm text-indigo-200 mt-2">Colaboradores treinados</p>
+                </div>
+                <div class="reveal reveal-delay-1">
+                    <p class="text-4xl md:text-5xl font-black counter" data-target="50">0</p>
+                    <p class="text-sm text-indigo-200 mt-2">Treinamentos criados</p>
+                </div>
+                <div class="reveal reveal-delay-2">
+                    <p class="text-4xl md:text-5xl font-black counter" data-target="200">0</p>
+                    <p class="text-sm text-indigo-200 mt-2">Certificados emitidos</p>
+                </div>
+                <div class="reveal reveal-delay-3">
+                    <p class="text-4xl md:text-5xl font-black counter" data-target="99">0</p>
+                    <p class="text-sm text-indigo-200 mt-2">% de satisfação</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     {{-- Pricing --}}
     <section id="precos" class="py-24 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <p class="text-sm font-semibold text-brand-600 uppercase tracking-wider mb-2">Planos e Preços</p>
-                <h2 class="text-3xl sm:text-4xl font-extrabold mb-4">Escolha o plano ideal para sua empresa</h2>
-                <p class="text-lg text-gray-500 max-w-2xl mx-auto">Comece com 7 dias grátis em qualquer plano. Cobrança mensal no cartão de crédito.</p>
+                <p class="reveal text-sm font-semibold text-brand-600 uppercase tracking-wider mb-2">Planos e Preços</p>
+                <h2 class="reveal reveal-delay-1 text-3xl sm:text-4xl font-extrabold mb-4">Escolha o plano ideal para sua empresa</h2>
+                <p class="reveal reveal-delay-2 text-lg text-gray-500 max-w-2xl mx-auto">Comece com 7 dias grátis em qualquer plano. Cobrança mensal no cartão de crédito.</p>
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -291,8 +354,8 @@
     <section id="como-funciona" class="py-24 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <p class="text-sm font-semibold text-brand-600 uppercase tracking-wider mb-2">Como funciona</p>
-                <h2 class="text-3xl sm:text-4xl font-extrabold mb-4">Simples de começar, poderoso de escalar</h2>
+                <p class="reveal text-sm font-semibold text-brand-600 uppercase tracking-wider mb-2">Como funciona</p>
+                <h2 class="reveal reveal-delay-1 text-3xl sm:text-4xl font-extrabold mb-4">Simples de começar, poderoso de escalar</h2>
             </div>
 
             <div class="grid md:grid-cols-4 gap-8">
@@ -306,7 +369,7 @@
                 @endphp
 
                 @foreach($steps as $step)
-                    <div class="text-center">
+                    <div class="reveal text-center">
                         <div class="w-14 h-14 bg-brand-600 text-white text-xl font-bold rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-brand-500/25">
                             {{ $step['num'] }}
                         </div>
@@ -326,8 +389,8 @@
                 <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2"></div>
 
                 <div class="relative">
-                    <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">Pronto para transformar seus treinamentos?</h2>
-                    <p class="text-lg text-indigo-200 mb-8 max-w-xl mx-auto">Comece com 7 dias grátis. Sem cartão de crédito no período de teste.</p>
+                    <h2 class="reveal text-3xl sm:text-4xl font-extrabold text-white mb-4">Pronto para transformar seus treinamentos?</h2>
+                    <p class="reveal reveal-delay-1 text-lg text-indigo-200 mb-8 max-w-xl mx-auto">Comece com 7 dias grátis. Sem cartão de crédito no período de teste.</p>
 
                     <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <a href="{{ route('register') }}" class="inline-flex items-center gap-2 px-8 py-4 text-base font-bold text-brand-700 bg-white hover:bg-indigo-50 rounded-xl transition-all shadow-lg hover:-translate-y-0.5">
@@ -384,6 +447,45 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        // Scroll reveal animations
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal, .reveal-scale').forEach(el => revealObserver.observe(el));
+
+        // Counter animation
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.dataset.counted) {
+                    entry.target.dataset.counted = 'true';
+                    const target = parseInt(entry.target.dataset.target);
+                    const duration = 2000;
+                    const start = performance.now();
+                    const step = (now) => {
+                        const progress = Math.min((now - start) / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        const suffix = entry.target.nextElementSibling?.textContent?.includes('%') ? '%' : '+';
+                        entry.target.textContent = Math.floor(eased * target) + (progress >= 1 ? suffix : '');
+                        if (progress < 1) requestAnimationFrame(step);
+                    };
+                    requestAnimationFrame(step);
+                }
+            });
+        }, { threshold: 0.5 });
+        document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
+
+        // Navbar background on scroll
+        const header = document.querySelector('header');
+        window.addEventListener('scroll', () => {
+            header.classList.toggle('shadow-sm', window.scrollY > 20);
+        });
+    </script>
 
 </body>
 </html>
