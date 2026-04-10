@@ -116,29 +116,65 @@
 
         window.__fetchVideoTitle = function(ctx, url, lesson, mi) {
             if (lesson.title && lesson.title.trim() !== '') return;
+            lesson._aiLoading = true;
             fetch('https://noembed.com/embed?url=' + encodeURIComponent(url))
                 .then(r => r.json())
                 .then(data => {
                     if (data.title && (!lesson.title || lesson.title.trim() === '')) {
-                        lesson.title = data.title;
-                        if (mi !== undefined) window.__suggestModuleTitle(ctx, mi);
+                        window.__cleanLessonTitle(ctx, data.title, lesson, mi);
                     }
                 })
-                .catch(() => {});
+                .catch(() => {})
+                .finally(() => { lesson._aiLoading = false; });
         };
+
+        window.__cleanLessonTitle = function(ctx, rawTitle, lesson, mi) {
+            fetch('/api/ai/generate-description', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                body: JSON.stringify({
+                    title: rawTitle,
+                    context: 'Este é o título de um vídeo do YouTube que será usado como nome de uma AULA dentro de um treinamento corporativo. '
+                        + 'Limpe e reescreva o título de forma profissional e curta (máximo 8 palavras). '
+                        + 'Remova nomes de canais, numeração de aulas (ex: "AULA 03"), termos como "COMPLETO", emojis, e formatação excessiva. '
+                        + 'Mantenha apenas o assunto principal. Responda SOMENTE com o título limpo, sem aspas.',
+                    type: 'training'
+                }),
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.description && (!lesson.title || lesson.title.trim() === '')) {
+                    lesson.title = data.description.replace(/["']/g, '').trim();
+                } else if (!lesson.title || lesson.title.trim() === '') {
+                    lesson.title = rawTitle;
+                }
+                if (mi !== undefined) window.__suggestModuleTitle(ctx, mi);
+            })
+            .catch(() => {
+                if (!lesson.title || lesson.title.trim() === '') lesson.title = rawTitle;
+                if (mi !== undefined) window.__suggestModuleTitle(ctx, mi);
+            });
+        };
+
         window.__suggestModuleTitle = function(ctx, mi) {
             const mod = ctx.modules[mi];
             if (mod.title && mod.title.trim() !== '') {
                 window.__suggestTrainingInfo(ctx);
                 return;
             }
-            const titles = mod.lessons.map(l => l.title).filter(t => t && t.trim() !== '');
-            if (titles.length === 0) return;
+            const lessonTitles = mod.lessons.map(l => l.title).filter(t => t && t.trim() !== '');
+            if (lessonTitles.length === 0) return;
             mod._aiLoading = true;
+            const trainingTitle = document.querySelector('input[name="title"]')?.value || '';
+            let prompt = 'Hierarquia: TREINAMENTO > MÓDULO > AULA. '
+                + 'Você está nomeando um MÓDULO (nível intermediário). '
+                + 'O módulo agrupa as seguintes aulas: ' + lessonTitles.join('; ') + '. ';
+            if (trainingTitle) prompt += 'O treinamento se chama "' + trainingTitle + '". ';
+            prompt += 'Responda APENAS com um título de subcategoria de no máximo 3 palavras. Sem pontuação, sem aspas.';
             fetch('/api/ai/generate-description', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
-                body: JSON.stringify({ title: titles.join(', '), context: 'Responda APENAS com um título de no máximo 3 palavras para um módulo que contém estas aulas: ' + titles.join(', ') + '. Sem pontuação, sem aspas, apenas o título curto.', type: 'training' }),
+                body: JSON.stringify({ title: lessonTitles.join(', '), context: prompt, type: 'training' }),
             })
             .then(r => r.json())
             .then(data => {
@@ -156,19 +192,26 @@
             const descField = document.getElementById('description-field');
             if (titleInput.value.trim() && descField.value.trim()) return;
 
-            const allTitles = [];
+            const moduleTitles = [];
+            const lessonTitles = [];
             ctx.modules.forEach(m => {
-                if (m.title) allTitles.push('Módulo: ' + m.title);
-                m.lessons.forEach(l => { if (l.title) allTitles.push(l.title); });
+                if (m.title) moduleTitles.push(m.title);
+                m.lessons.forEach(l => { if (l.title) lessonTitles.push(l.title); });
             });
-            if (allTitles.length === 0) return;
+            if (lessonTitles.length === 0) return;
 
             if (!titleInput.value.trim()) {
                 titleInput.classList.add('ai-loading-field');
+                let prompt = 'Hierarquia: TREINAMENTO > MÓDULO > AULA. '
+                    + 'Você está nomeando o TREINAMENTO (nível mais alto e genérico). '
+                    + 'Deve representar o tema geral que engloba tudo. ';
+                if (moduleTitles.length > 0) prompt += 'Módulos: ' + moduleTitles.join(', ') + '. ';
+                prompt += 'Aulas: ' + lessonTitles.join('; ') + '. '
+                    + 'Responda APENAS com um título amplo de no máximo 5 palavras. Sem pontuação, sem aspas.';
                 fetch('/api/ai/generate-description', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
-                    body: JSON.stringify({ title: allTitles.join(', '), context: 'Responda APENAS com um título de no máximo 5 palavras para um treinamento corporativo que contém: ' + allTitles.join(', ') + '. Sem pontuação, sem aspas.', type: 'training' }),
+                    body: JSON.stringify({ title: lessonTitles.join(', '), context: prompt, type: 'training' }),
                 })
                 .then(r => r.json())
                 .then(data => {
