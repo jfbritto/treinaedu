@@ -244,6 +244,23 @@ class AsaasService
             'current_period_end' => now()->addMonth(),
         ]);
 
+        $asaasPaymentId = $payment['id'] ?? null;
+        $dueDate = $payment['dueDate'] ?? now()->toDateString();
+
+        // Check if initial payment already exists (created by createSubscription)
+        // If so, update it with the Asaas ID instead of creating a duplicate
+        $existing = Payment::withoutGlobalScopes()
+            ->where('subscription_id', $subscription->id)
+            ->where('status', 'confirmed')
+            ->whereDate('due_date', $dueDate)
+            ->whereNull('asaas_payment_id')
+            ->first();
+
+        if ($existing) {
+            $existing->update(['asaas_payment_id' => $asaasPaymentId]);
+            return;
+        }
+
         try {
             Payment::create([
                 'company_id' => $subscription->company_id,
