@@ -26,7 +26,7 @@ class SendBulkInviteJob implements ShouldQueue
         private int $companyId,
     ) {
         $this->onQueue('bulk-emails');
-        $this->onConnection('database');
+        $this->onConnection('redis');
     }
 
     public function handle(): void
