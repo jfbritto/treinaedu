@@ -390,7 +390,7 @@
                     <div class="mt-5 pt-5 border-t border-gray-100">
                         <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Preview do Certificado</p>
                         <div class="rounded-lg border border-gray-200 overflow-hidden bg-white">
-                            <iframe x-ref="certPreview" style="width:100%;border:0;pointer-events:none;aspect-ratio:297/210;" scrolling="no"></iframe>
+                            <img x-ref="certPreview" style="width:100%;display:block;" alt="Preview">
                         </div>
                         <p class="text-xs text-gray-400 mt-2">O preview atualiza ao vivo conforme você altera as opções acima.</p>
                     </div>
@@ -500,78 +500,70 @@
             cprimary: '{{ $company->primary_color ?? '#4f46e5' }}',
             csecondary: '{{ $company->secondary_color ?? '#3730a3' }}',
             renderPreview() {
-                const iframe = this.$refs.certPreview;
-                if (!iframe) return;
+                const img = this.$refs.certPreview;
+                if (!img) return;
                 const p = this.cprimary, s = this.csecondary, b = this.borderStyle;
-                const t = (this.titleText || 'CERTIFICADO').replace(/</g,'&lt;');
-                const st = (this.subtitleText || 'de Conclusão').replace(/</g,'&lt;');
-                const logo = @js($company->logo_path ? Storage::url($company->logo_path) : '');
+                const esc = (str) => str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+                const t = esc(this.titleText || 'CERTIFICADO');
+                const st = esc(this.subtitleText || 'de Conclusão');
                 const companyName = @js($company->name);
                 const signerName = @js($company->cert_signer_name ?? '');
                 const signerRole = @js($company->cert_signer_role ?? '');
-                const borderHtml = b === 'none' ? '' : `
-                    <div style="position:absolute;top:5%;left:4%;right:4%;height:2px;background:${p}"></div>
-                    <div style="position:absolute;bottom:5%;left:4%;right:4%;height:2px;background:${p}"></div>
-                ` + (b === 'classic' ? `
-                    <div style="position:absolute;top:6.5%;left:4%;right:4%;height:1px;background:${p}"></div>
-                    <div style="position:absolute;bottom:6.5%;left:4%;right:4%;height:1px;background:${p}"></div>
-                    <div style="position:absolute;top:7%;left:5%;width:4%;height:6%;border-top:2px solid ${p};border-left:2px solid ${p}"></div>
-                    <div style="position:absolute;top:7%;right:5%;width:4%;height:6%;border-top:2px solid ${p};border-right:2px solid ${p}"></div>
-                    <div style="position:absolute;bottom:7%;left:5%;width:4%;height:6%;border-bottom:2px solid ${p};border-left:2px solid ${p}"></div>
-                    <div style="position:absolute;bottom:7%;right:5%;width:4%;height:6%;border-bottom:2px solid ${p};border-right:2px solid ${p}"></div>
-                ` : '');
-                const logoHtml = logo
-                    ? `<img src="${logo}" style="max-height:7%;max-width:20%;margin:0 auto 1%;">`
-                    : `<div style="font-size:2.2vw;font-weight:bold;color:${s};margin-bottom:1%">${companyName}</div>`;
-                const signerHtml = signerName ? `
-                    <div style="width:15%;height:1px;background:#9ca3af;margin:0 auto 1%"></div>
-                    <div style="font-size:1.4vw;font-weight:bold;color:#1f2937">${signerName}</div>
-                    ${signerRole ? `<div style="font-size:1vw;color:#6b7280">${signerRole}</div>` : ''}
-                ` : '';
-                const html = `<!DOCTYPE html><html><head><style>
-                    *{margin:0;padding:0;box-sizing:border-box}
-                    body{font-family:Helvetica,Arial,sans-serif;color:#1f2937;overflow:hidden;width:100vw;height:100vh;position:relative;text-align:center}
-                </style></head><body>
-                    ${borderHtml}
-                    <div style="padding:12% 12% 28% 12%">
-                        ${logoHtml}
-                        <div style="margin:1.5% 0;font-size:1vw;letter-spacing:3px;color:${s}">
-                            <span style="display:inline-block;width:8%;height:1px;background:${p};vertical-align:middle"></span>
-                            <span style="padding:0 1%;vertical-align:middle">APRESENTA</span>
-                            <span style="display:inline-block;width:8%;height:1px;background:${p};vertical-align:middle"></span>
-                        </div>
-                        <div style="font-size:6vw;font-weight:bold;color:${s};letter-spacing:3px;line-height:1.1">${t}</div>
-                        <div style="font-size:2.2vw;font-style:italic;color:${p};letter-spacing:1px;margin-bottom:2%">${st}</div>
-                        <div style="font-size:1.2vw;color:#6b7280;letter-spacing:2px;text-transform:uppercase;margin-bottom:1.5%">Certificamos que</div>
-                        <div style="font-size:4vw;font-weight:bold;color:${s};margin-bottom:2%">Nome do Colaborador</div>
-                        <div style="max-width:70%;margin:0 auto;padding:1.5% 3%;border-top:2px solid ${p};border-bottom:2px solid ${p};background:#f5f9ff">
-                            <div style="font-size:1vw;color:#6b7280;letter-spacing:1px;text-transform:uppercase;margin-bottom:0.5%">concluiu com sucesso o treinamento</div>
-                            <div style="font-size:2.5vw;font-weight:bold;color:#1f2937">Treinamento Exemplo</div>
-                            <div style="font-size:1.2vw;color:#6b7280;margin-top:0.5%">carga horária de <strong style="color:#1f2937">2h</strong> · emitido por <strong style="color:#1f2937">${companyName}</strong></div>
-                        </div>
-                    </div>
-                    <div style="position:absolute;left:10%;right:10%;bottom:8%">
-                        <table style="width:100%;border-collapse:collapse"><tr>
-                            <td style="width:28%;text-align:center;vertical-align:bottom">
-                                <div style="font-size:0.9vw;color:#9ca3af;letter-spacing:1px;text-transform:uppercase">Emitido em</div>
-                                <div style="font-size:1.4vw;font-weight:bold;color:${s}">${new Date().toLocaleDateString('pt-BR')}</div>
-                            </td>
-                            <td style="width:44%;text-align:center;vertical-align:bottom">${signerHtml}</td>
-                            <td style="width:28%;text-align:center;vertical-align:bottom">
-                                <div style="font-size:0.9vw;color:#9ca3af;letter-spacing:1px;text-transform:uppercase">Verificar</div>
-                                <div style="width:6%;padding-bottom:6%;background:#e5e7eb;margin:1% auto 0;border-radius:3px"></div>
-                            </td>
-                        </tr></table>
-                    </div>
-                    <div style="position:absolute;left:0;right:0;bottom:3%;text-align:center;font-size:0.9vw;color:#9ca3af">
-                        Verificado por <strong style="color:${p}">TreinaEdu</strong>
-                    </div>
-                </body></html>`;
-                const scrollY = window.scrollY;
-                const lock = () => window.scrollTo(0, scrollY);
-                window.addEventListener('scroll', lock);
-                iframe.srcdoc = html;
-                setTimeout(() => window.removeEventListener('scroll', lock), 300);
+                const W = 594, H = 420;
+
+                let borders = '';
+                if (b !== 'none') {
+                    borders += `<line x1="24" y1="21" x2="${W-24}" y2="21" stroke="${p}" stroke-width="1.5"/>`;
+                    borders += `<line x1="24" y1="${H-21}" x2="${W-24}" y2="${H-21}" stroke="${p}" stroke-width="1.5"/>`;
+                }
+                if (b === 'classic') {
+                    borders += `<line x1="24" y1="27" x2="${W-24}" y2="27" stroke="${p}" stroke-width="0.5"/>`;
+                    borders += `<line x1="24" y1="${H-27}" x2="${W-24}" y2="${H-27}" stroke="${p}" stroke-width="0.5"/>`;
+                    borders += `<rect x="28" y="30" width="20" height="14" fill="none" stroke="${p}" stroke-width="1" rx="0"
+                        style="clip-path:polygon(0 0,100% 0,100% 1px,1px 1px,1px 100%,0 100%)"/>`;
+                    borders += `<rect x="${W-48}" y="30" width="20" height="14" fill="none" stroke="${p}" stroke-width="1"
+                        style="clip-path:polygon(0 0,100% 0,100% 100%,calc(100% - 1px) 100%,calc(100% - 1px) 1px,0 1px)"/>`;
+                    borders += `<rect x="28" y="${H-44}" width="20" height="14" fill="none" stroke="${p}" stroke-width="1"
+                        style="clip-path:polygon(0 0,1px 0,1px calc(100% - 1px),100% calc(100% - 1px),100% 100%,0 100%)"/>`;
+                    borders += `<rect x="${W-48}" y="${H-44}" width="20" height="14" fill="none" stroke="${p}" stroke-width="1"
+                        style="clip-path:polygon(calc(100% - 1px) 0,100% 0,100% 100%,0 100%,0 calc(100% - 1px),calc(100% - 1px) calc(100% - 1px))"/>`;
+                }
+
+                let signerSvg = '';
+                if (signerName) {
+                    signerSvg = `<line x1="${W/2-30}" y1="0" x2="${W/2+30}" y2="0" stroke="#9ca3af" stroke-width="0.5"/>
+                        <text x="${W/2}" y="10" text-anchor="middle" font-size="7" font-weight="bold" fill="#1f2937">${esc(signerName)}</text>
+                        ${signerRole ? `<text x="${W/2}" y="19" text-anchor="middle" font-size="5" fill="#6b7280">${esc(signerRole)}</text>` : ''}`;
+                }
+
+                const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
+                    <rect width="${W}" height="${H}" fill="white"/>
+                    ${borders}
+                    <text x="${W/2}" y="68" text-anchor="middle" font-size="8" font-weight="bold" fill="${s}" font-family="Helvetica,Arial,sans-serif">${esc(companyName)}</text>
+                    <line x1="${W/2-50}" y1="80" x2="${W/2-15}" y2="80" stroke="${p}" stroke-width="0.5"/>
+                    <text x="${W/2}" y="83" text-anchor="middle" font-size="5" fill="${s}" letter-spacing="2" font-family="Helvetica,Arial,sans-serif">APRESENTA</text>
+                    <line x1="${W/2+15}" y1="80" x2="${W/2+50}" y2="80" stroke="${p}" stroke-width="0.5"/>
+                    <text x="${W/2}" y="120" text-anchor="middle" font-size="36" font-weight="bold" fill="${s}" letter-spacing="2" font-family="Helvetica,Arial,sans-serif">${t}</text>
+                    <text x="${W/2}" y="140" text-anchor="middle" font-size="13" fill="${p}" font-style="italic" letter-spacing="1" font-family="Helvetica,Arial,sans-serif">${st}</text>
+                    <text x="${W/2}" y="162" text-anchor="middle" font-size="6" fill="#6b7280" letter-spacing="1.5" font-family="Helvetica,Arial,sans-serif">CERTIFICAMOS QUE</text>
+                    <text x="${W/2}" y="188" text-anchor="middle" font-size="22" font-weight="bold" fill="${s}" font-family="Helvetica,Arial,sans-serif">Nome do Colaborador</text>
+                    <rect x="${W/2-140}" y="205" width="280" height="55" fill="#f5f9ff" stroke="${p}" stroke-width="1"/>
+                    <line x1="${W/2-140}" y1="205" x2="${W/2+140}" y2="205" stroke="${p}" stroke-width="1.5"/>
+                    <line x1="${W/2-140}" y1="260" x2="${W/2+140}" y2="260" stroke="${p}" stroke-width="1.5"/>
+                    <text x="${W/2}" y="220" text-anchor="middle" font-size="5" fill="#6b7280" letter-spacing="1" font-family="Helvetica,Arial,sans-serif">CONCLUIU COM SUCESSO O TREINAMENTO</text>
+                    <text x="${W/2}" y="238" text-anchor="middle" font-size="14" font-weight="bold" fill="#1f2937" font-family="Helvetica,Arial,sans-serif">Treinamento Exemplo</text>
+                    <text x="${W/2}" y="253" text-anchor="middle" font-size="6" fill="#6b7280" font-family="Helvetica,Arial,sans-serif">carga horária de 2h · emitido por ${esc(companyName)}</text>
+                    <g transform="translate(0,${H-60})">
+                        <text x="80" y="0" text-anchor="middle" font-size="5" fill="#9ca3af" letter-spacing="1" font-family="Helvetica,Arial,sans-serif">EMITIDO EM</text>
+                        <text x="80" y="12" text-anchor="middle" font-size="8" font-weight="bold" fill="${s}" font-family="Helvetica,Arial,sans-serif">${new Date().toLocaleDateString('pt-BR')}</text>
+                        ${signerSvg}
+                        <text x="${W-80}" y="0" text-anchor="middle" font-size="5" fill="#9ca3af" letter-spacing="1" font-family="Helvetica,Arial,sans-serif">VERIFICAR</text>
+                        <rect x="${W-95}" y="5" width="30" height="30" fill="#e5e7eb" rx="2"/>
+                        <text x="${W-80}" y="24" text-anchor="middle" font-size="5" fill="#9ca3af" font-family="Helvetica,Arial,sans-serif">QR</text>
+                    </g>
+                    <text x="${W/2}" y="${H-10}" text-anchor="middle" font-size="5" fill="#9ca3af" font-family="Helvetica,Arial,sans-serif">Verificado por TreinaEdu</text>
+                </svg>`;
+                img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
             }
         };
     }
