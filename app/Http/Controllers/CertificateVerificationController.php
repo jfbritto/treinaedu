@@ -41,36 +41,114 @@ class CertificateVerificationController extends Controller
             ->where('certificate_code', $code)
             ->firstOrFail();
 
+        // Check cache
+        $cachePath = storage_path("app/og-images/{$code}.png");
+        if (file_exists($cachePath) && filemtime($cachePath) > now()->subDay()->timestamp) {
+            return response()->file($cachePath, ['Content-Type' => 'image/png', 'Cache-Control' => 'public, max-age=86400']);
+        }
+
         $company = $certificate->company;
-        $primary = preg_match('/^#[0-9A-Fa-f]{6}$/', $company->primary_color ?? '') ? $company->primary_color : '#4f46e5';
-        $secondary = preg_match('/^#[0-9A-Fa-f]{6}$/', $company->secondary_color ?? '') ? $company->secondary_color : '#3730a3';
-        $userName = htmlspecialchars($certificate->user->name, ENT_XML1);
-        $trainingTitle = htmlspecialchars($certificate->training->title, ENT_XML1);
-        $companyName = htmlspecialchars($company->name, ENT_XML1);
-        $titleText = htmlspecialchars($company->cert_title_text ?? 'CERTIFICADO', ENT_XML1);
+        $primary = $this->hexToRgb($company->primary_color ?? '#4f46e5');
+        $userName = $certificate->user->name;
+        $trainingTitle = $certificate->training->title;
+        $companyName = $company->name;
+        $titleText = $company->cert_title_text ?? 'CERTIFICADO';
         $date = $certificate->generated_at->format('d/m/Y');
 
-        $svg = <<<SVG
-        <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-            <rect width="1200" height="630" fill="white"/>
-            <rect x="0" y="0" width="40" height="630" fill="{$primary}"/>
-            <rect x="16" y="16" width="8" height="598" fill="{$secondary}" opacity="0.3"/>
-            <text x="80" y="100" font-family="Helvetica,Arial,sans-serif" font-size="18" font-weight="bold" fill="{$primary}" letter-spacing="1">{$companyName}</text>
-            <text x="80" y="200" font-family="Helvetica,Arial,sans-serif" font-size="64" font-weight="bold" fill="{$primary}" letter-spacing="3" opacity="0.85">{$titleText}</text>
-            <rect x="80" y="230" width="80" height="4" fill="{$primary}"/>
-            <text x="80" y="280" font-family="Helvetica,Arial,sans-serif" font-size="16" fill="#9ca3af" letter-spacing="3">CERTIFICAMOS QUE</text>
-            <text x="80" y="340" font-family="Helvetica,Arial,sans-serif" font-size="48" font-weight="bold" fill="#1f2937">{$userName}</text>
-            <rect x="80" y="358" width="280" height="3" fill="{$primary}"/>
-            <rect x="80" y="390" width="1040" height="80" fill="#f8fafc"/>
-            <rect x="80" y="390" width="5" height="80" fill="{$primary}"/>
-            <text x="104" y="420" font-family="Helvetica,Arial,sans-serif" font-size="14" fill="#9ca3af" letter-spacing="2">CONCLUIU COM SUCESSO O TREINAMENTO</text>
-            <text x="104" y="452" font-family="Helvetica,Arial,sans-serif" font-size="28" font-weight="bold" fill="#1f2937">{$trainingTitle}</text>
-            <text x="80" y="540" font-family="Helvetica,Arial,sans-serif" font-size="13" fill="#9ca3af">Emitido em {$date}</text>
-            <text x="80" y="560" font-family="Helvetica,Arial,sans-serif" font-size="13" fill="#9ca3af">{$certificate->certificate_code}</text>
-            <text x="1120" y="600" font-family="Helvetica,Arial,sans-serif" font-size="14" fill="#d1d5db" text-anchor="end">Verificado por TreinaEdu</text>
-        </svg>
-        SVG;
+        $w = 1200;
+        $h = 630;
+        $img = imagecreatetruecolor($w, $h);
+        imagesavealpha($img, true);
 
-        return response($svg, 200)->header('Content-Type', 'image/svg+xml')->header('Cache-Control', 'public, max-age=86400');
+        // Colors
+        $white = imagecolorallocate($img, 255, 255, 255);
+        $primaryC = imagecolorallocate($img, $primary[0], $primary[1], $primary[2]);
+        $primaryLight = imagecolorallocate($img, $primary[0], $primary[1], $primary[2]);
+        $dark = imagecolorallocate($img, 31, 41, 55);
+        $gray = imagecolorallocate($img, 156, 163, 175);
+        $lightBg = imagecolorallocate($img, 248, 250, 252);
+
+        // Background
+        imagefilledrectangle($img, 0, 0, $w, $h, $white);
+
+        // Left accent bar
+        imagefilledrectangle($img, 0, 0, 39, $h, $primaryC);
+
+        // Company name
+        $this->drawText($img, 16, $companyName, 80, 90, $primaryC);
+
+        // Title
+        $this->drawText($img, 48, $titleText, 80, 195, $primaryC, true);
+
+        // Divider
+        imagefilledrectangle($img, 80, 220, 160, 224, $primaryC);
+
+        // Certificamos que
+        $this->drawText($img, 13, 'CERTIFICAMOS QUE', 80, 270, $gray);
+
+        // Name
+        $this->drawText($img, 36, $userName, 80, 330, $dark, true);
+
+        // Name underline
+        imagefilledrectangle($img, 80, 348, 360, 351, $primaryC);
+
+        // Training box bg
+        imagefilledrectangle($img, 80, 385, 1120, 475, $lightBg);
+        imagefilledrectangle($img, 80, 385, 85, 475, $primaryC);
+
+        // Training text
+        $this->drawText($img, 12, 'CONCLUIU COM SUCESSO O TREINAMENTO', 104, 415, $gray);
+        $this->drawText($img, 22, $trainingTitle, 104, 452, $dark, true);
+
+        // Footer
+        $this->drawText($img, 12, "Emitido em {$date}  |  {$certificate->certificate_code}", 80, 540, $gray);
+        $this->drawText($img, 12, 'Verificado por TreinaEdu', 80, 565, $gray);
+
+        // Save
+        if (!is_dir(dirname($cachePath))) {
+            mkdir(dirname($cachePath), 0755, true);
+        }
+        imagepng($img, $cachePath);
+        imagedestroy($img);
+
+        return response()->file($cachePath, ['Content-Type' => 'image/png', 'Cache-Control' => 'public, max-age=86400']);
+    }
+
+    private function drawText($img, int $size, string $text, int $x, int $y, $color, bool $bold = false): void
+    {
+        // Try system fonts, fallback to GD built-in
+        $fontPaths = [
+            '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
+            '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+            '/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf',
+            '/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf',
+        ];
+
+        $font = null;
+        foreach ($fontPaths as $fp) {
+            if (file_exists($fp)) {
+                $font = $fp;
+                if ($bold && str_contains($fp, 'Bold')) break;
+                if (!$bold && !str_contains($fp, 'Bold')) break;
+            }
+        }
+
+        if ($font) {
+            imagettftext($img, $size, 0, $x, $y, $color, $font, $text);
+        } else {
+            // Fallback: GD built-in font
+            $gdFont = $size > 20 ? 5 : ($size > 14 ? 4 : 3);
+            imagestring($img, $gdFont, $x, $y - 10, $text, $color);
+        }
+    }
+
+    private function hexToRgb(string $hex): array
+    {
+        $hex = ltrim($hex, '#');
+        return [
+            hexdec(substr($hex, 0, 2)),
+            hexdec(substr($hex, 2, 2)),
+            hexdec(substr($hex, 4, 2)),
+        ];
     }
 }
