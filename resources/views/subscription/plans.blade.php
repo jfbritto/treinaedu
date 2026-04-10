@@ -45,10 +45,19 @@
                         <div class="text-center text-xs font-semibold py-1.5 uppercase tracking-wide text-white" style="background-color: var(--primary)">
                             Plano Atual
                         </div>
+                    @elseif($plan->isCustom())
+                        <div class="text-center text-xs font-semibold py-1.5 uppercase tracking-wide text-white bg-gradient-to-r from-amber-500 to-orange-500">
+                            Plano Negociado
+                        </div>
                     @endif
 
                     <div class="p-6 flex-1 flex flex-col">
-                        <h3 class="text-lg font-bold text-gray-800">{{ $plan->name }}</h3>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-lg font-bold text-gray-800">{{ $plan->name }}</h3>
+                            @if($plan->isCustom())
+                                <span class="text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">Exclusivo</span>
+                            @endif
+                        </div>
                         <div class="mt-2 flex items-baseline gap-1">
                             <span class="text-3xl font-extrabold text-gray-900">R$ {{ number_format($plan->price, 2, ',', '.') }}</span>
                             <span class="text-sm text-gray-400">/mês</span>

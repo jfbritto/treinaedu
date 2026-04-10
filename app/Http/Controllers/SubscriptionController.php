@@ -10,8 +10,9 @@ class SubscriptionController extends Controller
 {
     public function plans()
     {
-        $plans = Plan::where('active', true)->get();
-        $currentSubscription = auth()->user()->company->subscription;
+        $company = auth()->user()->company;
+        $plans = Plan::visibleTo($company->id)->orderBy('price')->get();
+        $currentSubscription = $company->subscription;
 
         return view('subscription.plans', compact('plans', 'currentSubscription'));
     }

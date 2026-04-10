@@ -177,6 +177,94 @@
         </div>
     </div>
 
+    {{-- Custom Plan --}}
+    @php $customPlan = \App\Models\Plan::where('company_id', $company->id)->first(); @endphp
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6" x-data="{ showForm: false }">
+        <div class="px-6 py-4 border-b border-gray-100">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-sm font-semibold text-gray-800">Plano Personalizado</h3>
+                    <p class="text-xs text-gray-400">Plano exclusivo negociado para esta empresa</p>
+                </div>
+                @if(!$customPlan)
+                    <button @click="showForm = !showForm" type="button" class="text-xs font-medium text-amber-600 hover:text-amber-700 transition">
+                        <span x-text="showForm ? 'Cancelar' : '+ Criar plano'"></span>
+                    </button>
+                @endif
+            </div>
+        </div>
+
+        @if($customPlan)
+            <div class="p-6">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="p-3 rounded-lg bg-gray-50">
+                        <p class="text-xs text-gray-400 mb-0.5">Nome</p>
+                        <p class="text-sm font-semibold text-gray-800">{{ $customPlan->name }}</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-gray-50">
+                        <p class="text-xs text-gray-400 mb-0.5">Preço</p>
+                        <p class="text-sm font-semibold text-gray-800">R$ {{ number_format($customPlan->price, 2, ',', '.') }}/mês</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-gray-50">
+                        <p class="text-xs text-gray-400 mb-0.5">Max Usuários</p>
+                        <p class="text-sm font-semibold text-gray-800">{{ $customPlan->max_users ?? 'Ilimitado' }}</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-gray-50">
+                        <p class="text-xs text-gray-400 mb-0.5">Max Treinamentos</p>
+                        <p class="text-sm font-semibold text-gray-800">{{ $customPlan->max_trainings ?? 'Ilimitado' }}</p>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center gap-3">
+                    <a href="{{ route('super.plans.edit', $customPlan) }}" class="text-xs font-medium text-primary hover:text-secondary transition">Editar plano</a>
+                    <form method="POST" action="{{ route('super.plans.destroy', $customPlan) }}" data-confirm="Remover plano personalizado desta empresa?">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="text-xs font-medium text-red-500 hover:text-red-700 transition">Remover</button>
+                    </form>
+                </div>
+            </div>
+        @else
+            <div x-show="!showForm" class="p-6 text-center">
+                <p class="text-sm text-gray-400">Nenhum plano personalizado para esta empresa.</p>
+            </div>
+
+            <form x-show="showForm" x-cloak method="POST" action="{{ route('super.plans.store') }}" class="p-6">
+                @csrf
+                <input type="hidden" name="company_id" value="{{ $company->id }}">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Nome do plano</label>
+                        <input type="text" name="name" required placeholder="Ex: Enterprise {{ $company->name }}" value="Enterprise {{ $company->name }}"
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Preço mensal (R$)</label>
+                        <input type="number" name="price" required min="0" step="0.01" placeholder="2500.00"
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Max Usuários <span class="text-gray-300">(vazio = ilimitado)</span></label>
+                        <input type="number" name="max_users" min="1" placeholder="500"
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Max Treinamentos <span class="text-gray-300">(vazio = ilimitado)</span></label>
+                        <input type="number" name="max_trainings" min="1" placeholder="Ilimitado"
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                </div>
+                <button type="submit" class="inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Criar plano personalizado
+                </button>
+            </form>
+        @endif
+    </div>
+
     {{-- Users Table --}}
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100">
