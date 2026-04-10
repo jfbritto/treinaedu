@@ -152,9 +152,12 @@
             font-weight: bold;
             color: #1f2937;
             margin-bottom: 24px;
-            border-bottom: 2px solid {{ $primaryColor }};
-            padding-bottom: 8px;
-            display: inline-block;
+        }
+        .recipient-line {
+            width: 200px;
+            height: 2px;
+            background: {{ $primaryColor }};
+            margin-bottom: 24px;
         }
 
         .training-box {
@@ -303,6 +306,7 @@
                         {{-- Body --}}
                         <div class="certifies">Certificamos que</div>
                         <div class="recipient">{{ $userName }}</div>
+                        <div class="recipient-line"></div>
 
                         <div class="training-box">
                             <div class="completed-label">concluiu com sucesso o treinamento</div>
