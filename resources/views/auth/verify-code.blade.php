@@ -22,42 +22,80 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('verification.code.verify') }}" class="space-y-5"
-          x-data="{ code: '', submitting: false }" @submit="if(submitting) { $event.preventDefault(); return; } submitting = true;">
+    @error('code')
+        <div class="mb-5 flex items-center gap-2 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+            <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+            {{ $message }}
+        </div>
+    @enderror
+
+    <form id="verify-form" method="POST" action="{{ route('verification.code.verify') }}">
         @csrf
 
-        <div class="space-y-1.5">
-            <label for="code" class="block text-sm font-medium text-gray-700 text-center">Código de verificação</label>
-            <input
-                type="text"
-                id="code"
-                name="code"
-                x-model="code"
-                @input="code = code.replace(/\D/g, '').substring(0, 6)"
-                required
-                autofocus
-                autocomplete="one-time-code"
-                inputmode="numeric"
-                maxlength="6"
-                placeholder="000000"
-                class="w-full py-4 text-center text-2xl font-bold tracking-[0.5em] rounded-lg border @error('code') border-red-400 bg-red-50 @else border-gray-300 bg-white @enderror text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-            >
-            @error('code')
-                <p class="flex items-center justify-center gap-1 text-red-500 text-xs">
-                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
-                    {{ $message }}
-                </p>
-            @enderror
-        </div>
+        <div x-data="{
+            code: '',
+            submitting: false,
+            handleInput(e) {
+                this.code = e.target.value.replace(/\D/g, '').substring(0, 6);
+                e.target.value = this.code;
+                if (this.code.length === 6 && !this.submitting) {
+                    this.submit();
+                }
+            },
+            submit() {
+                this.submitting = true;
+                document.getElementById('code-input').value = this.code;
+                document.getElementById('verify-form').submit();
+            }
+        }">
+            {{-- Input --}}
+            <div class="mb-5">
+                <label class="block text-sm font-medium text-gray-700 text-center mb-2">Código de verificação</label>
+                <input
+                    type="text"
+                    id="code-input"
+                    name="code"
+                    x-model="code"
+                    @input="handleInput($event)"
+                    @paste="setTimeout(() => handleInput({ target: $el }), 50)"
+                    required
+                    autofocus
+                    autocomplete="one-time-code"
+                    inputmode="numeric"
+                    maxlength="6"
+                    placeholder="000000"
+                    :disabled="submitting"
+                    class="w-full py-4 text-center text-2xl font-bold tracking-[0.5em] rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                >
+            </div>
 
-        <button
-            type="submit"
-            :disabled="code.length < 6 || submitting"
-            :class="code.length < 6 || submitting ? 'opacity-50 cursor-not-allowed' : ''"
-            class="w-full flex items-center justify-center gap-2 text-white font-semibold py-3 px-4 rounded-lg text-sm transition-all shadow-sm"
-            style="background: linear-gradient(135deg, #4f46e5, #3730a3)"
-            x-text="submitting ? 'Verificando...' : 'Verificar e-mail'">
-        </button>
+            {{-- Status indicator --}}
+            <div class="text-center mb-5">
+                <div x-show="submitting" class="flex items-center justify-center gap-2 text-indigo-600">
+                    <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                    </svg>
+                    <span class="text-sm font-semibold">Verificando seu código...</span>
+                </div>
+                <div x-show="!submitting && code.length === 0" class="text-sm text-gray-400">
+                    Cole ou digite o código recebido por e-mail
+                </div>
+                <div x-show="!submitting && code.length > 0 && code.length < 6" class="text-sm text-gray-500">
+                    <span x-text="6 - code.length"></span> dígitos restantes
+                </div>
+            </div>
+
+            {{-- Manual submit button (fallback) --}}
+            <button
+                type="button"
+                @click="submit()"
+                x-show="!submitting && code.length === 6"
+                class="w-full py-3 px-4 rounded-lg text-sm font-semibold text-white transition-all shadow-sm hover:shadow-md"
+                style="background: linear-gradient(135deg, #4f46e5, #3730a3)">
+                Verificar e-mail
+            </button>
+        </div>
     </form>
 
     <div class="mt-6 text-center">
