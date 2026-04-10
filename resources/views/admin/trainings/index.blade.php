@@ -150,11 +150,16 @@
                                             <path fill-rule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clip-rule="evenodd"/>
                                         </svg>
                                     </div>
-                                    <div class="min-w-0">
+                                    <div class="min-w-0 max-w-md">
                                         <p class="text-sm font-semibold text-gray-800 truncate">{{ $training->title }}</p>
                                         @if($training->description)
-                                            <p class="text-xs text-gray-400 truncate">{{ $training->description }}</p>
+                                            <p class="text-xs text-gray-400 line-clamp-1">{{ $training->description }}</p>
                                         @endif
+                                        <div class="flex items-center gap-3 mt-1">
+                                            <span class="text-xs text-gray-400">{{ $training->modules_count ?? $training->modules()->count() }} {{ ($training->modules_count ?? $training->modules()->count()) === 1 ? 'módulo' : 'módulos' }}</span>
+                                            <span class="text-gray-200">·</span>
+                                            <span class="text-xs text-gray-400">{{ $training->totalLessons() }} {{ $training->totalLessons() === 1 ? 'aula' : 'aulas' }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </td>
