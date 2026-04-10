@@ -27,14 +27,18 @@
             100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
         }
         .flash-move { animation: flash-move 0.6s ease-out; }
-        @keyframes ai-pulse {
-            0%, 100% { border-color: rgba(139, 92, 246, 0.3); }
-            50% { border-color: rgba(139, 92, 246, 0.8); }
+        @keyframes ai-shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
         .ai-loading-field {
-            animation: ai-pulse 1.5s ease-in-out infinite;
-            background-image: linear-gradient(90deg, transparent 0%, rgba(139, 92, 246, 0.05) 50%, transparent 100%);
+            border-color: rgba(139, 92, 246, 0.6) !important;
+            background: linear-gradient(90deg, #f5f3ff 25%, #ede9fe 50%, #f5f3ff 75%) !important;
+            background-size: 200% 100%;
+            animation: ai-shimmer 1.5s ease-in-out infinite;
+            color: transparent !important;
         }
+        .ai-loading-field::placeholder { color: transparent !important; }
     </style>
 
     <script>
@@ -114,6 +118,13 @@
             }
         };
 
+        window.__aiHeaders = function() {
+            return { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content };
+        };
+        window.__aiTruncate = function(text, maxWords) {
+            return text.replace(/["'".!:;()]/g, '').trim().split(/\s+/).slice(0, maxWords).join(' ');
+        };
+
         window.__fetchVideoTitle = function(ctx, url, lesson, mi) {
             if (lesson.title && lesson.title.trim() !== '') return;
             lesson._aiLoading = true;
@@ -122,36 +133,35 @@
                 .then(data => {
                     if (data.title && (!lesson.title || lesson.title.trim() === '')) {
                         window.__cleanLessonTitle(ctx, data.title, lesson, mi);
-                    }
+                    } else { lesson._aiLoading = false; }
                 })
-                .catch(() => {})
-                .finally(() => { lesson._aiLoading = false; });
+                .catch(() => { lesson._aiLoading = false; });
         };
 
         window.__cleanLessonTitle = function(ctx, rawTitle, lesson, mi) {
             fetch('/api/ai/generate-description', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                headers: window.__aiHeaders(),
                 body: JSON.stringify({
                     title: rawTitle,
-                    context: 'Este é o título de um vídeo do YouTube que será usado como nome de uma AULA dentro de um treinamento corporativo. '
-                        + 'Limpe e reescreva o título de forma profissional e curta (máximo 8 palavras). '
-                        + 'Remova nomes de canais, numeração de aulas (ex: "AULA 03"), termos como "COMPLETO", emojis, e formatação excessiva. '
-                        + 'Mantenha apenas o assunto principal. Responda SOMENTE com o título limpo, sem aspas.',
+                    context: 'Limpe este título de vídeo do YouTube para usar como nome de AULA. '
+                        + 'REGRAS RÍGIDAS: máximo 6 palavras. Remova: nome do canal, numeração (AULA 01), palavras como COMPLETO/DEFINITIVO, emojis, pontuação excessiva. '
+                        + 'Mantenha só o assunto. Exemplos: "Velocidade Média" ou "Introdução à Termodinâmica" ou "Leis de Newton". '
+                        + 'Responda SOMENTE o título, nada mais.',
                     type: 'training'
                 }),
             })
             .then(r => r.json())
             .then(data => {
                 if (data.description && (!lesson.title || lesson.title.trim() === '')) {
-                    lesson.title = data.description.replace(/["']/g, '').trim();
+                    lesson.title = window.__aiTruncate(data.description, 6);
                 } else if (!lesson.title || lesson.title.trim() === '') {
                     lesson.title = rawTitle;
                 }
-                if (mi !== undefined) window.__suggestModuleTitle(ctx, mi);
             })
-            .catch(() => {
-                if (!lesson.title || lesson.title.trim() === '') lesson.title = rawTitle;
+            .catch(() => { if (!lesson.title) lesson.title = rawTitle; })
+            .finally(() => {
+                lesson._aiLoading = false;
                 if (mi !== undefined) window.__suggestModuleTitle(ctx, mi);
             });
         };
@@ -165,26 +175,30 @@
             const lessonTitles = mod.lessons.map(l => l.title).filter(t => t && t.trim() !== '');
             if (lessonTitles.length === 0) return;
             mod._aiLoading = true;
-            const trainingTitle = document.querySelector('input[name="title"]')?.value || '';
-            let prompt = 'Hierarquia: TREINAMENTO > MÓDULO > AULA. '
-                + 'Você está nomeando um MÓDULO (nível intermediário). '
-                + 'O módulo agrupa as seguintes aulas: ' + lessonTitles.join('; ') + '. ';
-            if (trainingTitle) prompt += 'O treinamento se chama "' + trainingTitle + '". ';
-            prompt += 'Responda APENAS com um título de subcategoria de no máximo 3 palavras. Sem pontuação, sem aspas.';
             fetch('/api/ai/generate-description', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
-                body: JSON.stringify({ title: lessonTitles.join(', '), context: prompt, type: 'training' }),
+                headers: window.__aiHeaders(),
+                body: JSON.stringify({
+                    title: lessonTitles.join(', '),
+                    context: 'Nomeie este MÓDULO de treinamento (categoria que agrupa aulas). '
+                        + 'REGRAS RÍGIDAS: exatamente 2 ou 3 palavras. Só o tema/categoria. '
+                        + 'Aulas dentro: ' + lessonTitles.join(', ') + '. '
+                        + 'Exemplos bons: "Física Básica", "Segurança do Trabalho", "Gestão de Projetos". '
+                        + 'Responda SOMENTE o título, nada mais.',
+                    type: 'training'
+                }),
             })
             .then(r => r.json())
             .then(data => {
                 if (data.description && (!mod.title || mod.title.trim() === '')) {
-                    mod.title = data.description.replace(/["'.!:]/g, '').trim().split(/\s+/).slice(0, 3).join(' ');
+                    mod.title = window.__aiTruncate(data.description, 3);
                 }
-                window.__suggestTrainingInfo(ctx);
             })
             .catch(() => {})
-            .finally(() => { mod._aiLoading = false; });
+            .finally(() => {
+                mod._aiLoading = false;
+                window.__suggestTrainingInfo(ctx);
+            });
         };
 
         window.__suggestTrainingInfo = function(ctx) {
@@ -202,21 +216,24 @@
 
             if (!titleInput.value.trim()) {
                 titleInput.classList.add('ai-loading-field');
-                let prompt = 'Hierarquia: TREINAMENTO > MÓDULO > AULA. '
-                    + 'Você está nomeando o TREINAMENTO (nível mais alto e genérico). '
-                    + 'Deve representar o tema geral que engloba tudo. ';
-                if (moduleTitles.length > 0) prompt += 'Módulos: ' + moduleTitles.join(', ') + '. ';
-                prompt += 'Aulas: ' + lessonTitles.join('; ') + '. '
-                    + 'Responda APENAS com um título amplo de no máximo 5 palavras. Sem pontuação, sem aspas.';
+                const context = moduleTitles.length > 0 ? moduleTitles.join(', ') : lessonTitles.join(', ');
                 fetch('/api/ai/generate-description', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
-                    body: JSON.stringify({ title: lessonTitles.join(', '), context: prompt, type: 'training' }),
+                    headers: window.__aiHeaders(),
+                    body: JSON.stringify({
+                        title: context,
+                        context: 'Nomeie este TREINAMENTO corporativo (nível mais alto, tema geral). '
+                            + 'REGRAS RÍGIDAS: máximo 4 palavras. Deve ser genérico e englobar os módulos/aulas abaixo. '
+                            + 'Conteúdo: ' + context + '. '
+                            + 'Exemplos bons: "Fundamentos de Física", "Capacitação em Vendas", "Segurança no Trabalho". '
+                            + 'Responda SOMENTE o título, nada mais.',
+                        type: 'training'
+                    }),
                 })
                 .then(r => r.json())
                 .then(data => {
                     if (data.description && !titleInput.value.trim()) {
-                        titleInput.value = data.description.replace(/["'.!:]/g, '').trim();
+                        titleInput.value = window.__aiTruncate(data.description, 4);
                         if (!descField.value.trim()) window.__suggestTrainingDescription(titleInput.value);
                     }
                 })
@@ -238,7 +255,7 @@
             if (textEl) textEl.textContent = 'Gerando...';
             fetch('/api/ai/generate-description', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                headers: window.__aiHeaders(),
                 body: JSON.stringify({ title: title, type: 'training' }),
             })
             .then(r => r.json())
