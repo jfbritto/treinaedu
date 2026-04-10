@@ -10,7 +10,7 @@ class PlanController extends Controller
 {
     public function index()
     {
-        $plans = Plan::withoutGlobalScopes()->latest()->get();
+        $plans = Plan::withoutGlobalScopes()->with('company')->latest()->get();
 
         return view('super-admin.plans.index', compact('plans'));
     }

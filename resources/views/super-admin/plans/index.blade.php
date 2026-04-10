@@ -37,6 +37,7 @@
                 <thead class="bg-gray-50 border-b border-gray-100">
                     <tr>
                         <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Nome</th>
+                        <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Empresa</th>
                         <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Preço</th>
                         <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Max Usuários</th>
                         <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Max Treinamentos</th>
@@ -49,6 +50,13 @@
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-6 py-4">
                                 <p class="font-semibold text-gray-800">{{ $plan->name }}</p>
+                            </td>
+                            <td class="px-6 py-4">
+                                @if($plan->company)
+                                    <a href="{{ route('super.companies.show', $plan->company) }}" class="text-xs font-medium text-primary hover:text-secondary transition">{{ $plan->company->name }}</a>
+                                @else
+                                    <span class="text-xs text-gray-400">Público</span>
+                                @endif
                             </td>
                             <td class="px-6 py-4">
                                 <p class="font-semibold text-gray-800">R$ {{ number_format($plan->price, 2, ',', '.') }}</p>
@@ -79,7 +87,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center">
+                            <td colspan="7" class="px-6 py-12 text-center">
                                 <div class="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mx-auto mb-4">
                                     <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
