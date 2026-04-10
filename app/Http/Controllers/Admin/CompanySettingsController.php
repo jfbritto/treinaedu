@@ -26,6 +26,7 @@ class CompanySettingsController extends Controller
             'cert_signer_role'     => 'nullable|string|max:255',
             'cert_signer_registry' => 'nullable|string|max:255',
             'signature'            => 'nullable|image|mimes:jpg,jpeg,png|max:1024',
+            'signature_drawn'      => 'nullable|string',
         ]);
 
         $company = auth()->user()->company;
@@ -62,6 +63,20 @@ class CompanySettingsController extends Controller
                 Storage::disk('public')->delete($company->cert_signer_signature_path);
             }
             $company->cert_signer_signature_path = $request->file('signature')->store("signatures/{$company->id}", 'public');
+        } elseif ($request->filled('signature_drawn')) {
+            // Save drawn signature from base64 data URL
+            $dataUrl = $request->signature_drawn;
+            if (preg_match('/^data:image\/png;base64,/', $dataUrl)) {
+                $imageData = base64_decode(preg_replace('/^data:image\/png;base64,/', '', $dataUrl));
+                if ($imageData && strlen($imageData) > 100) {
+                    if ($company->cert_signer_signature_path) {
+                        Storage::disk('public')->delete($company->cert_signer_signature_path);
+                    }
+                    $path = "signatures/{$company->id}/" . uniqid('sig_') . '.png';
+                    Storage::disk('public')->put($path, $imageData);
+                    $company->cert_signer_signature_path = $path;
+                }
+            }
         }
 
         $company->save();

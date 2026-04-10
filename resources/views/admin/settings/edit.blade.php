@@ -258,10 +258,11 @@
                             <p class="text-xs text-gray-400">COREN, CRM, CREA, OAB, ou qualquer registro que valide a certificação.</p>
                         </div>
 
-                        <div class="space-y-1">
-                            <label class="block text-xs font-medium text-gray-600">Assinatura <span class="text-gray-400 font-normal">(imagem PNG com fundo transparente)</span></label>
+                        <div class="space-y-2" x-data="signaturePad()">
+                            <label class="block text-xs font-medium text-gray-600">Assinatura</label>
+
                             @if($company->cert_signer_signature_path)
-                                <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-lg border border-gray-200" x-show="!drawnDataUrl">
                                     <img src="{{ Storage::url($company->cert_signer_signature_path) }}" alt="Assinatura" class="h-12 object-contain">
                                     <div class="flex-1">
                                         <p class="text-xs text-gray-500">Assinatura atual</p>
@@ -272,13 +273,52 @@
                                     </label>
                                 </div>
                             @endif
-                            <input type="file" name="signature" accept="image/png,image/jpeg,image/jpg"
-                                   class="w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer">
+
+                            {{-- Tabs --}}
+                            <div class="flex gap-1 bg-gray-100 p-1 rounded-lg">
+                                <button type="button" @click="mode = 'draw'" :class="mode === 'draw' ? 'bg-white shadow-sm text-gray-800' : 'text-gray-500 hover:text-gray-700'" class="flex-1 text-xs font-medium py-1.5 rounded-md transition flex items-center justify-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                    Desenhar
+                                </button>
+                                <button type="button" @click="mode = 'upload'" :class="mode === 'upload' ? 'bg-white shadow-sm text-gray-800' : 'text-gray-500 hover:text-gray-700'" class="flex-1 text-xs font-medium py-1.5 rounded-md transition flex items-center justify-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    Enviar imagem
+                                </button>
+                            </div>
+
+                            {{-- Draw pad --}}
+                            <div x-show="mode === 'draw'" x-cloak>
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-1 bg-white relative" :class="drawnDataUrl ? 'border-green-400' : ''">
+                                    <canvas x-ref="sigCanvas" width="500" height="160" class="w-full rounded cursor-crosshair" style="touch-action: none;"></canvas>
+                                    <div x-show="isEmpty && !drawnDataUrl" class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                        <p class="text-xs text-gray-400">Assine aqui com o mouse ou dedo</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <button type="button" @click="clearPad()" class="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 transition">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        Limpar
+                                    </button>
+                                    <div class="flex-1"></div>
+                                    <div x-show="drawnDataUrl" x-cloak class="inline-flex items-center gap-1 text-xs text-green-600 font-medium">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                        Assinatura capturada
+                                    </div>
+                                </div>
+                                <input type="hidden" name="signature_drawn" :value="drawnDataUrl">
+                            </div>
+
+                            {{-- Upload --}}
+                            <div x-show="mode === 'upload'" x-cloak>
+                                <input type="file" name="signature" accept="image/png,image/jpeg,image/jpg"
+                                       class="w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer">
+                                <p class="text-xs text-gray-400 mt-1">PNG com fundo transparente funciona melhor.</p>
+                            </div>
                         </div>
 
                         <div class="p-3 bg-amber-50 rounded-lg border border-amber-200">
                             <p class="text-xs text-amber-700">
-                                <strong>Dica:</strong> Esses dados aparecem no rodapé do certificado PDF. A assinatura funciona melhor como imagem PNG com fundo transparente, escaneada ou digital.
+                                <strong>Dica:</strong> Esses dados aparecem no certificado PDF. Desenhe sua assinatura ou envie uma imagem escaneada.
                             </p>
                         </div>
                     </div>
@@ -378,7 +418,50 @@
     </form>
 
     @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.2.0/dist/signature_pad.umd.min.js"></script>
     <script>
+    function signaturePad() {
+        return {
+            mode: 'draw',
+            pad: null,
+            isEmpty: true,
+            drawnDataUrl: '',
+            init() {
+                this.$nextTick(() => {
+                    const canvas = this.$refs.sigCanvas;
+                    if (!canvas) return;
+                    this.pad = new SignaturePad(canvas, {
+                        backgroundColor: 'rgba(0,0,0,0)',
+                        penColor: '#1f2937',
+                        minWidth: 1.5,
+                        maxWidth: 3,
+                    });
+                    this.pad.addEventListener('beginStroke', () => { this.isEmpty = false; });
+                    this.pad.addEventListener('endStroke', () => {
+                        this.drawnDataUrl = this.pad.toDataURL('image/png');
+                    });
+                    this.resizeCanvas(canvas);
+                    window.addEventListener('resize', () => this.resizeCanvas(canvas));
+                });
+            },
+            resizeCanvas(canvas) {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width * ratio;
+                canvas.height = rect.height * ratio;
+                canvas.getContext('2d').scale(ratio, ratio);
+                if (this.pad) this.pad.clear();
+                this.isEmpty = true;
+                this.drawnDataUrl = '';
+            },
+            clearPad() {
+                if (this.pad) this.pad.clear();
+                this.isEmpty = true;
+                this.drawnDataUrl = '';
+            }
+        };
+    }
+
     function logoUploader() {
         return {
             showCropper: false,
