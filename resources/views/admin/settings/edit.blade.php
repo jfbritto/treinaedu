@@ -381,6 +381,30 @@
                         </div>
                     </div>
 
+                        <div class="space-y-1">
+                            <label class="block text-xs font-medium text-gray-600">Tamanhos</label>
+                            <div class="space-y-3 bg-gray-50 rounded-lg p-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs text-gray-500 w-24 flex-shrink-0">Título</span>
+                                    <input type="range" name="cert_size_title" min="30" max="72" x-model="sizeTitle" @input="renderPreview()"
+                                           class="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary">
+                                    <span class="text-xs text-gray-400 w-8 text-right" x-text="sizeTitle + 'px'"></span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs text-gray-500 w-24 flex-shrink-0">Nome</span>
+                                    <input type="range" name="cert_size_name" min="20" max="50" x-model="sizeName" @input="renderPreview()"
+                                           class="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary">
+                                    <span class="text-xs text-gray-400 w-8 text-right" x-text="sizeName + 'px'"></span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs text-gray-500 w-24 flex-shrink-0">Treinamento</span>
+                                    <input type="range" name="cert_size_training" min="14" max="32" x-model="sizeTraining" @input="renderPreview()"
+                                           class="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary">
+                                    <span class="text-xs text-gray-400 w-8 text-right" x-text="sizeTraining + 'px'"></span>
+                                </div>
+                            </div>
+                        </div>
+
                     {{-- Live Preview do Certificado --}}
                     <div class="mt-5 pt-5 border-t border-gray-100">
                         <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Preview do Certificado</p>
@@ -492,6 +516,9 @@
             borderStyle: '{{ $company->cert_border_style ?? 'classic' }}',
             titleText: '{{ addslashes($company->cert_title_text ?? 'CERTIFICADO') }}',
             subtitleText: '{{ addslashes($company->cert_subtitle_text ?? 'de Conclusão') }}',
+            sizeTitle: {{ $company->cert_size_title ?? 54 }},
+            sizeName: {{ $company->cert_size_name ?? 34 }},
+            sizeTraining: {{ $company->cert_size_training ?? 20 }},
             cprimary: '{{ $company->primary_color ?? '#4f46e5' }}',
             csecondary: '{{ $company->secondary_color ?? '#3730a3' }}',
             renderPreview() {
@@ -548,15 +575,15 @@
                     `<rect x="16" y="16" width="4" height="${H-32}" fill="${s}" opacity="0.3"/>`,
                     frame,
                     logoSvg,
-                    `<text x="${LX}" y="96" ${f} font-size="34" font-weight="bold" fill="${p}" letter-spacing="2">${t}</text>`,
-                    `<text x="${LX}" y="114" ${f} font-size="13" fill="${s}" letter-spacing="1">${st}</text>`,
-                    `<rect x="${LX}" y="122" width="36" height="2" fill="${p}"/>`,
-                    `<text x="${LX}" y="142" ${f} font-size="6" fill="#9ca3af" letter-spacing="2">CERTIFICAMOS QUE</text>`,
-                    `<text x="${LX}" y="164" ${f} font-size="20" font-weight="bold" fill="#1f2937">Nome do Colaborador</text>`,
+                    `<text x="${LX}" y="96" ${f} font-size="${Math.round(this.sizeTitle*0.63)}" font-weight="bold" fill="${p}" letter-spacing="2">${t}</text>`,
+                    `<text x="${LX}" y="${96 + Math.round(this.sizeTitle*0.63)*0.45}" ${f} font-size="${Math.round(this.sizeTitle*0.24)}" fill="${s}" letter-spacing="1">${st}</text>`,
+                    `<rect x="${LX}" y="${100 + Math.round(this.sizeTitle*0.63)*0.7}" width="36" height="2" fill="${p}"/>`,
+                    `<text x="${LX}" y="${118 + Math.round(this.sizeTitle*0.63)*0.7}" ${f} font-size="6" fill="#9ca3af" letter-spacing="2">CERTIFICAMOS QUE</text>`,
+                    `<text x="${LX}" y="${138 + Math.round(this.sizeTitle*0.63)*0.7}" ${f} font-size="${Math.round(this.sizeName*0.63)}" font-weight="bold" fill="#1f2937">Nome do Colaborador</text>`,
                     `<rect x="${LX}" y="178" width="${W-BAR-46}" height="48" fill="#f8fafc"/>`,
                     `<rect x="${LX}" y="178" width="3" height="48" fill="${p}"/>`,
                     `<text x="${LX+14}" y="194" ${f} font-size="5" fill="#9ca3af" letter-spacing="1.5">CONCLUIU COM SUCESSO O TREINAMENTO</text>`,
-                    `<text x="${LX+14}" y="210" ${f} font-size="12" font-weight="bold" fill="#1f2937">Treinamento Exemplo</text>`,
+                    `<text x="${LX+14}" y="210" ${f} font-size="${Math.round(this.sizeTraining*0.63)}" font-weight="bold" fill="#1f2937">Treinamento Exemplo</text>`,
                     `<text x="${LX+14}" y="222" ${f} font-size="6" fill="#6b7280">Carga horaria: 2h &#183; Emitido por ${esc(companyName)}</text>`,
                     `<g transform="translate(0,${H-52})">`,
                     `<text x="${LX}" y="0" ${f} font-size="4.5" fill="#9ca3af" letter-spacing="1">EMITIDO EM</text>`,

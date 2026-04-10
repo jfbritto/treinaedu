@@ -15,6 +15,7 @@ class Company extends Model
         'logo_path', 'primary_color', 'secondary_color',
         'cert_signer_name', 'cert_signer_role', 'cert_signer_registry', 'cert_signer_signature_path',
         'cert_border_style', 'cert_title_text', 'cert_subtitle_text',
+        'cert_size_title', 'cert_size_name', 'cert_size_training',
     ];
 
     public function users()

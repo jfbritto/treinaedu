@@ -149,6 +149,9 @@ class CertificateService
             'borderStyle' => $company->cert_border_style ?? 'classic',
             'titleText' => $company->cert_title_text ?? 'CERTIFICADO',
             'subtitleText' => $company->cert_subtitle_text ?? 'de Conclusão',
+            'sizeTitle' => $company->cert_size_title ?? 54,
+            'sizeName' => $company->cert_size_name ?? 34,
+            'sizeTraining' => $company->cert_size_training ?? 20,
         ];
     }
 

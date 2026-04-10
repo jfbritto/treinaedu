@@ -115,7 +115,7 @@
         }
 
         .title {
-            font-size: 54px;
+            font-size: {{ $sizeTitle ?? 54 }}px;
             font-weight: bold;
             color: {{ $primaryColor }};
             letter-spacing: 3px;
@@ -124,7 +124,7 @@
         }
 
         .subtitle {
-            font-size: 20px;
+            font-size: {{ max(12, ($sizeTitle ?? 54) * 0.37) }}px;
             font-weight: 300;
             color: {{ $secondaryColor }};
             letter-spacing: 1.5px;
@@ -147,7 +147,7 @@
         }
 
         .recipient {
-            font-size: 34px;
+            font-size: {{ $sizeName ?? 34 }}px;
             font-weight: bold;
             color: #1f2937;
             margin-bottom: 18px;
@@ -170,7 +170,7 @@
         }
 
         .training-title {
-            font-size: 20px;
+            font-size: {{ $sizeTraining ?? 20 }}px;
             font-weight: bold;
             color: #1f2937;
             line-height: 1.3;

@@ -30,6 +30,9 @@ class CompanySettingsController extends Controller
             'cert_border_style'    => 'nullable|string|in:classic,simple,none',
             'cert_title_text'      => 'nullable|string|max:100',
             'cert_subtitle_text'   => 'nullable|string|max:100',
+            'cert_size_title'      => 'nullable|integer|min:30|max:72',
+            'cert_size_name'       => 'nullable|integer|min:20|max:50',
+            'cert_size_training'   => 'nullable|integer|min:14|max:32',
         ]);
 
         $company = auth()->user()->company;
@@ -55,6 +58,11 @@ class CompanySettingsController extends Controller
         $company->cert_border_style  = $request->cert_border_style ?? 'classic';
         $company->cert_title_text    = $request->cert_title_text ?: 'CERTIFICADO';
         $company->cert_subtitle_text = $request->cert_subtitle_text ?: 'de Conclusão';
+
+        // Certificate sizes
+        $company->cert_size_title    = $request->cert_size_title ?? 54;
+        $company->cert_size_name     = $request->cert_size_name ?? 34;
+        $company->cert_size_training = $request->cert_size_training ?? 20;
 
         // Certificate signer
         $company->cert_signer_name     = $request->cert_signer_name;
