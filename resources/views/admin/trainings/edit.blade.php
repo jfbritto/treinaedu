@@ -39,7 +39,19 @@
     <script>
         window.__aiGenerateLessonQuiz = async function(ctx, mi, li) {
             const lesson = ctx.modules[mi].lessons[li];
-            let content = lesson.type === 'text' ? lesson.content : '';
+            let content = '';
+            if (lesson.type === 'text' && lesson.content) {
+                content = lesson.content;
+            } else if (lesson.type === 'video') {
+                content = 'Aula em vídeo: ' + (lesson.title || '');
+                if (lesson.video_url) content += '\nURL: ' + lesson.video_url;
+                const mod = ctx.modules[mi];
+                const otherTitles = mod.lessons.filter((l, idx) => idx !== li && l.title).map(l => l.title);
+                if (otherTitles.length > 0) content += '\nOutras aulas do módulo: ' + otherTitles.join(', ');
+                if (mod.title) content += '\nMódulo: ' + mod.title;
+                const trainingTitle = document.querySelector('input[name="title"]')?.value;
+                if (trainingTitle) content += '\nTreinamento: ' + trainingTitle;
+            }
             if (!lesson.title && !content) {
                 Swal.fire({ icon: 'warning', title: 'Conteúdo necessário', text: 'Preencha o título e/ou conteúdo da aula antes de gerar o quiz.' });
                 return;
