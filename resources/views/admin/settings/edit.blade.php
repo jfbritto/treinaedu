@@ -340,33 +340,28 @@
 
                     <div class="space-y-4">
                         <div class="space-y-1">
-                            <label class="block text-xs font-medium text-gray-600">Estilo da Moldura</label>
+                            <span class="block text-xs font-medium text-gray-600">Estilo da Moldura</span>
+                            <input type="hidden" name="cert_border_style" :value="borderStyle">
                             <div class="grid grid-cols-3 gap-2">
-                                <label class="cursor-pointer">
-                                    <input type="radio" name="cert_border_style" value="classic" x-model="borderStyle" @change="renderPreview()" class="sr-only peer">
-                                    <div class="border-2 rounded-lg p-3 text-center transition peer-checked:border-primary peer-checked:bg-primary/5 border-gray-200 hover:border-gray-300">
-                                        <div class="w-full h-10 border-2 border-gray-400 rounded relative mb-1.5">
-                                            <div class="absolute inset-1 border border-gray-300 rounded"></div>
-                                        </div>
-                                        <span class="text-xs font-medium text-gray-700">Clássico</span>
+                                <div @click="borderStyle='classic';renderPreview()" class="cursor-pointer border-2 rounded-lg p-3 text-center transition"
+                                     :class="borderStyle==='classic' ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'">
+                                    <div class="w-full h-10 border-2 border-gray-400 rounded relative mb-1.5">
+                                        <div class="absolute inset-1 border border-gray-300 rounded"></div>
                                     </div>
-                                </label>
-                                <label class="cursor-pointer">
-                                    <input type="radio" name="cert_border_style" value="simple" x-model="borderStyle" @change="renderPreview()" class="sr-only peer">
-                                    <div class="border-2 rounded-lg p-3 text-center transition peer-checked:border-primary peer-checked:bg-primary/5 border-gray-200 hover:border-gray-300">
-                                        <div class="w-full h-10 border-2 border-gray-400 rounded mb-1.5"></div>
-                                        <span class="text-xs font-medium text-gray-700">Simples</span>
+                                    <span class="text-xs font-medium text-gray-700">Clássico</span>
+                                </div>
+                                <div @click="borderStyle='simple';renderPreview()" class="cursor-pointer border-2 rounded-lg p-3 text-center transition"
+                                     :class="borderStyle==='simple' ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'">
+                                    <div class="w-full h-10 border-2 border-gray-400 rounded mb-1.5"></div>
+                                    <span class="text-xs font-medium text-gray-700">Simples</span>
+                                </div>
+                                <div @click="borderStyle='none';renderPreview()" class="cursor-pointer border-2 rounded-lg p-3 text-center transition"
+                                     :class="borderStyle==='none' ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'">
+                                    <div class="w-full h-10 border-2 border-dashed border-gray-200 rounded mb-1.5 flex items-center justify-center">
+                                        <span class="text-gray-300 text-xs">—</span>
                                     </div>
-                                </label>
-                                <label class="cursor-pointer">
-                                    <input type="radio" name="cert_border_style" value="none" x-model="borderStyle" @change="renderPreview()" class="sr-only peer">
-                                    <div class="border-2 rounded-lg p-3 text-center transition peer-checked:border-primary peer-checked:bg-primary/5 border-gray-200 hover:border-gray-300">
-                                        <div class="w-full h-10 border-2 border-dashed border-gray-200 rounded mb-1.5 flex items-center justify-center">
-                                            <span class="text-gray-300 text-xs">—</span>
-                                        </div>
-                                        <span class="text-xs font-medium text-gray-700">Sem moldura</span>
-                                    </div>
-                                </label>
+                                    <span class="text-xs font-medium text-gray-700">Sem moldura</span>
+                                </div>
                             </div>
                         </div>
 
