@@ -90,7 +90,7 @@ class CheckSubscriptionTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_cancelled_subscription_is_redirected(): void
+    public function test_cancelled_subscription_with_expired_period_is_redirected(): void
     {
         $plan = Plan::factory()->create();
         $company = Company::factory()->create();
@@ -98,6 +98,7 @@ class CheckSubscriptionTest extends TestCase
             'company_id' => $company->id,
             'plan_id' => $plan->id,
             'status' => 'cancelled',
+            'current_period_end' => now()->subDay(), // Period already ended
         ]);
         $admin = User::factory()->admin()->create([
             'company_id' => $company->id,
@@ -105,6 +106,24 @@ class CheckSubscriptionTest extends TestCase
 
         $response = $this->actingAs($admin)->get('/dashboard');
         $response->assertRedirect(route('subscription.plans'));
+    }
+
+    public function test_cancelled_subscription_within_paid_period_can_access(): void
+    {
+        $plan = Plan::factory()->create();
+        $company = Company::factory()->create();
+        Subscription::factory()->create([
+            'company_id' => $company->id,
+            'plan_id' => $plan->id,
+            'status' => 'cancelled',
+            'current_period_end' => now()->addDays(15), // Still within paid period
+        ]);
+        $admin = User::factory()->admin()->create([
+            'company_id' => $company->id,
+        ]);
+
+        $response = $this->actingAs($admin)->get('/dashboard');
+        $response->assertStatus(200);
     }
 
     public function test_super_admin_bypasses_subscription_check(): void

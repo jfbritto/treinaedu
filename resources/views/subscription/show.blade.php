@@ -2,12 +2,34 @@
 
     <p class="text-sm text-gray-500 mb-6">Gerencie seu plano, acompanhe o uso e veja o histórico de cobranças</p>
 
+    @if($subscription && $subscription->status === 'cancelled' && $subscription->current_period_end && $subscription->current_period_end->isFuture())
+        <div class="rounded-xl p-4 mb-6 flex items-center justify-between gap-4 bg-amber-50 border border-amber-200">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-amber-800">Assinatura cancelada</p>
+                    <p class="text-xs text-amber-600">Você ainda tem acesso até <strong>{{ $subscription->current_period_end->format('d/m/Y') }}</strong> ({{ $subscription->current_period_end->diffForHumans() }}). Após essa data, o acesso será bloqueado.</p>
+                </div>
+            </div>
+            <a href="{{ route('subscription.plans') }}" class="flex-shrink-0 inline-flex items-center gap-1.5 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-xs font-semibold transition">
+                Reativar
+            </a>
+        </div>
+    @endif
+
     @if($subscription)
         @php
             $statusColors = [
                 'active' => 'bg-green-300', 'trial' => 'bg-blue-300',
                 'past_due' => 'bg-amber-300', 'cancelled' => 'bg-red-300', 'expired' => 'bg-gray-300',
             ];
+            $isCancelledButActive = $subscription->status === 'cancelled'
+                && $subscription->current_period_end
+                && $subscription->current_period_end->isFuture();
             $statusLabels = [
                 'active' => 'Ativa', 'trial' => 'Período de Teste',
                 'past_due' => 'Em Atraso', 'cancelled' => 'Cancelada', 'expired' => 'Expirada',

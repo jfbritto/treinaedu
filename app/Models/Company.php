@@ -54,8 +54,19 @@ class Company extends Model
             return false;
         }
 
-        return $this->isOnTrial()
-            || in_array($this->subscription->status, ['active', 'past_due']);
+        // Active or grace period
+        if ($this->isOnTrial() || in_array($this->subscription->status, ['active', 'past_due'])) {
+            return true;
+        }
+
+        // Cancelled but still within paid period
+        if ($this->subscription->status === 'cancelled'
+            && $this->subscription->current_period_end
+            && $this->subscription->current_period_end->isFuture()) {
+            return true;
+        }
+
+        return false;
     }
 
     public function hasReachedUserLimit(): bool

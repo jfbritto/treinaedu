@@ -12,6 +12,12 @@
         </div>
     @endif
 
+    @if($currentSubscription && $currentSubscription->status === 'cancelled' && $currentSubscription->current_period_end?->isFuture())
+        <div class="mb-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-700">
+            Sua assinatura foi cancelada. Você tem acesso até <strong>{{ $currentSubscription->current_period_end->format('d/m/Y') }}</strong>. Assine um plano para continuar após essa data.
+        </div>
+    @endif
+
     <div x-data="{
         selectedPlan: null,
         showCardForm: false,
