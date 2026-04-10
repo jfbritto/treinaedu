@@ -193,6 +193,20 @@ class UserController extends Controller
         return redirect()->route('users.show', $user)->with('success', 'Usuário atualizado.');
     }
 
+    public function toggleActive(User $user)
+    {
+        $this->authorizeCompany($user);
+
+        if ($user->is(auth()->user())) {
+            return back()->with('error', 'Você não pode inativar sua própria conta.');
+        }
+
+        $user->update(['active' => !$user->active]);
+
+        $status = $user->active ? 'ativado' : 'inativado';
+        return back()->with('success', "Usuário {$user->name} {$status} com sucesso.");
+    }
+
     public function destroy(User $user)
     {
         $this->authorizeCompany($user);

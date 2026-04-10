@@ -36,6 +36,20 @@
                     </button>
                 </form>
             @endif
+            @if($user->role !== 'admin')
+                <form method="POST" action="{{ route('users.toggle-active', $user) }}" data-confirm="{{ $user->active ? 'Inativar este usuário? Ele perderá acesso à plataforma.' : 'Reativar este usuário?' }}">
+                    @csrf
+                    <button type="submit" class="inline-flex items-center gap-2 {{ $user->active ? 'bg-gray-500 hover:bg-gray-600' : 'bg-green-500 hover:bg-green-600' }} text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+                        @if($user->active)
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                            Inativar
+                        @else
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Reativar
+                        @endif
+                    </button>
+                </form>
+            @endif
             <a href="{{ route('users.edit', $user) }}"
                class="inline-flex items-center gap-2 bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -36,4 +36,21 @@ class CompanyController extends Controller
 
         return view('super-admin.companies.show', compact('company', 'companyStats'));
     }
+
+    public function toggleSubscription(Company $company)
+    {
+        $subscription = $company->subscription;
+
+        if (!$subscription) {
+            return back()->with('error', 'Empresa não possui assinatura.');
+        }
+
+        if (in_array($subscription->status, ['active', 'trial', 'past_due'])) {
+            $subscription->update(['status' => 'expired']);
+            return back()->with('success', "Empresa {$company->name} suspensa.");
+        } else {
+            $subscription->update(['status' => 'active', 'current_period_start' => now(), 'current_period_end' => now()->addMonth()]);
+            return back()->with('success', "Empresa {$company->name} reativada.");
+        }
+    }
 }

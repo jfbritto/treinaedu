@@ -72,6 +72,8 @@ Route::middleware(['auth', 'theme'])->group(function () {
             Route::resource('users', UserController::class);
             Route::post('users/{user}/resend-invite', [UserController::class, 'resendInvite'])
                 ->name('users.resend-invite');
+            Route::post('users/{user}/toggle-active', [UserController::class, 'toggleActive'])
+                ->name('users.toggle-active');
             Route::resource('groups', GroupController::class);
             Route::resource('trainings', AdminTrainingController::class);
             Route::resource('paths', PathController::class)->middleware('plan.feature:learning_paths');
@@ -161,6 +163,8 @@ Route::middleware('auth')->prefix('api')->group(function () {
 Route::middleware(['auth', 'role:super_admin'])->prefix('super')->name('super.')->group(function () {
     Route::get('dashboard', [SuperDashboardController::class, 'index'])->name('dashboard');
     Route::resource('companies', SuperCompanyController::class);
+    Route::post('companies/{company}/toggle-subscription', [SuperCompanyController::class, 'toggleSubscription'])
+        ->name('companies.toggle-subscription');
     Route::get('subscriptions', [SuperSubscriptionController::class, 'index'])->name('subscriptions.index');
     Route::get('payments', [SuperPaymentController::class, 'index'])->name('payments.index');
     Route::resource('plans', SuperPlanController::class);

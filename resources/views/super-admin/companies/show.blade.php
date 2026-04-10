@@ -27,10 +27,21 @@
                 <p class="text-sm text-white/80 mt-1">{{ $company->slug }} · Cadastrada em {{ $company->created_at->format('d/m/Y') }}</p>
             </div>
             @php $status = $company->subscription?->status ?? 'none'; @endphp
-            <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-white/20 backdrop-blur flex-shrink-0">
-                <span class="w-1.5 h-1.5 rounded-full {{ match($status) { 'active' => 'bg-green-300', 'trial' => 'bg-amber-300', 'past_due' => 'bg-red-300', default => 'bg-gray-300' } }}"></span>
-                {{ match($status) { 'active' => 'Ativa', 'trial' => 'Trial', 'past_due' => 'Em Atraso', 'cancelled' => 'Cancelada', default => 'Sem assinatura' } }}
-            </span>
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-white/20 backdrop-blur">
+                    <span class="w-1.5 h-1.5 rounded-full {{ match($status) { 'active' => 'bg-green-300', 'trial' => 'bg-amber-300', 'past_due' => 'bg-red-300', default => 'bg-gray-300' } }}"></span>
+                    {{ match($status) { 'active' => 'Ativa', 'trial' => 'Trial', 'past_due' => 'Em Atraso', 'cancelled' => 'Cancelada', 'expired' => 'Expirada', default => 'Sem assinatura' } }}
+                </span>
+                @if($company->subscription)
+                    <form method="POST" action="{{ route('super.companies.toggle-subscription', $company) }}"
+                          data-confirm="{{ in_array($status, ['active', 'trial', 'past_due']) ? 'Suspender esta empresa? Todos os usuários perderão acesso.' : 'Reativar esta empresa por mais 30 dias?' }}">
+                        @csrf
+                        <button type="submit" class="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full transition {{ in_array($status, ['active', 'trial', 'past_due']) ? 'bg-red-500/20 hover:bg-red-500/40 text-white' : 'bg-green-500/20 hover:bg-green-500/40 text-white' }}">
+                            {{ in_array($status, ['active', 'trial', 'past_due']) ? 'Suspender' : 'Reativar' }}
+                        </button>
+                    </form>
+                @endif
+            </div>
         </div>
     </div>
 
