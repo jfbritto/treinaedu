@@ -122,9 +122,19 @@
             return { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content };
         };
 
+        window.__markPendingFields = function(ctx, mi) {
+            const mod = ctx.modules[mi];
+            if (!mod.title || !mod.title.trim()) mod._aiLoading = true;
+            const titleInput = document.querySelector('input[name="title"]');
+            const descField = document.getElementById('description-field');
+            if (titleInput && !titleInput.value.trim()) titleInput.classList.add('ai-loading-field');
+            if (descField && !descField.value.trim()) descField.classList.add('ai-loading-field');
+        };
+
         window.__fetchVideoTitle = function(ctx, url, lesson, mi) {
             if (lesson.title && lesson.title.trim() !== '') return;
             lesson._aiLoading = true;
+            if (mi !== undefined) window.__markPendingFields(ctx, mi);
             fetch('https://noembed.com/embed?url=' + encodeURIComponent(url))
                 .then(r => r.json())
                 .then(data => {
@@ -183,10 +193,20 @@
             });
         };
 
+        window.__clearPendingShimmers = function() {
+            const titleInput = document.querySelector('input[name="title"]');
+            const descField = document.getElementById('description-field');
+            if (titleInput) titleInput.classList.remove('ai-loading-field');
+            if (descField) descField.classList.remove('ai-loading-field');
+        };
+
         window.__suggestTrainingInfo = function(ctx) {
             const titleInput = document.querySelector('input[name="title"]');
             const descField = document.getElementById('description-field');
-            if (titleInput.value.trim() && descField.value.trim()) return;
+            if (titleInput.value.trim() && descField.value.trim()) {
+                window.__clearPendingShimmers();
+                return;
+            }
 
             const moduleTitles = [];
             const lessonTitles = [];
@@ -194,7 +214,10 @@
                 if (m.title) moduleTitles.push(m.title);
                 m.lessons.forEach(l => { if (l.title) lessonTitles.push(l.title); });
             });
-            if (lessonTitles.length === 0) return;
+            if (lessonTitles.length === 0) {
+                window.__clearPendingShimmers();
+                return;
+            }
 
             if (!titleInput.value.trim()) {
                 titleInput.classList.add('ai-loading-field');
