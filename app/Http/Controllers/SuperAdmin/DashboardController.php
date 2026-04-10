@@ -14,7 +14,7 @@ class DashboardController extends Controller
         $metrics = [
             'total_companies' => Company::withoutGlobalScopes()->count(),
             'active_subscriptions' => Subscription::withoutGlobalScopes()
-                ->whereIn('status', ['active', 'trial'])->count(),
+                ->where('status', 'active')->count(),
             'monthly_revenue' => Payment::withoutGlobalScopes()
                 ->where('status', 'confirmed')
                 ->whereMonth('paid_at', now()->month)

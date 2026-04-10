@@ -27,7 +27,7 @@
             </div>
             <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Assinaturas Ativas</p>
             <p class="text-2xl font-bold text-gray-800 mt-1">{{ $metrics['active_subscriptions'] }}</p>
-            <p class="text-xs text-gray-400 mt-0.5">incluindo trials</p>
+            <p class="text-xs text-gray-400 mt-0.5">planos pagantes</p>
         </div>
 
         <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
