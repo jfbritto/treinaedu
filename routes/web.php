@@ -33,6 +33,7 @@ Route::get('/', function () {
     return view('welcome', compact('plans'));
 })->name('home');
 
+Route::get('/apresentacao', fn () => view('presentation'))->name('presentation');
 Route::get('/termos-de-uso', fn () => view('pages.termos-de-uso'))->name('termos');
 Route::get('/politica-de-privacidade', fn () => view('pages.politica-de-privacidade'))->name('privacidade');
 Route::get('/og-image-preview', fn () => view('pages.og-image'))->name('og-image-preview');
