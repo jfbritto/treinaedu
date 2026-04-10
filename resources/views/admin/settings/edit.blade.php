@@ -540,8 +540,17 @@
                             $logoDataUri = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($logoFullPath));
                         }
                     }
+                    $signatureDataUri = '';
+                    if ($company->cert_signer_signature_path) {
+                        $sigFullPath = storage_path('app/public/' . $company->cert_signer_signature_path);
+                        if (file_exists($sigFullPath)) {
+                            $sigMime = mime_content_type($sigFullPath);
+                            $signatureDataUri = 'data:' . $sigMime . ';base64,' . base64_encode(file_get_contents($sigFullPath));
+                        }
+                    }
                 @endphp
                 const logoDataUri = @js($logoDataUri);
+                const signatureDataUri = @js($signatureDataUri);
                 const W = 594, H = 420;
 
                 const BAR = 36, CX = BAR + (W - BAR) / 2, LX = BAR + 20;
@@ -559,9 +568,13 @@
 
                 let signerSvg = '';
                 if (signerName) {
-                    signerSvg = `<line x1="${CX-30}" y1="0" x2="${CX+30}" y2="0" stroke="#d1d5db" stroke-width="0.5"/>
-                        <text x="${CX}" y="10" text-anchor="middle" font-size="6" font-weight="bold" fill="#374151" ${f}>${esc(signerName)}</text>
-                        ${signerRole ? `<text x="${CX}" y="18" text-anchor="middle" font-size="5" fill="#6b7280" ${f}>${esc(signerRole)}</text>` : ''}`;
+                    let sigY = 0;
+                    if (signatureDataUri) {
+                        signerSvg += `<image href="${signatureDataUri}" x="${CX-35}" y="-20" width="70" height="18" preserveAspectRatio="xMidYMid meet"/>`;
+                    }
+                    signerSvg += `<line x1="${CX-35}" y1="0" x2="${CX+35}" y2="0" stroke="#d1d5db" stroke-width="0.5"/>`;
+                    signerSvg += `<text x="${CX}" y="10" text-anchor="middle" font-size="7" font-weight="bold" fill="#374151" ${f}>${esc(signerName)}</text>`;
+                    if (signerRole) signerSvg += `<text x="${CX}" y="19" text-anchor="middle" font-size="5.5" fill="#6b7280" ${f}>${esc(signerRole)}</text>`;
                 }
 
                 const logoSvg = logoDataUri
