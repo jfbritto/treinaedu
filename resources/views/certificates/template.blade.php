@@ -205,48 +205,48 @@
         .footer-cell-right { width: 25%; text-align: right; }
 
         .footer-label {
-            font-size: 7px;
+            font-size: 10px;
             color: #9ca3af;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
         }
         .footer-value {
-            font-size: 11px;
+            font-size: 15px;
             color: #374151;
             font-weight: bold;
         }
         .footer-code {
             font-family: 'Courier New', monospace;
-            font-size: 10px;
+            font-size: 13px;
             color: #6b7280;
         }
         .qrcode {
-            width: 54px;
-            height: 54px;
+            width: 80px;
+            height: 80px;
         }
 
         .signer-signature {
-            max-height: 32px;
-            max-width: 120px;
+            max-height: 48px;
+            max-width: 160px;
         }
         .signer-line {
-            width: 120px;
+            width: 160px;
             height: 1px;
             background: #d1d5db;
-            margin: 3px auto;
+            margin: 4px auto;
         }
         .signer-name {
-            font-size: 10px;
+            font-size: 14px;
             font-weight: bold;
             color: #374151;
         }
         .signer-role {
-            font-size: 8px;
+            font-size: 11px;
             color: #6b7280;
         }
         .signer-registry {
-            font-size: 7px;
+            font-size: 10px;
             color: #9ca3af;
         }
 
