@@ -27,18 +27,6 @@
             100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
         }
         .flash-move { animation: flash-move 0.6s ease-out; }
-        @keyframes ai-shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-        .ai-loading-field {
-            border-color: rgba(139, 92, 246, 0.6) !important;
-            background: linear-gradient(90deg, #f5f3ff 25%, #ede9fe 50%, #f5f3ff 75%) !important;
-            background-size: 200% 100%;
-            animation: ai-shimmer 1.5s ease-in-out infinite;
-            color: transparent !important;
-        }
-        .ai-loading-field::placeholder { color: transparent !important; }
     </style>
 
     <script>
@@ -127,8 +115,8 @@
             if (!mod.title || !mod.title.trim()) mod._aiLoading = true;
             const titleInput = document.querySelector('input[name="title"]');
             const descField = document.getElementById('description-field');
-            if (titleInput && !titleInput.value.trim()) titleInput.classList.add('ai-loading-field');
-            if (descField && !descField.value.trim()) descField.classList.add('ai-loading-field');
+            if (titleInput && !titleInput.value.trim()) ctx._titleLoading = true;
+            if (descField && !descField.value.trim()) ctx._descLoading = true;
         };
 
         window.__fetchVideoTitle = function(ctx, url, lesson, mi) {
@@ -193,18 +181,16 @@
             });
         };
 
-        window.__clearPendingShimmers = function() {
-            const titleInput = document.querySelector('input[name="title"]');
-            const descField = document.getElementById('description-field');
-            if (titleInput) titleInput.classList.remove('ai-loading-field');
-            if (descField) descField.classList.remove('ai-loading-field');
+        window.__clearPendingShimmers = function(ctx) {
+            ctx._titleLoading = false;
+            ctx._descLoading = false;
         };
 
         window.__suggestTrainingInfo = function(ctx) {
             const titleInput = document.querySelector('input[name="title"]');
             const descField = document.getElementById('description-field');
             if (titleInput.value.trim() && descField.value.trim()) {
-                window.__clearPendingShimmers();
+                window.__clearPendingShimmers(ctx);
                 return;
             }
 
@@ -215,12 +201,12 @@
                 m.lessons.forEach(l => { if (l.title) lessonTitles.push(l.title); });
             });
             if (lessonTitles.length === 0) {
-                window.__clearPendingShimmers();
+                window.__clearPendingShimmers(ctx);
                 return;
             }
 
             if (!titleInput.value.trim()) {
-                titleInput.classList.add('ai-loading-field');
+                ctx._titleLoading = true;
                 const input = moduleTitles.length > 0 ? moduleTitles.join(', ') : lessonTitles.join(', ');
                 fetch('/api/ai/suggest-title', {
                     method: 'POST',
@@ -231,25 +217,24 @@
                 .then(data => {
                     if (data.title && !titleInput.value.trim()) {
                         titleInput.value = data.title;
-                        if (!descField.value.trim()) window.__suggestTrainingDescription(titleInput.value);
+                        if (!descField.value.trim()) window.__suggestTrainingDescription(ctx, titleInput.value);
+                        else ctx._descLoading = false;
                     }
                 })
                 .catch(() => {})
-                .finally(() => { titleInput.classList.remove('ai-loading-field'); });
+                .finally(() => { ctx._titleLoading = false; });
             } else if (!descField.value.trim()) {
-                window.__suggestTrainingDescription(titleInput.value.trim());
+                window.__suggestTrainingDescription(ctx, titleInput.value.trim());
+            } else {
+                window.__clearPendingShimmers(ctx);
             }
         };
 
-        window.__suggestTrainingDescription = function(title) {
-            if (!title) return;
+        window.__suggestTrainingDescription = function(ctx, title) {
+            if (!title) { ctx._descLoading = false; return; }
             const descField = document.getElementById('description-field');
-            if (descField.value.trim()) return;
-            descField.classList.add('ai-loading-field');
-            var btn = document.getElementById('ai-desc-btn');
-            var textEl = document.getElementById('ai-desc-text');
-            if (btn) btn.disabled = true;
-            if (textEl) textEl.textContent = 'Gerando...';
+            if (descField.value.trim()) { ctx._descLoading = false; return; }
+            ctx._descLoading = true;
             fetch('/api/ai/generate-description', {
                 method: 'POST',
                 headers: window.__aiHeaders(),
@@ -262,11 +247,7 @@
                 }
             })
             .catch(() => {})
-            .finally(() => {
-                descField.classList.remove('ai-loading-field');
-                if (btn) btn.disabled = false;
-                if (textEl) textEl.textContent = 'Gerar com IA';
-            });
+            .finally(() => { ctx._descLoading = false; });
         };
 
         window.generateDescription = async function() {
@@ -369,6 +350,8 @@
         hasQuiz: false,
         questions: [{ text: '', options: [{ text: '' }, { text: '' }], correct: 0 }],
         _aiLoading: false,
+        _titleLoading: false,
+        _descLoading: false,
         addQuestion() {
             this.questions.push({ text: '', options: [{ text: '' }, { text: '' }], correct: 0 });
         },
@@ -470,21 +453,35 @@
                 <div class="space-y-5">
                     <div class="space-y-1">
                         <label class="block text-sm font-medium text-gray-700">Título <span class="text-red-500">*</span></label>
-                        <input type="text" name="title" value="{{ old('title') }}" required
-                               class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                               placeholder="Ex: Onboarding de novos colaboradores">
+                        <div class="relative">
+                            <input type="text" name="title" value="{{ old('title') }}" required
+                                   class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                   :class="_titleLoading ? 'pr-10' : ''"
+                                   placeholder="Ex: Onboarding de novos colaboradores">
+                            <div x-show="_titleLoading" x-transition class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                                <svg class="w-4 h-4 animate-spin text-primary" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                </svg>
+                                <span class="text-xs text-primary font-medium">IA</span>
+                            </div>
+                        </div>
                         @error('title')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                     </div>
 
                     <div class="space-y-1">
                         <div class="flex items-center justify-between">
                             <label class="block text-sm font-medium text-gray-700">Descrição</label>
-                            <button type="button" id="ai-desc-btn" onclick="generateDescription()"
-                                class="inline-flex items-center gap-1.5 text-xs font-medium text-purple-600 hover:text-purple-800 transition">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <button type="button" id="ai-desc-btn" onclick="generateDescription()" :disabled="_descLoading"
+                                class="inline-flex items-center gap-1.5 text-xs font-medium text-purple-600 hover:text-purple-800 transition disabled:opacity-50">
+                                <svg x-show="!_descLoading" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
                                 </svg>
-                                <span id="ai-desc-text">Gerar com IA</span>
+                                <svg x-show="_descLoading" x-cloak class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                </svg>
+                                <span id="ai-desc-text" x-text="_descLoading ? 'Gerando...' : 'Gerar com IA'"></span>
                             </button>
                         </div>
                         <textarea name="description" id="description-field" rows="3"
