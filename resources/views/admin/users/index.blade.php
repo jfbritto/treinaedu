@@ -19,6 +19,7 @@
     </div>
 
     {{-- Stats --}}
+    @if($totalUsers > 0)
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         {{-- Total de usuários --}}
         <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition">
@@ -67,6 +68,7 @@
             <p class="text-xs text-gray-400 mt-0.5">{{ $instructors === 1 ? 'criador de treinamentos' : 'criadores de treinamentos' }}</p>
         </div>
     </div>
+    @endif
 
     {{-- Table with server-side filters --}}
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
