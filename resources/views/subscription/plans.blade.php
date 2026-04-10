@@ -216,29 +216,45 @@
                         @error('holder_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
-                    {{-- Expiry --}}
+                    {{-- Expiry + CVV in one row --}}
                     <div>
                         <label class="block text-xs font-medium text-gray-500 mb-1">Validade</label>
-                        <div class="flex gap-2">
-                            <input type="text" name="expiry_month" value="{{ old('expiry_month') }}" required placeholder="MM" maxlength="2"
-                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary"
-                                autocomplete="cc-exp-month" inputmode="numeric">
-                            <span class="flex items-center text-gray-300">/</span>
-                            <input type="text" name="expiry_year" value="{{ old('expiry_year') }}" required placeholder="AAAA" maxlength="4"
-                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary"
-                                autocomplete="cc-exp-year" inputmode="numeric">
+                        <div class="flex items-center gap-1">
+                            <input type="text" name="expiry_month" id="expiry_month" value="{{ old('expiry_month') }}" required placeholder="MM" maxlength="2"
+                                class="w-16 rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-center tracking-widest focus:outline-none focus:ring-2 focus:ring-primary"
+                                autocomplete="cc-exp-month" inputmode="numeric"
+                                @input="
+                                    let v = $event.target.value.replace(/\D/g,'');
+                                    if (v.length === 1 && parseInt(v) > 1) v = '0' + v;
+                                    if (parseInt(v) > 12) v = '12';
+                                    $event.target.value = v;
+                                    if (v.length === 2) document.getElementById('expiry_year').focus();
+                                ">
+                            <span class="text-gray-300 text-lg font-light">/</span>
+                            <input type="text" name="expiry_year" id="expiry_year" value="{{ old('expiry_year') }}" required placeholder="AAAA" maxlength="4"
+                                class="w-20 rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-center tracking-widest focus:outline-none focus:ring-2 focus:ring-primary"
+                                autocomplete="cc-exp-year" inputmode="numeric"
+                                @input="
+                                    let v = $event.target.value.replace(/\D/g,'');
+                                    $event.target.value = v;
+                                    if (v.length === 4) document.getElementById('ccv_field').focus();
+                                "
+                                @keydown.backspace="if (!$event.target.value) document.getElementById('expiry_month').focus()">
                         </div>
+                        <p class="text-xs text-gray-400 mt-1">Mês e ano com 4 dígitos (ex: 12/2028)</p>
                     </div>
 
                     {{-- CVV --}}
                     <div>
                         <label class="block text-xs font-medium text-gray-500 mb-1">CVV</label>
                         <div class="relative">
-                            <input type="password" name="ccv" value="{{ old('ccv') }}" required placeholder="•••" maxlength="4"
+                            <input type="password" name="ccv" id="ccv_field" value="{{ old('ccv') }}" required placeholder="•••" maxlength="4"
                                 class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                                autocomplete="cc-csc" inputmode="numeric">
+                                autocomplete="cc-csc" inputmode="numeric"
+                                @input="$event.target.value = $event.target.value.replace(/\D/g,'')">
                             <svg class="w-4 h-4 text-gray-300 absolute right-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                         </div>
+                        <p class="text-xs text-gray-400 mt-1">3 ou 4 dígitos no verso do cartão</p>
                     </div>
 
                     {{-- Separator --}}
