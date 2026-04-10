@@ -121,9 +121,6 @@
         window.__aiHeaders = function() {
             return { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content };
         };
-        window.__aiTruncate = function(text, maxWords) {
-            return text.replace(/["'".!:;()]/g, '').trim().split(/\s+/).slice(0, maxWords).join(' ');
-        };
 
         window.__fetchVideoTitle = function(ctx, url, lesson, mi) {
             if (lesson.title && lesson.title.trim() !== '') return;
@@ -139,22 +136,15 @@
         };
 
         window.__cleanLessonTitle = function(ctx, rawTitle, lesson, mi) {
-            fetch('/api/ai/generate-description', {
+            fetch('/api/ai/suggest-title', {
                 method: 'POST',
                 headers: window.__aiHeaders(),
-                body: JSON.stringify({
-                    title: rawTitle,
-                    context: 'Limpe este título de vídeo do YouTube para usar como nome de AULA. '
-                        + 'REGRAS RÍGIDAS: máximo 6 palavras. Remova: nome do canal, numeração (AULA 01), palavras como COMPLETO/DEFINITIVO, emojis, pontuação excessiva. '
-                        + 'Mantenha só o assunto. Exemplos: "Velocidade Média" ou "Introdução à Termodinâmica" ou "Leis de Newton". '
-                        + 'Responda SOMENTE o título, nada mais.',
-                    type: 'training'
-                }),
+                body: JSON.stringify({ level: 'lesson', input: rawTitle }),
             })
             .then(r => r.json())
             .then(data => {
-                if (data.description && (!lesson.title || lesson.title.trim() === '')) {
-                    lesson.title = window.__aiTruncate(data.description, 6);
+                if (data.title && (!lesson.title || lesson.title.trim() === '')) {
+                    lesson.title = data.title;
                 } else if (!lesson.title || lesson.title.trim() === '') {
                     lesson.title = rawTitle;
                 }
@@ -175,23 +165,15 @@
             const lessonTitles = mod.lessons.map(l => l.title).filter(t => t && t.trim() !== '');
             if (lessonTitles.length === 0) return;
             mod._aiLoading = true;
-            fetch('/api/ai/generate-description', {
+            fetch('/api/ai/suggest-title', {
                 method: 'POST',
                 headers: window.__aiHeaders(),
-                body: JSON.stringify({
-                    title: lessonTitles.join(', '),
-                    context: 'Nomeie este MÓDULO de treinamento (categoria que agrupa aulas). '
-                        + 'REGRAS RÍGIDAS: exatamente 2 ou 3 palavras. Só o tema/categoria. '
-                        + 'Aulas dentro: ' + lessonTitles.join(', ') + '. '
-                        + 'Exemplos bons: "Física Básica", "Segurança do Trabalho", "Gestão de Projetos". '
-                        + 'Responda SOMENTE o título, nada mais.',
-                    type: 'training'
-                }),
+                body: JSON.stringify({ level: 'module', input: lessonTitles.join(', ') }),
             })
             .then(r => r.json())
             .then(data => {
-                if (data.description && (!mod.title || mod.title.trim() === '')) {
-                    mod.title = window.__aiTruncate(data.description, 3);
+                if (data.title && (!mod.title || mod.title.trim() === '')) {
+                    mod.title = data.title;
                 }
             })
             .catch(() => {})
@@ -216,24 +198,16 @@
 
             if (!titleInput.value.trim()) {
                 titleInput.classList.add('ai-loading-field');
-                const context = moduleTitles.length > 0 ? moduleTitles.join(', ') : lessonTitles.join(', ');
-                fetch('/api/ai/generate-description', {
+                const input = moduleTitles.length > 0 ? moduleTitles.join(', ') : lessonTitles.join(', ');
+                fetch('/api/ai/suggest-title', {
                     method: 'POST',
                     headers: window.__aiHeaders(),
-                    body: JSON.stringify({
-                        title: context,
-                        context: 'Nomeie este TREINAMENTO corporativo (nível mais alto, tema geral). '
-                            + 'REGRAS RÍGIDAS: máximo 4 palavras. Deve ser genérico e englobar os módulos/aulas abaixo. '
-                            + 'Conteúdo: ' + context + '. '
-                            + 'Exemplos bons: "Fundamentos de Física", "Capacitação em Vendas", "Segurança no Trabalho". '
-                            + 'Responda SOMENTE o título, nada mais.',
-                        type: 'training'
-                    }),
+                    body: JSON.stringify({ level: 'training', input: input, context: 'Aulas: ' + lessonTitles.join(', ') }),
                 })
                 .then(r => r.json())
                 .then(data => {
-                    if (data.description && !titleInput.value.trim()) {
-                        titleInput.value = window.__aiTruncate(data.description, 4);
+                    if (data.title && !titleInput.value.trim()) {
+                        titleInput.value = data.title;
                         if (!descField.value.trim()) window.__suggestTrainingDescription(titleInput.value);
                     }
                 })

@@ -157,6 +157,9 @@ Route::middleware('auth')->prefix('api')->group(function () {
     Route::post('ai/generate-description', [AiController::class, 'generateDescription'])
         ->name('api.ai.generate-description')
         ->middleware(['role:admin', 'throttle:15,1']);
+    Route::post('ai/suggest-title', [AiController::class, 'suggestTitle'])
+        ->name('api.ai.suggest-title')
+        ->middleware(['role:admin', 'throttle:20,1']);
 });
 
 // Super Admin routes

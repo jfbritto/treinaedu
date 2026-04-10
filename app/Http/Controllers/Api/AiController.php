@@ -42,6 +42,53 @@ class AiController extends Controller
         return response()->json(['questions' => $questions]);
     }
 
+    public function suggestTitle(Request $request, GeminiService $gemini): JsonResponse
+    {
+        $company = $request->user()?->company;
+        if ($company && !$company->planHasFeature('ai_quiz')) {
+            return response()->json(['error' => 'IA está disponível a partir do plano Business.'], 403);
+        }
+
+        $validated = $request->validate([
+            'level' => 'required|in:lesson,module,training',
+            'input' => 'required|string|max:2000',
+            'context' => 'nullable|string|max:2000',
+        ]);
+
+        if (!$gemini->isConfigured()) {
+            return response()->json(['error' => 'Serviço de IA não configurado.'], 503);
+        }
+
+        $systemPrompt = "Você é um especialista em nomear conteúdos de treinamentos corporativos em português brasileiro. "
+            . "Você SEMPRE responde com APENAS o título sugerido, sem aspas, sem pontuação final, sem explicações. "
+            . "Nunca comece com verbos como 'Aprimore', 'Descubra', 'Aprenda'. Use substantivos. "
+            . "Exemplos de bons títulos: 'Velocidade Média', 'Física Básica', 'Segurança do Trabalho', 'Gestão de Projetos', 'Primeiros Socorros'.";
+
+        $rules = match ($validated['level']) {
+            'lesson' => "Limpe este título de vídeo para usar como nome de AULA (nível mais específico). "
+                . "Máximo 5 palavras. Remova: nome de canais, numeração (Aula 01), termos como COMPLETO/DEFINITIVO, emojis. "
+                . "Mantenha apenas o assunto central do vídeo.",
+            'module' => "Crie um título de MÓDULO (categoria intermediária que agrupa aulas). "
+                . "Exatamente 2 ou 3 palavras. Deve ser o tema/área que engloba as aulas listadas.",
+            'training' => "Crie um título de TREINAMENTO (nível mais alto, tema geral). "
+                . "Máximo 4 palavras. Deve ser amplo e representar toda a capacitação.",
+        };
+
+        $userPrompt = $rules . "\n\nConteúdo: " . $validated['input'];
+        if (!empty($validated['context'])) {
+            $userPrompt .= "\nContexto: " . $validated['context'];
+        }
+
+        $text = $gemini->generateText($systemPrompt, $userPrompt);
+
+        if ($text === null) {
+            return response()->json(['error' => 'Não foi possível sugerir o título.'], 422);
+        }
+
+        $title = preg_replace('/[""\'".!:;()\n\r]/', '', trim($text));
+        return response()->json(['title' => $title]);
+    }
+
     public function generateDescription(Request $request, GeminiService $gemini): JsonResponse
     {
         $company = $request->user()?->company;
