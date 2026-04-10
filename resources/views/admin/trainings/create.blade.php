@@ -612,12 +612,22 @@
                                               x-text="(li + 1) + '.'"></span>
 
                                         {{-- Lesson title --}}
-                                        <input type="text"
-                                               :name="'modules['+mi+'][lessons]['+li+'][title]'"
-                                               x-model="lesson.title"
-                                               placeholder="Título da aula"
-                                               required
-                                               class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white">
+                                        <div class="relative flex-1">
+                                            <input type="text"
+                                                   :name="'modules['+mi+'][lessons]['+li+'][title]'"
+                                                   x-model="lesson.title"
+                                                   placeholder="Título da aula"
+                                                   required
+                                                   class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white"
+                                                   :class="lesson._aiLoading ? 'pr-10 ai-shimmer' : ''">
+                                            <div x-show="lesson._aiLoading" x-transition class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                                                <svg class="w-4 h-4 animate-spin text-primary" fill="none" viewBox="0 0 24 24">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                                </svg>
+                                                <span class="text-xs text-primary font-medium">IA</span>
+                                            </div>
+                                        </div>
 
                                         {{-- Lesson type --}}
                                         <div class="flex items-center gap-1 flex-shrink-0">
