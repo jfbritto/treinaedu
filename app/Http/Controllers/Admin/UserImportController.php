@@ -21,15 +21,19 @@ class UserImportController extends Controller
 
     public function preview(Request $request)
     {
-        $request->validate([
-            'file' => 'required|file|mimes:csv,txt,xlsx,xls|max:2048',
-        ]);
-
-        $file = $request->file('file');
-        $rows = $this->parseFile($file);
+        // Accept either file upload or pasted data
+        if ($request->filled('paste_data')) {
+            $parsed = json_decode($request->paste_data, true);
+            $rows = is_array($parsed) ? array_map(fn ($r) => ['name' => $r['name'] ?? '', 'email' => $r['email'] ?? ''], $parsed) : [];
+        } else {
+            $request->validate([
+                'file' => 'required|file|mimes:csv,txt,xlsx,xls|max:2048',
+            ]);
+            $rows = $this->parseFile($request->file('file'));
+        }
 
         if (empty($rows)) {
-            return back()->with('error', 'O arquivo está vazio ou não contém dados válidos.');
+            return back()->with('error', 'Nenhum dado encontrado. Preencha a tabela ou envie um arquivo.');
         }
 
         $company = auth()->user()->company;
