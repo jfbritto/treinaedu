@@ -97,64 +97,68 @@
         }
         .content-inner td {
             vertical-align: middle;
-            padding: 18mm 20mm 42mm 16mm;
+            padding: 14mm 20mm 38mm 16mm;
         }
 
         .logo {
-            max-height: 44px;
-            max-width: 150px;
-            margin-bottom: 12px;
+            max-height: 40px;
+            max-width: 140px;
+            margin-bottom: 16px;
         }
 
         .company-name {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             color: {{ $primaryColor }};
             letter-spacing: 1px;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .title {
             font-size: {{ $sizeTitle ?? 54 }}px;
             font-weight: bold;
             color: {{ $primaryColor }};
-            letter-spacing: 3px;
+            letter-spacing: 4px;
             line-height: 1;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
+            opacity: 0.85;
         }
 
         .subtitle {
-            font-size: {{ max(12, ($sizeTitle ?? 54) * 0.37) }}px;
+            font-size: {{ max(12, ($sizeTitle ?? 54) * 0.35) }}px;
             font-weight: 300;
             color: {{ $secondaryColor }};
             letter-spacing: 1.5px;
-            margin-bottom: 22px;
+            margin-bottom: 28px;
         }
 
         .divider {
-            width: 60px;
+            width: 50px;
             height: 3px;
             background: {{ $primaryColor }};
-            margin-bottom: 18px;
+            margin-bottom: 10px;
         }
 
         .certifies {
-            font-size: 11px;
+            font-size: 10px;
             color: #9ca3af;
             letter-spacing: 3px;
             text-transform: uppercase;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .recipient {
             font-size: {{ $sizeName ?? 34 }}px;
             font-weight: bold;
             color: #1f2937;
-            margin-bottom: 18px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid {{ $primaryColor }};
+            padding-bottom: 8px;
+            display: inline-block;
         }
 
         .training-box {
-            padding: 14px 20px;
+            padding: 16px 24px;
             border-left: 4px solid {{ $primaryColor }};
             background-color: #f8fafc;
             text-align: left;
@@ -166,7 +170,7 @@
             color: #9ca3af;
             letter-spacing: 2px;
             text-transform: uppercase;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .training-title {
@@ -190,7 +194,7 @@
             position: fixed;
             left: 30mm;
             right: 14mm;
-            bottom: 12mm;
+            bottom: 16mm;
         }
         .footer-table {
             width: 100%;
