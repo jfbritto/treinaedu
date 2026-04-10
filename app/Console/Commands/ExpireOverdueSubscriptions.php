@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use App\Models\Payment;
 use App\Models\Subscription;
+use App\Models\User;
+use App\Notifications\TrialExpiredNotification;
 use Illuminate\Console\Command;
 
 class ExpireOverdueSubscriptions extends Command
@@ -35,13 +37,23 @@ class ExpireOverdueSubscriptions extends Command
 
         $this->info("Expired {$expired} past_due subscriptions.");
 
-        // Also expire trials that have ended
-        $expiredTrials = Subscription::withoutGlobalScopes()
+        // Also expire trials that have ended — notify admin before updating
+        $expiredTrialSubs = Subscription::withoutGlobalScopes()
             ->where('status', 'trial')
             ->where('trial_ends_at', '<', now())
-            ->update(['status' => 'expired']);
+            ->get();
 
-        $this->info("Expired {$expiredTrials} trials.");
+        foreach ($expiredTrialSubs as $sub) {
+            $sub->update(['status' => 'expired']);
+
+            $admin = User::withoutGlobalScopes()
+                ->where('company_id', $sub->company_id)
+                ->where('role', 'admin')
+                ->first();
+            $admin?->notify(new TrialExpiredNotification());
+        }
+
+        $this->info("Expired {$expiredTrialSubs->count()} trials.");
 
         return Command::SUCCESS;
     }

@@ -6,6 +6,28 @@
             : null;
     @endphp
 
+    {{-- Trial banner --}}
+    @if(auth()->user()->company->isOnTrial())
+        @php $trialEnds = auth()->user()->company->subscription->trial_ends_at; @endphp
+        <div class="rounded-xl p-4 mb-4 flex items-center justify-between gap-4 bg-amber-50 border border-amber-200">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-amber-800">Período de teste gratuito</p>
+                    <p class="text-xs text-amber-600">Expira {{ $trialEnds->diffForHumans() }} ({{ $trialEnds->format('d/m/Y') }}). Escolha um plano para continuar.</p>
+                </div>
+            </div>
+            <a href="{{ route('subscription.plans') }}" class="flex-shrink-0 inline-flex items-center gap-1.5 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-xs font-semibold transition">
+                Escolher plano
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </a>
+        </div>
+    @endif
+
     {{-- Banner de boas-vindas --}}
     <div class="rounded-xl p-6 mb-6 text-white" style="background: linear-gradient(to right, var(--secondary), var(--primary))">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
