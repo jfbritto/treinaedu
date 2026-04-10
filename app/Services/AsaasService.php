@@ -85,6 +85,7 @@ class AsaasService
                 'plan_id' => $plan->id,
                 'asaas_subscription_id' => $subscriptionId,
                 'status' => 'active',
+                'trial_ends_at' => null,
                 'current_period_start' => now(),
                 'current_period_end' => now()->addMonth(),
             ]);
