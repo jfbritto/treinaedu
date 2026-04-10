@@ -325,11 +325,7 @@
                 </div>
 
                 {{-- Personalizar Certificado --}}
-                <div class="bg-white rounded-xl shadow-sm p-6" x-data="{
-                    borderStyle: '{{ $company->cert_border_style ?? 'classic' }}',
-                    titleText: '{{ addslashes($company->cert_title_text ?? 'CERTIFICADO') }}',
-                    subtitleText: '{{ addslashes($company->cert_subtitle_text ?? 'de Conclusão') }}'
-                }">
+                <div class="bg-white rounded-xl shadow-sm p-6" x-data="certCustomizer()" x-init="renderPreview()" @preview-color.window="cprimary=$event.detail.primary||cprimary;csecondary=$event.detail.secondary||csecondary;renderPreview()">
                     <div class="flex items-center gap-3 mb-5">
                         <div class="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
                             <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -347,7 +343,7 @@
                             <label class="block text-xs font-medium text-gray-600">Estilo da Moldura</label>
                             <div class="grid grid-cols-3 gap-2">
                                 <label class="cursor-pointer">
-                                    <input type="radio" name="cert_border_style" value="classic" x-model="borderStyle" @change="$dispatch('preview-cert')" class="sr-only peer">
+                                    <input type="radio" name="cert_border_style" value="classic" x-model="borderStyle" @change="renderPreview()" class="sr-only peer">
                                     <div class="border-2 rounded-lg p-3 text-center transition peer-checked:border-primary peer-checked:bg-primary/5 border-gray-200 hover:border-gray-300">
                                         <div class="w-full h-10 border-2 border-gray-400 rounded relative mb-1.5">
                                             <div class="absolute inset-1 border border-gray-300 rounded"></div>
@@ -356,14 +352,14 @@
                                     </div>
                                 </label>
                                 <label class="cursor-pointer">
-                                    <input type="radio" name="cert_border_style" value="simple" x-model="borderStyle" @change="$dispatch('preview-cert')" class="sr-only peer">
+                                    <input type="radio" name="cert_border_style" value="simple" x-model="borderStyle" @change="renderPreview()" class="sr-only peer">
                                     <div class="border-2 rounded-lg p-3 text-center transition peer-checked:border-primary peer-checked:bg-primary/5 border-gray-200 hover:border-gray-300">
                                         <div class="w-full h-10 border-2 border-gray-400 rounded mb-1.5"></div>
                                         <span class="text-xs font-medium text-gray-700">Simples</span>
                                     </div>
                                 </label>
                                 <label class="cursor-pointer">
-                                    <input type="radio" name="cert_border_style" value="none" x-model="borderStyle" @change="$dispatch('preview-cert')" class="sr-only peer">
+                                    <input type="radio" name="cert_border_style" value="none" x-model="borderStyle" @change="renderPreview()" class="sr-only peer">
                                     <div class="border-2 rounded-lg p-3 text-center transition peer-checked:border-primary peer-checked:bg-primary/5 border-gray-200 hover:border-gray-300">
                                         <div class="w-full h-10 border-2 border-dashed border-gray-200 rounded mb-1.5 flex items-center justify-center">
                                             <span class="text-gray-300 text-xs">—</span>
@@ -377,13 +373,13 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="space-y-1">
                                 <label class="block text-xs font-medium text-gray-600">Título principal</label>
-                                <input type="text" name="cert_title_text" x-model="titleText" @input="$dispatch('preview-cert')"
+                                <input type="text" name="cert_title_text" x-model="titleText" @input="renderPreview()"
                                        placeholder="CERTIFICADO" maxlength="100"
                                        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                             </div>
                             <div class="space-y-1">
                                 <label class="block text-xs font-medium text-gray-600">Subtítulo</label>
-                                <input type="text" name="cert_subtitle_text" x-model="subtitleText" @input="$dispatch('preview-cert')"
+                                <input type="text" name="cert_subtitle_text" x-model="subtitleText" @input="renderPreview()"
                                        placeholder="de Conclusão" maxlength="100"
                                        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                             </div>
@@ -391,84 +387,12 @@
                     </div>
 
                     {{-- Live Preview do Certificado --}}
-                    <div class="mt-5 pt-5 border-t border-gray-100"
-                         x-data="{ cprimary: '{{ $company->primary_color ?? '#4f46e5' }}', csecondary: '{{ $company->secondary_color ?? '#3730a3' }}' }"
-                         @preview-color.window="if($event.detail.primary) cprimary=$event.detail.primary; if($event.detail.secondary) csecondary=$event.detail.secondary">
+                    <div class="mt-5 pt-5 border-t border-gray-100">
                         <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Preview do Certificado</p>
-
-                        <div class="rounded-lg border border-gray-200 overflow-hidden bg-gray-50 relative" style="padding-bottom: 70.7%;">
-                            <div style="position:absolute;inset:0;overflow:hidden;">
-                                <div style="width: 800px; height: 566px; transform-origin: top left; position: absolute; top: 0; left: 0; background: #fff; font-family: Helvetica, Arial, sans-serif; text-align: center;"
-                                     :style="'transform: scale(' + ($el.parentElement.offsetWidth / 800) + ')'">
-
-                                    {{-- Borders: simple + classic --}}
-                                    <div x-show="borderStyle !== 'none'" style="position:absolute;top:30px;left:36px;right:36px;height:2px;" :style="'background:'+cprimary"></div>
-                                    <div x-show="borderStyle !== 'none'" style="position:absolute;bottom:30px;left:36px;right:36px;height:2px;" :style="'background:'+cprimary"></div>
-                                    <div x-show="borderStyle === 'classic'" style="position:absolute;top:39px;left:36px;right:36px;height:1px;" :style="'background:'+cprimary"></div>
-                                    <div x-show="borderStyle === 'classic'" style="position:absolute;bottom:39px;left:36px;right:36px;height:1px;" :style="'background:'+cprimary"></div>
-                                    <div x-show="borderStyle === 'classic'" style="position:absolute;top:42px;left:42px;width:30px;height:30px;" :style="'border-top:2px solid '+cprimary+';border-left:2px solid '+cprimary"></div>
-                                    <div x-show="borderStyle === 'classic'" style="position:absolute;top:42px;right:42px;width:30px;height:30px;" :style="'border-top:2px solid '+cprimary+';border-right:2px solid '+cprimary"></div>
-                                    <div x-show="borderStyle === 'classic'" style="position:absolute;bottom:42px;left:42px;width:30px;height:30px;" :style="'border-bottom:2px solid '+cprimary+';border-left:2px solid '+cprimary"></div>
-                                    <div x-show="borderStyle === 'classic'" style="position:absolute;bottom:42px;right:42px;width:30px;height:30px;" :style="'border-bottom:2px solid '+cprimary+';border-right:2px solid '+cprimary"></div>
-
-                                    {{-- Content --}}
-                                    <div style="padding: 65px 90px 160px 90px;">
-                                        @if($company->logo_path)
-                                            <img src="{{ Storage::url($company->logo_path) }}" style="max-height:36px;max-width:130px;margin:0 auto 6px;display:block;">
-                                        @else
-                                            <div style="font-size:12px;font-weight:bold;margin-bottom:6px;" :style="'color:'+csecondary">{{ $company->name }}</div>
-                                        @endif
-
-                                        <div style="margin:6px 0;font-size:7px;letter-spacing:3px;" :style="'color:'+csecondary">
-                                            <span style="display:inline-block;width:40px;height:1px;vertical-align:middle;" :style="'background:'+cprimary"></span>
-                                            <span style="padding:0 6px;vertical-align:middle;">APRESENTA</span>
-                                            <span style="display:inline-block;width:40px;height:1px;vertical-align:middle;" :style="'background:'+cprimary"></span>
-                                        </div>
-
-                                        <div style="font-size:38px;font-weight:bold;letter-spacing:3px;line-height:1.1;" :style="'color:'+csecondary" x-text="titleText || 'CERTIFICADO'"></div>
-                                        <div style="font-size:14px;font-style:italic;letter-spacing:1px;margin-bottom:10px;" :style="'color:'+cprimary" x-text="subtitleText || 'de Conclusão'"></div>
-
-                                        <div style="font-size:8px;color:#6b7280;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">Certificamos que</div>
-                                        <div style="font-size:24px;font-weight:bold;margin-bottom:10px;" :style="'color:'+csecondary">Nome do Colaborador</div>
-
-                                        <div style="max-width:500px;margin:0 auto;padding:8px 14px;border-top:2px solid;border-bottom:2px solid;background:#f5f9ff;" :style="'border-color:'+cprimary">
-                                            <div style="font-size:7px;color:#6b7280;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">concluiu com sucesso o treinamento</div>
-                                            <div style="font-size:16px;font-weight:bold;color:#1f2937;">Treinamento Exemplo</div>
-                                            <div style="font-size:8px;color:#6b7280;margin-top:3px;">carga horária de <strong style="color:#1f2937">2h</strong> · emitido por <strong style="color:#1f2937">{{ $company->name }}</strong></div>
-                                        </div>
-                                    </div>
-
-                                    {{-- Footer --}}
-                                    <div style="position:absolute;left:70px;right:70px;bottom:44px;">
-                                        <table style="width:100%;border-collapse:collapse;">
-                                            <tr>
-                                                <td style="width:28%;text-align:center;vertical-align:bottom;">
-                                                    <div style="font-size:6px;color:#9ca3af;letter-spacing:1px;text-transform:uppercase;">Emitido em</div>
-                                                    <div style="font-size:9px;font-weight:bold;" :style="'color:'+csecondary">{{ now()->format('d/m/Y') }}</div>
-                                                </td>
-                                                <td style="width:44%;text-align:center;vertical-align:bottom;">
-                                                    @if($company->cert_signer_name)
-                                                        <div style="width:80px;height:1px;background:#9ca3af;margin:0 auto 3px;"></div>
-                                                        <div style="font-size:8px;font-weight:bold;color:#1f2937;">{{ $company->cert_signer_name }}</div>
-                                                        @if($company->cert_signer_role)
-                                                            <div style="font-size:6px;color:#6b7280;">{{ $company->cert_signer_role }}</div>
-                                                        @endif
-                                                    @endif
-                                                </td>
-                                                <td style="width:28%;text-align:center;vertical-align:bottom;">
-                                                    <div style="font-size:6px;color:#9ca3af;letter-spacing:1px;text-transform:uppercase;">Verificar</div>
-                                                    <div style="width:32px;height:32px;background:#e5e7eb;margin:3px auto 0;border-radius:3px;font-size:5px;color:#9ca3af;line-height:32px;">QR</div>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </div>
-
-                                    <div style="position:absolute;left:0;right:0;bottom:16px;text-align:center;font-size:6px;color:#9ca3af;">
-                                        Verificado por <strong :style="'color:'+cprimary">TreinaEdu</strong>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="rounded-lg border border-gray-200 overflow-hidden bg-white">
+                            <iframe x-ref="certPreview" style="width:100%;border:0;pointer-events:none;aspect-ratio:297/210;" scrolling="no"></iframe>
                         </div>
+                        <p class="text-xs text-gray-400 mt-2">O preview atualiza ao vivo conforme você altera as opções acima.</p>
                     </div>
                 </div>
 
@@ -568,6 +492,86 @@
     @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.2.0/dist/signature_pad.umd.min.js"></script>
     <script>
+    function certCustomizer() {
+        return {
+            borderStyle: '{{ $company->cert_border_style ?? 'classic' }}',
+            titleText: '{{ addslashes($company->cert_title_text ?? 'CERTIFICADO') }}',
+            subtitleText: '{{ addslashes($company->cert_subtitle_text ?? 'de Conclusão') }}',
+            cprimary: '{{ $company->primary_color ?? '#4f46e5' }}',
+            csecondary: '{{ $company->secondary_color ?? '#3730a3' }}',
+            renderPreview() {
+                const iframe = this.$refs.certPreview;
+                if (!iframe) return;
+                const p = this.cprimary, s = this.csecondary, b = this.borderStyle;
+                const t = (this.titleText || 'CERTIFICADO').replace(/</g,'&lt;');
+                const st = (this.subtitleText || 'de Conclusão').replace(/</g,'&lt;');
+                const logo = @js($company->logo_path ? Storage::url($company->logo_path) : '');
+                const companyName = @js($company->name);
+                const signerName = @js($company->cert_signer_name ?? '');
+                const signerRole = @js($company->cert_signer_role ?? '');
+                const borderHtml = b === 'none' ? '' : `
+                    <div style="position:absolute;top:5%;left:4%;right:4%;height:2px;background:${p}"></div>
+                    <div style="position:absolute;bottom:5%;left:4%;right:4%;height:2px;background:${p}"></div>
+                ` + (b === 'classic' ? `
+                    <div style="position:absolute;top:6.5%;left:4%;right:4%;height:1px;background:${p}"></div>
+                    <div style="position:absolute;bottom:6.5%;left:4%;right:4%;height:1px;background:${p}"></div>
+                    <div style="position:absolute;top:7%;left:5%;width:4%;height:6%;border-top:2px solid ${p};border-left:2px solid ${p}"></div>
+                    <div style="position:absolute;top:7%;right:5%;width:4%;height:6%;border-top:2px solid ${p};border-right:2px solid ${p}"></div>
+                    <div style="position:absolute;bottom:7%;left:5%;width:4%;height:6%;border-bottom:2px solid ${p};border-left:2px solid ${p}"></div>
+                    <div style="position:absolute;bottom:7%;right:5%;width:4%;height:6%;border-bottom:2px solid ${p};border-right:2px solid ${p}"></div>
+                ` : '');
+                const logoHtml = logo
+                    ? `<img src="${logo}" style="max-height:7%;max-width:20%;margin:0 auto 1%;">`
+                    : `<div style="font-size:2.2vw;font-weight:bold;color:${s};margin-bottom:1%">${companyName}</div>`;
+                const signerHtml = signerName ? `
+                    <div style="width:15%;height:1px;background:#9ca3af;margin:0 auto 1%"></div>
+                    <div style="font-size:1.4vw;font-weight:bold;color:#1f2937">${signerName}</div>
+                    ${signerRole ? `<div style="font-size:1vw;color:#6b7280">${signerRole}</div>` : ''}
+                ` : '';
+                const html = `<!DOCTYPE html><html><head><style>
+                    *{margin:0;padding:0;box-sizing:border-box}
+                    body{font-family:Helvetica,Arial,sans-serif;color:#1f2937;overflow:hidden;width:100vw;height:100vh;position:relative;text-align:center}
+                </style></head><body>
+                    ${borderHtml}
+                    <div style="padding:12% 12% 28% 12%">
+                        ${logoHtml}
+                        <div style="margin:1.5% 0;font-size:1vw;letter-spacing:3px;color:${s}">
+                            <span style="display:inline-block;width:8%;height:1px;background:${p};vertical-align:middle"></span>
+                            <span style="padding:0 1%;vertical-align:middle">APRESENTA</span>
+                            <span style="display:inline-block;width:8%;height:1px;background:${p};vertical-align:middle"></span>
+                        </div>
+                        <div style="font-size:6vw;font-weight:bold;color:${s};letter-spacing:3px;line-height:1.1">${t}</div>
+                        <div style="font-size:2.2vw;font-style:italic;color:${p};letter-spacing:1px;margin-bottom:2%">${st}</div>
+                        <div style="font-size:1.2vw;color:#6b7280;letter-spacing:2px;text-transform:uppercase;margin-bottom:1.5%">Certificamos que</div>
+                        <div style="font-size:4vw;font-weight:bold;color:${s};margin-bottom:2%">Nome do Colaborador</div>
+                        <div style="max-width:70%;margin:0 auto;padding:1.5% 3%;border-top:2px solid ${p};border-bottom:2px solid ${p};background:#f5f9ff">
+                            <div style="font-size:1vw;color:#6b7280;letter-spacing:1px;text-transform:uppercase;margin-bottom:0.5%">concluiu com sucesso o treinamento</div>
+                            <div style="font-size:2.5vw;font-weight:bold;color:#1f2937">Treinamento Exemplo</div>
+                            <div style="font-size:1.2vw;color:#6b7280;margin-top:0.5%">carga horária de <strong style="color:#1f2937">2h</strong> · emitido por <strong style="color:#1f2937">${companyName}</strong></div>
+                        </div>
+                    </div>
+                    <div style="position:absolute;left:10%;right:10%;bottom:8%">
+                        <table style="width:100%;border-collapse:collapse"><tr>
+                            <td style="width:28%;text-align:center;vertical-align:bottom">
+                                <div style="font-size:0.9vw;color:#9ca3af;letter-spacing:1px;text-transform:uppercase">Emitido em</div>
+                                <div style="font-size:1.4vw;font-weight:bold;color:${s}">${new Date().toLocaleDateString('pt-BR')}</div>
+                            </td>
+                            <td style="width:44%;text-align:center;vertical-align:bottom">${signerHtml}</td>
+                            <td style="width:28%;text-align:center;vertical-align:bottom">
+                                <div style="font-size:0.9vw;color:#9ca3af;letter-spacing:1px;text-transform:uppercase">Verificar</div>
+                                <div style="width:6%;padding-bottom:6%;background:#e5e7eb;margin:1% auto 0;border-radius:3px"></div>
+                            </td>
+                        </tr></table>
+                    </div>
+                    <div style="position:absolute;left:0;right:0;bottom:3%;text-align:center;font-size:0.9vw;color:#9ca3af">
+                        Verificado por <strong style="color:${p}">TreinaEdu</strong>
+                    </div>
+                </body></html>`;
+                iframe.srcdoc = html;
+            }
+        };
+    }
+
     function signaturePad() {
         return {
             mode: 'draw',
