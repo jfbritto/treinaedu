@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
@@ -43,9 +44,11 @@ class NewPasswordController extends Controller
         $brokerName = ($user && $user->isPendingInvite()) ? 'invites' : 'users';
         $broker = Password::broker($brokerName);
 
+        $loggedUser = null;
+
         $status = $broker->reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
-            function (User $user) use ($request) {
+            function (User $user) use ($request, &$loggedUser) {
                 $user->forceFill([
                     'password' => Hash::make($request->password),
                     'remember_token' => Str::random(60),
@@ -53,12 +56,16 @@ class NewPasswordController extends Controller
                 ])->save();
 
                 event(new PasswordReset($user));
+                $loggedUser = $user;
             }
         );
 
-        return $status == Password::PASSWORD_RESET
-                    ? redirect()->route('login')->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                        ->withErrors(['email' => __($status)]);
+        if ($status == Password::PASSWORD_RESET && $loggedUser) {
+            Auth::login($loggedUser);
+            return redirect()->route('dashboard');
+        }
+
+        return back()->withInput($request->only('email'))
+            ->withErrors(['email' => __($status)]);
     }
 }
