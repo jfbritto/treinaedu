@@ -16,14 +16,12 @@
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
         }
-        .ai-loading-field {
-            border-color: rgba(139, 92, 246, 0.6) !important;
+        .ai-shimmer {
+            border-color: rgba(139, 92, 246, 0.5) !important;
             background: linear-gradient(90deg, #f5f3ff 25%, #ede9fe 50%, #f5f3ff 75%) !important;
             background-size: 200% 100%;
             animation: ai-shimmer 1.5s ease-in-out infinite;
-            color: transparent !important;
         }
-        .ai-loading-field::placeholder { color: transparent !important; }
     </style>
 
     <script>
@@ -31,13 +29,11 @@
             if (ctx.selected.length === 0) return;
             const names = ctx.selected.map(id => ctx.trainingNames[id]).filter(Boolean);
             if (names.length === 0) return;
-
-            const titleInput = document.getElementById('title');
-            const descInput = document.getElementById('description');
             const headers = { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content };
 
             if (!ctx.title.trim()) {
-                titleInput.classList.add('ai-loading-field');
+                ctx._titleLoading = true;
+                if (!ctx.description.trim()) ctx._descLoading = true;
                 fetch('/api/ai/suggest-title', {
                     method: 'POST',
                     headers: headers,
@@ -47,8 +43,9 @@
                 .then(data => { if (data.title && !ctx.title.trim()) ctx.title = data.title; })
                 .catch(() => {})
                 .finally(() => {
-                    titleInput.classList.remove('ai-loading-field');
+                    ctx._titleLoading = false;
                     if (ctx.title.trim() && !ctx.description.trim()) window.__pathSuggestDescription(ctx);
+                    else ctx._descLoading = false;
                 });
             } else if (!ctx.description.trim()) {
                 window.__pathSuggestDescription(ctx);
@@ -56,10 +53,9 @@
         };
 
         window.__pathSuggestDescription = function(ctx) {
-            if (ctx.description.trim()) return;
+            if (ctx.description.trim()) { ctx._descLoading = false; return; }
             const names = ctx.selected.map(id => ctx.trainingNames[id]).filter(Boolean);
-            const descInput = document.getElementById('description');
-            descInput.classList.add('ai-loading-field');
+            ctx._descLoading = true;
             const headers = { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content };
             fetch('/api/ai/generate-description', {
                 method: 'POST',
@@ -69,7 +65,7 @@
             .then(r => r.json())
             .then(data => { if (data.description && !ctx.description.trim()) ctx.description = data.description; })
             .catch(() => {})
-            .finally(() => { descInput.classList.remove('ai-loading-field'); });
+            .finally(() => { ctx._descLoading = false; });
         };
     </script>
 
@@ -82,6 +78,8 @@
               selected: @js(old('trainings', $pathTrainingIds)),
               trainingNames: @js($trainings->pluck('title', 'id')),
               _suggestTimer: null,
+              _titleLoading: false,
+              _descLoading: false,
               get selectedCount() { return this.selected.length; },
               isSelected(id) { return this.selected.includes(id); },
               toggle(id) {
@@ -133,17 +131,35 @@
                                 <input type="text" id="title" name="title"
                                     x-model="title" required
                                     placeholder="Ex: Onboarding 2026"
-                                    class="w-full pl-10 pr-3 rounded-lg border @error('title') border-red-400 @else border-gray-300 @enderror px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                    class="w-full pl-10 pr-3 rounded-lg border @error('title') border-red-400 @else border-gray-300 @enderror px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                    :class="_titleLoading ? 'pr-16 ai-shimmer' : ''">
+                                <div x-show="_titleLoading" x-transition class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                                    <svg class="w-4 h-4 animate-spin text-primary" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                    </svg>
+                                    <span class="text-xs text-primary font-medium">IA</span>
+                                </div>
                             </div>
                             @error('title') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
                         </div>
 
                         <div class="space-y-1.5">
-                            <label for="description" class="block text-sm font-medium text-gray-700">Descrição <span class="text-xs text-gray-400 font-normal">(opcional)</span></label>
+                            <div class="flex items-center justify-between">
+                                <label for="description" class="block text-sm font-medium text-gray-700">Descrição <span class="text-xs text-gray-400 font-normal">(opcional)</span></label>
+                                <span x-show="_descLoading" x-cloak class="inline-flex items-center gap-1.5 text-xs font-medium text-purple-600">
+                                    <svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                    </svg>
+                                    Gerando...
+                                </span>
+                            </div>
                             <textarea id="description" name="description" rows="3"
                                 x-model="description"
                                 placeholder="Descreva o objetivo desta trilha e para quem ela é voltada..."
-                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                :class="_descLoading ? 'ai-shimmer' : ''"></textarea>
                             <p class="text-xs text-gray-400">A descrição ajuda os colaboradores a entenderem o objetivo da trilha.</p>
                         </div>
 

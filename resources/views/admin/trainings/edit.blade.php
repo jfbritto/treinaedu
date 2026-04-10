@@ -27,6 +27,16 @@
             100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
         }
         .flash-move { animation: flash-move 0.6s ease-out; }
+        @keyframes ai-shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .ai-shimmer {
+            border-color: rgba(139, 92, 246, 0.5) !important;
+            background: linear-gradient(90deg, #f5f3ff 25%, #ede9fe 50%, #f5f3ff 75%) !important;
+            background-size: 200% 100%;
+            animation: ai-shimmer 1.5s ease-in-out infinite;
+        }
     </style>
 
     <script>
@@ -470,7 +480,7 @@
                         <div class="relative">
                             <input type="text" name="title" value="{{ old('title', $training->title) }}" required
                                    class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                                   :class="_titleLoading ? 'pr-10' : ''"
+                                   :class="_titleLoading ? 'pr-10 ai-shimmer' : ''"
                                    placeholder="Ex: Onboarding de novos colaboradores">
                             <div x-show="_titleLoading" x-transition class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
                                 <svg class="w-4 h-4 animate-spin text-primary" fill="none" viewBox="0 0 24 24">
@@ -500,6 +510,7 @@
                         </div>
                         <textarea name="description" id="description-field" rows="3"
                             class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                            :class="_descLoading ? 'ai-shimmer' : ''"
                             placeholder="Descreva o objetivo deste treinamento...">{{ old('description', $training->description) }}</textarea>
                     </div>
 
@@ -570,7 +581,7 @@
                                            placeholder="Título do módulo"
                                            required
                                            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary"
-                                           :class="module._aiLoading ? 'pr-10' : ''">
+                                           :class="module._aiLoading ? 'pr-10 ai-shimmer' : ''">
                                     <div x-show="module._aiLoading" x-transition class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
                                         <svg class="w-4 h-4 animate-spin text-primary" fill="none" viewBox="0 0 24 24">
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
