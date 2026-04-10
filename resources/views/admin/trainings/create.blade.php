@@ -210,32 +210,54 @@
         get totalDuration() {
             return this.modules.reduce((sum, m) => sum + m.lessons.reduce((s, l) => s + (parseInt(l.duration_minutes) || 0), 0), 0);
         },
-        fetchVideoDuration(lesson) {
+        fetchVideoDuration(lesson, mi) {
             const url = lesson.video_url;
             if (!url) return;
             const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
             if (ytMatch) {
                 this.fetchYouTubeDuration(ytMatch[1], lesson);
-                this.fetchVideoTitle(url, lesson);
+                this.fetchVideoTitle(url, lesson, mi);
                 return;
             }
             const vmMatch = url.match(/vimeo\.com\/(\d+)/);
             if (vmMatch) {
                 this.fetchVimeoDuration(url, lesson);
-                this.fetchVideoTitle(url, lesson);
+                this.fetchVideoTitle(url, lesson, mi);
                 return;
             }
         },
-        fetchVideoTitle(url, lesson) {
+        fetchVideoTitle(url, lesson, mi) {
             if (lesson.title && lesson.title.trim() !== '') return;
+            const self = this;
             fetch('https://noembed.com/embed?url=' + encodeURIComponent(url))
                 .then(r => r.json())
                 .then(data => {
                     if (data.title && (!lesson.title || lesson.title.trim() === '')) {
                         lesson.title = data.title;
+                        // Suggest module title if empty, based on lesson titles
+                        if (mi !== undefined) self.suggestModuleTitle(mi);
                     }
                 })
                 .catch(() => {});
+        },
+        suggestModuleTitle(mi) {
+            const mod = this.modules[mi];
+            if (mod.title && mod.title.trim() !== '') return;
+            const titles = mod.lessons.map(l => l.title).filter(t => t && t.trim() !== '');
+            if (titles.length === 0) return;
+            // Use AI to suggest module title from lesson titles
+            fetch('/api/ai/generate-description', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                body: JSON.stringify({ title: titles.join(', '), context: 'Sugira um título curto (máximo 5 palavras) para um módulo de treinamento que contém estas aulas: ' + titles.join(', '), type: 'training' }),
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.description && (!mod.title || mod.title.trim() === '')) {
+                    mod.title = data.description.replace(/["'.]/g, '').substring(0, 60);
+                }
+            })
+            .catch(() => {});
         },
         fetchVimeoDuration(url, lesson) {
             fetch('https://vimeo.com/api/oembed.json?url=' + encodeURIComponent(url))
@@ -478,8 +500,8 @@
                                             <input type="url"
                                                    :name="'modules['+mi+'][lessons]['+li+'][video_url]'"
                                                    x-model="lesson.video_url"
-                                                   @change="fetchVideoDuration(lesson)"
-                                                   @paste.debounce.500ms="$nextTick(() => fetchVideoDuration(lesson))"
+                                                   @change="fetchVideoDuration(lesson, mi)"
+                                                   @paste.debounce.500ms="$nextTick(() => fetchVideoDuration(lesson, mi))"
                                                    placeholder="https://www.youtube.com/watch?v=..."
                                                    class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white">
                                         </div>
