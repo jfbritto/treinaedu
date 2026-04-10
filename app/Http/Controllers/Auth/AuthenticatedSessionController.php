@@ -26,6 +26,17 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        // Block inactive users
+        if (!Auth::user()->active) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return back()->withErrors([
+                'email' => 'Sua conta está inativa. Entre em contato com o administrador da empresa.',
+            ])->onlyInput('email');
+        }
+
         $request->session()->regenerate();
 
         // Registra último login do usuário
