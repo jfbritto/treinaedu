@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\VerifyEmailCodeController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -17,6 +18,15 @@ Route::middleware('guest')->group(function () {
         ->name('register');
 
     Route::post('register', [RegisteredUserController::class, 'store']);
+
+    // Email verification with 6-digit code
+    Route::get('verify-code', [VerifyEmailCodeController::class, 'show'])
+        ->name('verification.code.show');
+    Route::post('verify-code', [VerifyEmailCodeController::class, 'verify'])
+        ->name('verification.code.verify');
+    Route::post('verify-code/resend', [VerifyEmailCodeController::class, 'resend'])
+        ->name('verification.code.resend')
+        ->middleware('throttle:3,1');
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');

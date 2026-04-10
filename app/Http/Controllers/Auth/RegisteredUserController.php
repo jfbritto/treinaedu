@@ -71,11 +71,13 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        $user->notify(new \App\Notifications\WelcomeNotification());
+        // Send 6-digit verification code instead of auto-login
+        \App\Http\Controllers\Auth\VerifyEmailCodeController::sendCode($user);
 
-        Auth::login($user);
+        // Store email in session for the verification page
+        $request->session()->put('verification_email', $user->email);
 
-        return redirect(route('dashboard'));
+        return redirect()->route('verification.code.show');
     }
 
     private function generateUniqueSlug(string $name): string

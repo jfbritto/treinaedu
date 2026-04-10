@@ -35,7 +35,11 @@ class RegistrationTest extends TestCase
             'password_confirmation' => 'password',
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        // User is NOT authenticated yet — needs to verify email code first
+        $this->assertGuest();
+        $response->assertRedirect(route('verification.code.show'));
+
+        // Verify that verification code was created
+        $this->assertDatabaseHas('email_verification_codes', ['email' => 'test@example.com']);
     }
 }

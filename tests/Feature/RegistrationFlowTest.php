@@ -29,10 +29,11 @@ class RegistrationFlowTest extends TestCase
             'password_confirmation' => 'password123',
         ]);
 
-        $response->assertRedirect('/dashboard');
+        $response->assertRedirect(route('verification.code.show'));
 
         $this->assertDatabaseHas('companies', ['name' => 'Minha Empresa', 'slug' => 'minha-empresa']);
         $this->assertDatabaseHas('users', ['email' => 'joao@empresa.com', 'role' => 'admin']);
         $this->assertDatabaseHas('subscriptions', ['status' => 'trial']);
+        $this->assertDatabaseHas('email_verification_codes', ['email' => 'joao@empresa.com']);
     }
 }
