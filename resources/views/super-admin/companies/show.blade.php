@@ -287,7 +287,7 @@
                 </div>
                 <div class="flex-1">
                     <h3 class="text-sm font-semibold text-gray-800">Usuários</h3>
-                    <p class="text-xs text-gray-400">{{ $company->users->count() }} {{ $company->users->count() === 1 ? 'usuário' : 'usuários' }} na empresa</p>
+                    <p class="text-xs text-gray-400">{{ $companyStats['users'] }} {{ $companyStats['users'] === 1 ? 'usuário' : 'usuários' }} na empresa</p>
                 </div>
             </div>
         </div>
@@ -302,7 +302,7 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50">
-                    @forelse($company->users as $user)
+                    @forelse($users as $user)
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-6 py-4 font-semibold text-gray-800">{{ $user->name }}</td>
                             <td class="px-6 py-4 text-gray-500">{{ $user->email }}</td>
@@ -327,6 +327,12 @@
                 </tbody>
             </table>
         </div>
+
+        @if($users->hasPages())
+            <div class="px-6 py-4 border-t border-gray-100">
+                {{ $users->links() }}
+            </div>
+        @endif
     </div>
 
 </x-layout.app>

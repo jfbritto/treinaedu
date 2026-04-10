@@ -26,15 +26,20 @@ class CompanyController extends Controller
 
     public function show(Company $company)
     {
-        $company->load(['subscription.plan', 'users']);
+        $company->load(['subscription.plan']);
+
+        $users = \App\Models\User::withoutGlobalScopes()
+            ->where('company_id', $company->id)
+            ->orderByRaw("FIELD(role, 'admin', 'instructor', 'employee')")
+            ->paginate(15);
 
         $companyStats = [
-            'users' => $company->users->count(),
+            'users' => \App\Models\User::withoutGlobalScopes()->where('company_id', $company->id)->count(),
             'trainings' => \App\Models\Training::withoutGlobalScopes()->where('company_id', $company->id)->count(),
             'certificates' => \App\Models\Certificate::withoutGlobalScopes()->where('company_id', $company->id)->count(),
         ];
 
-        return view('super-admin.companies.show', compact('company', 'companyStats'));
+        return view('super-admin.companies.show', compact('company', 'users', 'companyStats'));
     }
 
     public function toggleSubscription(Company $company)
