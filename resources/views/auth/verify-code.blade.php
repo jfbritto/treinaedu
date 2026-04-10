@@ -49,8 +49,8 @@
                 Cole ou digite o código do e-mail
             </div>
 
-            <button type="submit" id="submit-btn" style="display: none"
-                class="w-full py-3 px-4 rounded-lg text-sm font-semibold text-white transition-all shadow-sm hover:shadow-md mb-4"
+            <button type="submit" id="submit-btn"
+                class="w-full py-3 px-4 rounded-lg text-sm font-semibold text-white transition-all shadow-sm hover:shadow-md mb-4 hidden"
                 style="background: linear-gradient(135deg, #4f46e5, #3730a3)">
                 Verificar e-mail
             </button>
@@ -69,52 +69,60 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        (function() {
             var input = document.getElementById('code-input');
             var form = document.getElementById('verify-form');
-            var status = document.getElementById('status-text');
+            var statusEl = document.getElementById('status-text');
             var btn = document.getElementById('submit-btn');
             var submitted = false;
 
-            function autoSubmit() {
-                if (submitted) return;
+            // Prevent form from submitting if code is empty
+            form.addEventListener('submit', function(e) {
+                if (!input.value || input.value.length < 6) {
+                    e.preventDefault();
+                    return false;
+                }
+                if (submitted) {
+                    e.preventDefault();
+                    return false;
+                }
                 submitted = true;
-                input.disabled = true;
-                status.innerHTML = '<span class="flex items-center justify-center gap-2 text-indigo-600 font-semibold"><svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Verificando seu código...</span>';
-                btn.style.display = 'none';
-                form.submit();
+                input.readOnly = true;
+                btn.classList.add('hidden');
+                statusEl.innerHTML = '<span class="flex items-center justify-center gap-2 text-indigo-600 font-semibold"><svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Verificando seu código...</span>';
+            });
+
+            function updateStatus(val) {
+                if (val.length === 0) {
+                    statusEl.innerHTML = '<span class="text-gray-400">Cole ou digite o código do e-mail</span>';
+                    btn.classList.add('hidden');
+                } else if (val.length < 6) {
+                    var left = 6 - val.length;
+                    statusEl.innerHTML = '<span class="text-gray-500">Faltam <strong>' + left + '</strong> dígito' + (left > 1 ? 's' : '') + '</span>';
+                    btn.classList.add('hidden');
+                } else {
+                    statusEl.innerHTML = '';
+                    btn.classList.remove('hidden');
+                    // Auto-submit after short delay to show the value
+                    setTimeout(function() {
+                        if (!submitted) form.submit();
+                    }, 300);
+                }
             }
 
             input.addEventListener('input', function() {
                 var val = this.value.replace(/\D/g, '').substring(0, 6);
                 this.value = val;
-
-                if (val.length === 0) {
-                    status.innerHTML = '<span class="text-gray-400">Cole ou digite o código do e-mail</span>';
-                    btn.style.display = 'none';
-                } else if (val.length < 6) {
-                    var left = 6 - val.length;
-                    status.innerHTML = '<span class="text-gray-500">Faltam <strong>' + left + '</strong> dígito' + (left > 1 ? 's' : '') + '</span>';
-                    btn.style.display = 'none';
-                } else {
-                    autoSubmit();
-                }
+                updateStatus(val);
             });
 
             input.addEventListener('paste', function(e) {
                 e.preventDefault();
                 var text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').substring(0, 6);
                 this.value = text;
-                if (text.length === 6) {
-                    autoSubmit();
-                }
+                updateStatus(text);
             });
-
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                autoSubmit();
-            });
-        });
+        })();
     </script>
 
 </x-layout.guest>
