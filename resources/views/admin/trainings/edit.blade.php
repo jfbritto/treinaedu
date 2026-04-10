@@ -94,6 +94,37 @@
             }
         };
 
+        window.__fetchVideoTitle = function(ctx, url, lesson, mi) {
+            if (lesson.title && lesson.title.trim() !== '') return;
+            fetch('https://noembed.com/embed?url=' + encodeURIComponent(url))
+                .then(r => r.json())
+                .then(data => {
+                    if (data.title && (!lesson.title || lesson.title.trim() === '')) {
+                        lesson.title = data.title;
+                        if (mi !== undefined) window.__suggestModuleTitle(ctx, mi);
+                    }
+                })
+                .catch(() => {});
+        };
+        window.__suggestModuleTitle = function(ctx, mi) {
+            const mod = ctx.modules[mi];
+            if (mod.title && mod.title.trim() !== '') return;
+            const titles = mod.lessons.map(l => l.title).filter(t => t && t.trim() !== '');
+            if (titles.length === 0) return;
+            fetch('/api/ai/generate-description', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                body: JSON.stringify({ title: titles.join(', '), context: 'Sugira um título curto (máximo 5 palavras) para um módulo de treinamento que contém estas aulas: ' + titles.join(', '), type: 'training' }),
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.description && (!mod.title || mod.title.trim() === '')) {
+                    mod.title = data.description.replace(/["'.]/g, '').substring(0, 60);
+                }
+            })
+            .catch(() => {});
+        };
+
         window.generateDescription = async function() {
             var title = document.querySelector('input[name="title"]')?.value;
             if (!title) {
@@ -240,37 +271,8 @@
                 return;
             }
         },
-        fetchVideoTitle(url, lesson, mi) {
-            if (lesson.title && lesson.title.trim() !== '') return;
-            const self = this;
-            fetch('https://noembed.com/embed?url=' + encodeURIComponent(url))
-                .then(r => r.json())
-                .then(data => {
-                    if (data.title && (!lesson.title || lesson.title.trim() === '')) {
-                        lesson.title = data.title;
-                        if (mi !== undefined) self.suggestModuleTitle(mi);
-                    }
-                })
-                .catch(() => {});
-        },
-        suggestModuleTitle(mi) {
-            const mod = this.modules[mi];
-            if (mod.title && mod.title.trim() !== '') return;
-            const titles = mod.lessons.map(l => l.title).filter(t => t && t.trim() !== '');
-            if (titles.length === 0) return;
-            fetch('/api/ai/generate-description', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
-                body: JSON.stringify({ title: titles.join(', '), context: 'Sugira um título curto (máximo 5 palavras) para um módulo de treinamento que contém estas aulas: ' + titles.join(', '), type: 'training' }),
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.description && (!mod.title || mod.title.trim() === '')) {
-                    mod.title = data.description.replace(/["'.]/g, '').substring(0, 60);
-                }
-            })
-            .catch(() => {});
-        },
+        fetchVideoTitle(url, lesson, mi) { window.__fetchVideoTitle(this, url, lesson, mi); },
+        suggestModuleTitle(mi) { window.__suggestModuleTitle(this, mi); },
         fetchVimeoDuration(url, lesson) {
             fetch('https://vimeo.com/api/oembed.json?url=' + encodeURIComponent(url))
                 .then(r => r.json())
