@@ -9,6 +9,68 @@
         </a>
     </div>
 
+    <style>
+        @keyframes ai-shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .ai-loading-field {
+            border-color: rgba(139, 92, 246, 0.6) !important;
+            background: linear-gradient(90deg, #f5f3ff 25%, #ede9fe 50%, #f5f3ff 75%) !important;
+            background-size: 200% 100%;
+            animation: ai-shimmer 1.5s ease-in-out infinite;
+            color: transparent !important;
+        }
+        .ai-loading-field::placeholder { color: transparent !important; }
+    </style>
+
+    <script>
+        window.__pathSuggestInfo = function(ctx) {
+            if (ctx.selected.length === 0) return;
+            const names = ctx.selected.map(id => ctx.trainingNames[id]).filter(Boolean);
+            if (names.length === 0) return;
+
+            const titleInput = document.getElementById('title');
+            const descInput = document.getElementById('description');
+            const headers = { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content };
+
+            if (!ctx.title.trim()) {
+                titleInput.classList.add('ai-loading-field');
+                fetch('/api/ai/suggest-title', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({ level: 'training', input: names.join(', '), context: 'Esta é uma TRILHA DE APRENDIZAGEM que agrupa treinamentos. O título deve representar a jornada completa.' }),
+                })
+                .then(r => r.json())
+                .then(data => { if (data.title && !ctx.title.trim()) ctx.title = data.title; })
+                .catch(() => {})
+                .finally(() => {
+                    titleInput.classList.remove('ai-loading-field');
+                    if (ctx.title.trim() && !ctx.description.trim()) window.__pathSuggestDescription(ctx);
+                });
+            } else if (!ctx.description.trim()) {
+                window.__pathSuggestDescription(ctx);
+            }
+        };
+
+        window.__pathSuggestDescription = function(ctx) {
+            if (ctx.description.trim()) return;
+            const names = ctx.selected.map(id => ctx.trainingNames[id]).filter(Boolean);
+            const descInput = document.getElementById('description');
+            descInput.classList.add('ai-loading-field');
+            const headers = { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content };
+            fetch('/api/ai/generate-description', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({ title: ctx.title || names.join(', '), context: 'Treinamentos incluídos: ' + names.join(', '), type: 'path' }),
+            })
+            .then(r => r.json())
+            .then(data => { if (data.description && !ctx.description.trim()) ctx.description = data.description; })
+            .catch(() => {})
+            .finally(() => { descInput.classList.remove('ai-loading-field'); });
+        };
+    </script>
+
     <form method="POST" action="{{ route('paths.store') }}"
           x-data="{
               title: '{{ old('title', '') }}',
@@ -16,6 +78,8 @@
               active: {{ old('active', true) ? 'true' : 'false' }},
               search: '',
               selected: @js(old('trainings', [])),
+              trainingNames: @js($trainings->pluck('title', 'id')),
+              _suggestTimer: null,
               get selectedCount() { return this.selected.length; },
               isSelected(id) { return this.selected.includes(id); },
               toggle(id) {
@@ -24,6 +88,13 @@
                   } else {
                       this.selected.push(id);
                   }
+                  clearTimeout(this._suggestTimer);
+                  const self = this;
+                  this._suggestTimer = setTimeout(() => {
+                      if (!self.title.trim() || !self.description.trim()) {
+                          window.__pathSuggestInfo(self);
+                      }
+                  }, 500);
               }
           }">
         @csrf
