@@ -150,7 +150,7 @@ class AsaasService
 
         Log::error('Asaas createSubscription failed', [
             'status' => $response->status(),
-            'response' => $response->json(),
+            'errors' => $response->json('errors'),
         ]);
         return null;
     }
@@ -233,7 +233,7 @@ class AsaasService
 
         Log::error('Asaas updateCreditCard failed', [
             'status' => $response->status(),
-            'response' => $response->json(),
+            'errors' => $response->json('errors'),
         ]);
         return false;
     }

@@ -21,11 +21,11 @@ class SubscriptionController extends Controller
     {
         $request->validate([
             'plan_id' => 'required|exists:plans,id',
-            'holder_name' => 'required|string|max:255',
-            'card_number' => 'required|string|min:13|max:19',
-            'expiry_month' => 'required|string|size:2',
-            'expiry_year' => 'required|string|size:4',
-            'ccv' => 'required|string|min:3|max:4',
+            'holder_name' => 'required|string|max:255|regex:/^[\pL\s\.\-]+$/u',
+            'card_number' => 'required|string|min:13|max:19|regex:/^[\d\s]+$/',
+            'expiry_month' => 'required|string|size:2|regex:/^(0[1-9]|1[0-2])$/',
+            'expiry_year' => ['required', 'string', 'size:4', 'regex:/^\d{4}$/', 'gte:' . date('Y')],
+            'ccv' => 'required|string|regex:/^\d{3,4}$/',
             'cpf_cnpj' => 'required|string|min:11|max:18',
             'phone' => 'required|string|min:10|max:15',
             'postal_code' => 'required|string|min:8|max:9',
@@ -71,11 +71,11 @@ class SubscriptionController extends Controller
     public function updateCard(Request $request, AsaasService $asaas)
     {
         $request->validate([
-            'holder_name' => 'required|string|max:255',
-            'card_number' => 'required|string|min:13|max:19',
-            'expiry_month' => 'required|string|size:2',
-            'expiry_year' => 'required|string|size:4',
-            'ccv' => 'required|string|min:3|max:4',
+            'holder_name' => 'required|string|max:255|regex:/^[\pL\s\.\-]+$/u',
+            'card_number' => 'required|string|min:13|max:19|regex:/^[\d\s]+$/',
+            'expiry_month' => 'required|string|size:2|regex:/^(0[1-9]|1[0-2])$/',
+            'expiry_year' => ['required', 'string', 'size:4', 'regex:/^\d{4}$/', 'gte:' . date('Y')],
+            'ccv' => 'required|string|regex:/^\d{3,4}$/',
             'cpf_cnpj' => 'required|string|min:11|max:18',
             'phone' => 'required|string|min:10|max:15',
             'postal_code' => 'required|string|min:8|max:9',

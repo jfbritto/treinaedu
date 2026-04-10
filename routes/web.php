@@ -60,7 +60,8 @@ Route::middleware(['auth', 'theme'])->group(function () {
     Route::get('/subscription/plans', [SubscriptionController::class, 'plans'])
         ->name('subscription.plans');
     Route::post('/subscription/subscribe', [SubscriptionController::class, 'subscribe'])
-        ->name('subscription.subscribe');
+        ->name('subscription.subscribe')
+        ->middleware('throttle:5,1');
 
     // Routes that require active subscription
     Route::middleware('subscription')->group(function () {
@@ -98,7 +99,8 @@ Route::middleware(['auth', 'theme'])->group(function () {
             Route::get('subscription', [SubscriptionController::class, 'show'])
                 ->name('subscription.show');
             Route::put('subscription/card', [SubscriptionController::class, 'updateCard'])
-                ->name('subscription.update-card');
+                ->name('subscription.update-card')
+                ->middleware('throttle:5,1');
             Route::delete('subscription/cancel', [SubscriptionController::class, 'cancel'])
                 ->name('subscription.cancel');
             Route::get('company/settings', [CompanySettingsController::class, 'edit'])
