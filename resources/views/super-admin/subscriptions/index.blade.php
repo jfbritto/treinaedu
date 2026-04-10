@@ -84,7 +84,11 @@
                                 <p class="font-semibold text-gray-800">{{ $subscription->company?->name ?? '—' }}</p>
                             </td>
                             <td class="px-6 py-4 text-gray-600">
-                                {{ $subscription->plan?->name ?? '—' }}
+                                @if($subscription->status === 'trial')
+                                    <span class="text-gray-400 text-xs">Em avaliação</span>
+                                @else
+                                    {{ $subscription->plan?->name ?? '—' }}
+                                @endif
                             </td>
                             <td class="px-6 py-4">
                                 @php $status = $subscription->status; @endphp
@@ -123,7 +127,7 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-gray-600 text-xs font-medium">
-                                @if($subscription->plan?->price)
+                                @if($subscription->status !== 'trial' && $subscription->plan?->price)
                                     R$ {{ number_format($subscription->plan->price, 2, ',', '.') }}/mês
                                 @else
                                     —
