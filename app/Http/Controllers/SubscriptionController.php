@@ -114,12 +114,22 @@ class SubscriptionController extends Controller
             return back()->with('error', 'Nenhuma assinatura encontrada.');
         }
 
-        if ($asaas->cancelSubscription($subscription)) {
-            return redirect()->route('subscription.plans')
-                ->with('success', 'Assinatura cancelada. Você ainda tem acesso até o fim do período atual.');
+        // Try Asaas cancellation first
+        if ($subscription->asaas_subscription_id) {
+            $asaas->cancelSubscription($subscription);
+        } else {
+            // Local-only subscription (no Asaas integration)
+            $subscription->update(['status' => 'cancelled']);
+            $accessUntil = $subscription->current_period_end?->format('d/m/Y');
+            auth()->user()->notify(new \App\Notifications\SubscriptionCancelledNotification($accessUntil));
         }
 
-        return back()->with('error', 'Erro ao cancelar. Entre em contato com o suporte.');
+        $dateMsg = $subscription->current_period_end
+            ? ' Você ainda tem acesso até ' . $subscription->current_period_end->format('d/m/Y') . '.'
+            : '';
+
+        return redirect()->route('subscription.show')
+            ->with('success', 'Assinatura cancelada.' . $dateMsg);
     }
 
     public function show()

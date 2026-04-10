@@ -225,7 +225,8 @@ class AsaasService
                 ->where('company_id', $subscription->company_id)
                 ->where('role', 'admin')
                 ->first();
-            $admin?->notify(new \App\Notifications\SubscriptionCancelledNotification());
+            $accessUntil = $subscription->current_period_end?->format('d/m/Y');
+            $admin?->notify(new \App\Notifications\SubscriptionCancelledNotification($accessUntil));
 
             return true;
         }
