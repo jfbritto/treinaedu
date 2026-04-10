@@ -567,7 +567,9 @@
                         Verificado por <strong style="color:${p}">TreinaEdu</strong>
                     </div>
                 </body></html>`;
+                const scrollY = window.scrollY;
                 iframe.srcdoc = html;
+                requestAnimationFrame(() => window.scrollTo(0, scrollY));
             }
         };
     }
