@@ -568,8 +568,10 @@
                     </div>
                 </body></html>`;
                 const scrollY = window.scrollY;
+                const lock = () => window.scrollTo(0, scrollY);
+                window.addEventListener('scroll', lock);
                 iframe.srcdoc = html;
-                requestAnimationFrame(() => window.scrollTo(0, scrollY));
+                setTimeout(() => window.removeEventListener('scroll', lock), 300);
             }
         };
     }
