@@ -90,28 +90,22 @@
             bottom: 0;
         }
 
-        .content-inner {
-            width: 100%;
-            height: 210mm;
-            border-collapse: collapse;
-        }
-        .content-inner td {
-            vertical-align: middle;
-            padding: 14mm 20mm 38mm 16mm;
+        .content-body {
+            padding: 18mm 20mm 0 16mm;
         }
 
         .logo {
-            max-height: 40px;
-            max-width: 140px;
-            margin-bottom: 16px;
+            max-height: 44px;
+            max-width: 150px;
+            margin-bottom: 20px;
         }
 
         .company-name {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: bold;
             color: {{ $primaryColor }};
             letter-spacing: 1px;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
 
         .title {
@@ -120,48 +114,48 @@
             color: {{ $primaryColor }};
             letter-spacing: 4px;
             line-height: 1;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
             opacity: 0.85;
         }
 
         .subtitle {
-            font-size: {{ max(12, ($sizeTitle ?? 54) * 0.35) }}px;
+            font-size: {{ max(14, ($sizeTitle ?? 54) * 0.38) }}px;
             font-weight: 300;
             color: {{ $secondaryColor }};
             letter-spacing: 1.5px;
-            margin-bottom: 28px;
+            margin-bottom: 32px;
         }
 
         .divider {
             width: 50px;
             height: 3px;
             background: {{ $primaryColor }};
-            margin-bottom: 10px;
+            margin-bottom: 14px;
         }
 
         .certifies {
-            font-size: 10px;
+            font-size: 11px;
             color: #9ca3af;
             letter-spacing: 3px;
             text-transform: uppercase;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .recipient {
             font-size: {{ $sizeName ?? 34 }}px;
             font-weight: bold;
             color: #1f2937;
-            margin-bottom: 24px;
+            margin-bottom: 6px;
         }
         .recipient-line {
-            width: 200px;
+            width: 220px;
             height: 2px;
             background: {{ $primaryColor }};
-            margin-bottom: 24px;
+            margin-bottom: 30px;
         }
 
         .training-box {
-            padding: 16px 24px;
+            padding: 18px 26px;
             border-left: 4px solid {{ $primaryColor }};
             background-color: #f8fafc;
             text-align: left;
@@ -169,11 +163,11 @@
         }
 
         .completed-label {
-            font-size: 9px;
+            font-size: 10px;
             color: #9ca3af;
             letter-spacing: 2px;
             text-transform: uppercase;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .training-title {
@@ -185,8 +179,9 @@
         }
 
         .meta {
-            font-size: 11px;
+            font-size: 12px;
             color: #6b7280;
+            margin-top: 4px;
         }
         .meta strong {
             color: #374151;
@@ -197,7 +192,7 @@
             position: fixed;
             left: 30mm;
             right: 14mm;
-            bottom: 16mm;
+            bottom: 18mm;
         }
         .footer-table {
             width: 100%;
@@ -287,54 +282,49 @@
 
         {{-- Main content --}}
         <div class="content">
-            <table class="content-inner">
-                <tr>
-                    <td>
-                        {{-- Company identity --}}
-                        @if(!empty($companyLogo))
-                            <img src="{{ storage_path('app/public/' . $companyLogo) }}" alt="{{ $companyName }}" class="logo">
-                        @else
-                            <div class="company-name">{{ $companyName }}</div>
-                        @endif
+            <div class="content-body">
+                {{-- Company identity --}}
+                @if(!empty($companyLogo))
+                    <img src="{{ storage_path('app/public/' . $companyLogo) }}" alt="{{ $companyName }}" class="logo">
+                @else
+                    <div class="company-name">{{ $companyName }}</div>
+                @endif
 
-                        {{-- Title --}}
-                        <div class="title">{{ $titleText ?? 'CERTIFICADO' }}</div>
-                        <div class="subtitle">{{ $subtitleText ?? 'de Conclusão' }}</div>
+                {{-- Title --}}
+                <div class="title">{{ $titleText ?? 'CERTIFICADO' }}</div>
+                <div class="subtitle">{{ $subtitleText ?? 'de Conclusão' }}</div>
 
-                        <div class="divider"></div>
+                <div class="divider"></div>
 
-                        {{-- Body --}}
-                        <div class="certifies">Certificamos que</div>
-                        <div class="recipient">{{ $userName }}</div>
-                        <div class="recipient-line"></div>
+                {{-- Body --}}
+                <div class="certifies">Certificamos que</div>
+                <div class="recipient">{{ $userName }}</div>
+                <div class="recipient-line"></div>
 
-                        <div class="training-box">
-                            <div class="completed-label">concluiu com sucesso o treinamento</div>
-                            <div class="training-title">{{ $trainingTitle }}</div>
+                <div class="training-box">
+                    <div class="completed-label">concluiu com sucesso o treinamento</div>
+                    <div class="training-title">{{ $trainingTitle }}</div>
 
-                            @php
-                                $mins = (int) $durationMinutes;
-                                $durLabel = $mins >= 60
-                                    ? floor($mins/60).'h'.($mins%60 > 0 ? ' '.($mins%60).'min' : '')
-                                    : ($mins > 0 ? $mins.' min' : null);
-                            @endphp
+                    @php
+                        $mins = (int) $durationMinutes;
+                        $durLabel = $mins >= 60
+                            ? floor($mins/60).'h'.($mins%60 > 0 ? ' '.($mins%60).'min' : '')
+                            : ($mins > 0 ? $mins.' min' : null);
+                    @endphp
 
-                            @if($durLabel || $companyName)
-                                <div class="meta">
-                                    @if($durLabel)
-                                        Carga horária: <strong>{{ $durLabel }}</strong>
-                                    @endif
-                                    @if($durLabel && $companyName) · @endif
-                                    @if($companyName)
-                                        Emitido por <strong>{{ $companyName }}</strong>
-                                    @endif
-                                </div>
+                    @if($durLabel || $companyName)
+                        <div class="meta">
+                            @if($durLabel)
+                                Carga horária: <strong>{{ $durLabel }}</strong>
+                            @endif
+                            @if($durLabel && $companyName) · @endif
+                            @if($companyName)
+                                Emitido por <strong>{{ $companyName }}</strong>
                             @endif
                         </div>
-
-                    </td>
-                </tr>
-            </table>
+                    @endif
+                </div>
+            </div>
         </div>
 
         {{-- Footer --}}
