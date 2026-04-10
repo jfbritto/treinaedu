@@ -70,6 +70,7 @@ class CertificateService
             'qrCodeDataUri' => $qrCodeDataUri,
             'verifyUrl' => $verifyUrl,
             ...$this->signerData($company),
+            ...$this->certCustomization($company),
         ])->setPaper('a4', 'landscape');
 
         $directory = "certificates/{$company->id}";
@@ -127,6 +128,7 @@ class CertificateService
             'qrCodeDataUri' => $qrCodeDataUri,
             'verifyUrl' => $verifyUrl,
             ...$this->signerData($company),
+            ...$this->certCustomization($company),
         ])->setPaper('a4', 'landscape');
 
         Storage::disk('app')->put($certificate->pdf_path, $pdf->output());
@@ -139,6 +141,15 @@ class CertificateService
         } while (Certificate::withoutGlobalScopes()->where('certificate_code', $code)->exists());
 
         return $code;
+    }
+
+    private function certCustomization($company): array
+    {
+        return [
+            'borderStyle' => $company->cert_border_style ?? 'classic',
+            'titleText' => $company->cert_title_text ?? 'CERTIFICADO',
+            'subtitleText' => $company->cert_subtitle_text ?? 'de Conclusão',
+        ];
     }
 
     private function signerData($company): array

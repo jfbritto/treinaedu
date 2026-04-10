@@ -14,6 +14,7 @@ class Company extends Model
         'name', 'slug', 'asaas_customer_id',
         'logo_path', 'primary_color', 'secondary_color',
         'cert_signer_name', 'cert_signer_role', 'cert_signer_registry', 'cert_signer_signature_path',
+        'cert_border_style', 'cert_title_text', 'cert_subtitle_text',
     ];
 
     public function users()

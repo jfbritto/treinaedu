@@ -27,6 +27,9 @@ class CompanySettingsController extends Controller
             'cert_signer_registry' => 'nullable|string|max:255',
             'signature'            => 'nullable|image|mimes:jpg,jpeg,png|max:1024',
             'signature_drawn'      => 'nullable|string',
+            'cert_border_style'    => 'nullable|string|in:classic,simple,none',
+            'cert_title_text'      => 'nullable|string|max:100',
+            'cert_subtitle_text'   => 'nullable|string|max:100',
         ]);
 
         $company = auth()->user()->company;
@@ -47,6 +50,11 @@ class CompanySettingsController extends Controller
 
         $company->primary_color   = $request->primary_color;
         $company->secondary_color = $request->secondary_color;
+
+        // Certificate customization
+        $company->cert_border_style  = $request->cert_border_style ?? 'classic';
+        $company->cert_title_text    = $request->cert_title_text ?: 'CERTIFICADO';
+        $company->cert_subtitle_text = $request->cert_subtitle_text ?: 'de Conclusão';
 
         // Certificate signer
         $company->cert_signer_name     = $request->cert_signer_name;

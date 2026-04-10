@@ -324,6 +324,159 @@
                     </div>
                 </div>
 
+                {{-- Personalizar Certificado --}}
+                <div class="bg-white rounded-xl shadow-sm p-6" x-data="{
+                    borderStyle: '{{ $company->cert_border_style ?? 'classic' }}',
+                    titleText: '{{ addslashes($company->cert_title_text ?? 'CERTIFICADO') }}',
+                    subtitleText: '{{ addslashes($company->cert_subtitle_text ?? 'de Conclusão') }}'
+                }">
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-800">Personalizar Certificado</h3>
+                            <p class="text-xs text-gray-400">Aparência e textos do certificado PDF</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="space-y-1">
+                            <label class="block text-xs font-medium text-gray-600">Estilo da Moldura</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="cert_border_style" value="classic" x-model="borderStyle" @change="$dispatch('preview-cert')" class="sr-only peer">
+                                    <div class="border-2 rounded-lg p-3 text-center transition peer-checked:border-primary peer-checked:bg-primary/5 border-gray-200 hover:border-gray-300">
+                                        <div class="w-full h-10 border-2 border-gray-400 rounded relative mb-1.5">
+                                            <div class="absolute inset-1 border border-gray-300 rounded"></div>
+                                        </div>
+                                        <span class="text-xs font-medium text-gray-700">Clássico</span>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="cert_border_style" value="simple" x-model="borderStyle" @change="$dispatch('preview-cert')" class="sr-only peer">
+                                    <div class="border-2 rounded-lg p-3 text-center transition peer-checked:border-primary peer-checked:bg-primary/5 border-gray-200 hover:border-gray-300">
+                                        <div class="w-full h-10 border-2 border-gray-400 rounded mb-1.5"></div>
+                                        <span class="text-xs font-medium text-gray-700">Simples</span>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="cert_border_style" value="none" x-model="borderStyle" @change="$dispatch('preview-cert')" class="sr-only peer">
+                                    <div class="border-2 rounded-lg p-3 text-center transition peer-checked:border-primary peer-checked:bg-primary/5 border-gray-200 hover:border-gray-300">
+                                        <div class="w-full h-10 border-2 border-dashed border-gray-200 rounded mb-1.5 flex items-center justify-center">
+                                            <span class="text-gray-300 text-xs">—</span>
+                                        </div>
+                                        <span class="text-xs font-medium text-gray-700">Sem moldura</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-1">
+                                <label class="block text-xs font-medium text-gray-600">Título principal</label>
+                                <input type="text" name="cert_title_text" x-model="titleText" @input="$dispatch('preview-cert')"
+                                       placeholder="CERTIFICADO" maxlength="100"
+                                       class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="block text-xs font-medium text-gray-600">Subtítulo</label>
+                                <input type="text" name="cert_subtitle_text" x-model="subtitleText" @input="$dispatch('preview-cert')"
+                                       placeholder="de Conclusão" maxlength="100"
+                                       class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Live Preview do Certificado --}}
+                    <div class="mt-5 pt-5 border-t border-gray-100"
+                         x-data="{ cprimary: '{{ $company->primary_color ?? '#4f46e5' }}', csecondary: '{{ $company->secondary_color ?? '#3730a3' }}' }"
+                         @preview-color.window="if($event.detail.primary) cprimary=$event.detail.primary; if($event.detail.secondary) csecondary=$event.detail.secondary">
+                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Preview do Certificado</p>
+
+                        <div class="rounded-lg border border-gray-200 overflow-hidden" style="height: 200px;">
+                            <div style="width: 800px; height: 566px; transform: scale(0.353); transform-origin: top left; position: relative; background: #fff; font-family: Helvetica, Arial, sans-serif; text-align: center;">
+
+                                {{-- Borders --}}
+                                <template x-if="borderStyle !== 'none'">
+                                    <div>
+                                        <div style="position:absolute;top:30px;left:36px;right:36px;height:2px;" :style="'background:'+cprimary"></div>
+                                        <div style="position:absolute;bottom:30px;left:36px;right:36px;height:2px;" :style="'background:'+cprimary"></div>
+                                    </div>
+                                </template>
+                                <template x-if="borderStyle === 'classic'">
+                                    <div>
+                                        <div style="position:absolute;top:39px;left:36px;right:36px;height:1px;" :style="'background:'+cprimary"></div>
+                                        <div style="position:absolute;bottom:39px;left:36px;right:36px;height:1px;" :style="'background:'+cprimary"></div>
+                                        <div style="position:absolute;top:42px;left:42px;width:30px;height:30px;" :style="'border-top:2px solid '+cprimary+';border-left:2px solid '+cprimary"></div>
+                                        <div style="position:absolute;top:42px;right:42px;width:30px;height:30px;" :style="'border-top:2px solid '+cprimary+';border-right:2px solid '+cprimary"></div>
+                                        <div style="position:absolute;bottom:42px;left:42px;width:30px;height:30px;" :style="'border-bottom:2px solid '+cprimary+';border-left:2px solid '+cprimary"></div>
+                                        <div style="position:absolute;bottom:42px;right:42px;width:30px;height:30px;" :style="'border-bottom:2px solid '+cprimary+';border-right:2px solid '+cprimary"></div>
+                                    </div>
+                                </template>
+
+                                {{-- Content --}}
+                                <div style="padding: 70px 90px 160px 90px;">
+                                    @if($company->logo_path)
+                                        <img src="{{ Storage::url($company->logo_path) }}" style="max-height:40px;max-width:140px;margin:0 auto 8px;">
+                                    @else
+                                        <div style="font-size:12px;font-weight:bold;margin-bottom:8px;" :style="'color:'+csecondary">{{ $company->name }}</div>
+                                    @endif
+
+                                    <div style="margin:8px 0;font-size:8px;letter-spacing:3px;" :style="'color:'+csecondary">
+                                        <span style="display:inline-block;width:50px;height:1px;vertical-align:middle;" :style="'background:'+cprimary"></span>
+                                        <span style="padding:0 8px;vertical-align:middle;">APRESENTA</span>
+                                        <span style="display:inline-block;width:50px;height:1px;vertical-align:middle;" :style="'background:'+cprimary"></span>
+                                    </div>
+
+                                    <div style="font-size:42px;font-weight:bold;letter-spacing:3px;line-height:1.1;" :style="'color:'+csecondary" x-text="titleText || 'CERTIFICADO'"></div>
+                                    <div style="font-size:16px;font-style:italic;letter-spacing:1px;margin-bottom:14px;" :style="'color:'+cprimary" x-text="subtitleText || 'de Conclusão'"></div>
+
+                                    <div style="font-size:9px;color:#6b7280;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Certificamos que</div>
+                                    <div style="font-size:28px;font-weight:bold;margin-bottom:12px;" :style="'color:'+csecondary">Nome do Colaborador</div>
+
+                                    <div style="max-width:550px;margin:0 auto;padding:10px 16px;border-top:2px solid;border-bottom:2px solid;background:#f5f9ff;" :style="'border-color:'+cprimary">
+                                        <div style="font-size:8px;color:#6b7280;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">concluiu com sucesso o treinamento</div>
+                                        <div style="font-size:18px;font-weight:bold;color:#1f2937;">Treinamento Exemplo</div>
+                                        <div style="font-size:9px;color:#6b7280;margin-top:4px;">carga horária de <strong style="color:#1f2937">2h</strong> · emitido por <strong style="color:#1f2937">{{ $company->name }}</strong></div>
+                                    </div>
+                                </div>
+
+                                {{-- Footer --}}
+                                <div style="position:absolute;left:80px;right:80px;bottom:48px;">
+                                    <table style="width:100%;border-collapse:collapse;">
+                                        <tr>
+                                            <td style="width:28%;text-align:center;vertical-align:bottom;">
+                                                <div style="font-size:7px;color:#9ca3af;letter-spacing:1px;text-transform:uppercase;">Emitido em</div>
+                                                <div style="font-size:10px;font-weight:bold;" :style="'color:'+csecondary">{{ now()->format('d/m/Y') }}</div>
+                                            </td>
+                                            <td style="width:44%;text-align:center;vertical-align:bottom;">
+                                                @if($company->cert_signer_name)
+                                                    <div style="width:100px;height:1px;background:#9ca3af;margin:0 auto 4px;"></div>
+                                                    <div style="font-size:9px;font-weight:bold;color:#1f2937;">{{ $company->cert_signer_name }}</div>
+                                                    @if($company->cert_signer_role)
+                                                        <div style="font-size:7px;color:#6b7280;">{{ $company->cert_signer_role }}</div>
+                                                    @endif
+                                                @endif
+                                            </td>
+                                            <td style="width:28%;text-align:center;vertical-align:bottom;">
+                                                <div style="font-size:7px;color:#9ca3af;letter-spacing:1px;text-transform:uppercase;">Verificar</div>
+                                                <div style="width:40px;height:40px;background:#e5e7eb;margin:4px auto 0;border-radius:4px;font-size:6px;color:#9ca3af;line-height:40px;">QR</div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                                <div style="position:absolute;left:0;right:0;bottom:18px;text-align:center;font-size:7px;color:#9ca3af;">
+                                    Verificado por <strong :style="'color:'+cprimary">TreinaEdu</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             {{-- Preview ao vivo (1/3) --}}

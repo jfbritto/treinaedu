@@ -254,14 +254,18 @@
     <div class="certificate">
 
         {{-- Decorative frame --}}
-        <div class="border-top"></div>
-        <div class="border-accent-top"></div>
-        <div class="border-bottom"></div>
-        <div class="border-accent-bottom"></div>
-        <div class="corner-tl"></div>
-        <div class="corner-tr"></div>
-        <div class="corner-bl"></div>
-        <div class="corner-br"></div>
+        @if(($borderStyle ?? 'classic') !== 'none')
+            <div class="border-top"></div>
+            <div class="border-bottom"></div>
+            @if(($borderStyle ?? 'classic') === 'classic')
+                <div class="border-accent-top"></div>
+                <div class="border-accent-bottom"></div>
+                <div class="corner-tl"></div>
+                <div class="corner-tr"></div>
+                <div class="corner-bl"></div>
+                <div class="corner-br"></div>
+            @endif
+        @endif
 
         <table class="certificate-inner">
             <tr>
@@ -282,8 +286,8 @@
                     </div>
 
                     {{-- Title --}}
-                    <div class="title">CERTIFICADO</div>
-                    <div class="subtitle">de Conclusão</div>
+                    <div class="title">{{ $titleText ?? 'CERTIFICADO' }}</div>
+                    <div class="subtitle">{{ $subtitleText ?? 'de Conclusão' }}</div>
 
                     {{-- Body --}}
                     <div class="certifies">Certificamos que</div>
