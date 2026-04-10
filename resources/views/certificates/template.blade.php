@@ -5,156 +5,176 @@
     <title>Certificado de Conclusão</title>
     <style>
         @page { margin: 0; size: A4 landscape; }
-
-        * { margin: 0; padding: 0; }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body {
             font-family: 'Helvetica', Arial, sans-serif;
             color: #1f2937;
             background: #ffffff;
         }
 
-        .certificate {
+        .page {
             width: 297mm;
             height: 210mm;
-            text-align: center;
+            position: relative;
+            overflow: hidden;
         }
 
-        .certificate-inner {
+        /* Left accent bar */
+        .accent-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 18mm;
+            height: 210mm;
+            background: {{ $primaryColor }};
+        }
+        .accent-bar-inner {
+            position: fixed;
+            top: 8mm;
+            left: 8mm;
+            width: 2mm;
+            height: 194mm;
+            background: {{ $secondaryColor }};
+            opacity: 0.3;
+        }
+
+        @if(($borderStyle ?? 'classic') !== 'none')
+        /* Top and bottom lines */
+        .line-top {
+            position: fixed;
+            top: 8mm;
+            left: 24mm;
+            right: 8mm;
+            height: 1px;
+            background: {{ $primaryColor }};
+            opacity: 0.3;
+        }
+        .line-bottom {
+            position: fixed;
+            bottom: 8mm;
+            left: 24mm;
+            right: 8mm;
+            height: 1px;
+            background: {{ $primaryColor }};
+            opacity: 0.3;
+        }
+        @endif
+
+        @if(($borderStyle ?? 'classic') === 'classic')
+        .corner-tr {
+            position: fixed;
+            top: 8mm;
+            right: 8mm;
+            width: 12mm;
+            height: 12mm;
+            border-top: 2px solid {{ $primaryColor }};
+            border-right: 2px solid {{ $primaryColor }};
+        }
+        .corner-br {
+            position: fixed;
+            bottom: 8mm;
+            right: 8mm;
+            width: 12mm;
+            height: 12mm;
+            border-bottom: 2px solid {{ $primaryColor }};
+            border-right: 2px solid {{ $primaryColor }};
+        }
+        @endif
+
+        /* Main content area */
+        .content {
+            position: fixed;
+            top: 0;
+            left: 24mm;
+            right: 0;
+            bottom: 0;
+        }
+
+        .content-inner {
             width: 100%;
             height: 210mm;
             border-collapse: collapse;
         }
-        .certificate-inner td {
+        .content-inner td {
             vertical-align: middle;
-            text-align: center;
-            padding: 28mm 32mm 50mm 32mm;
+            padding: 18mm 20mm 42mm 16mm;
         }
-
-        /* Decorative borders */
-        .border-top,
-        .border-bottom {
-            position: fixed;
-            left: 12mm;
-            right: 12mm;
-            height: 2px;
-            background-color: {{ $primaryColor }};
-        }
-        .border-top { top: 10mm; }
-        .border-bottom { bottom: 10mm; }
-
-        .border-accent-top,
-        .border-accent-bottom {
-            position: fixed;
-            left: 12mm;
-            right: 12mm;
-            height: 1px;
-            background-color: {{ $primaryColor }};
-        }
-        .border-accent-top { top: 13mm; }
-        .border-accent-bottom { bottom: 13mm; }
-
-        /* Corner ornaments */
-        .corner-tl, .corner-tr, .corner-bl, .corner-br {
-            position: fixed;
-            width: 10mm;
-            height: 10mm;
-        }
-        .corner-tl { top: 14mm; left: 14mm; border-top: 1.5px solid {{ $primaryColor }}; border-left: 1.5px solid {{ $primaryColor }}; }
-        .corner-tr { top: 14mm; right: 14mm; border-top: 1.5px solid {{ $primaryColor }}; border-right: 1.5px solid {{ $primaryColor }}; }
-        .corner-bl { bottom: 14mm; left: 14mm; border-bottom: 1.5px solid {{ $primaryColor }}; border-left: 1.5px solid {{ $primaryColor }}; }
-        .corner-br { bottom: 14mm; right: 14mm; border-bottom: 1.5px solid {{ $primaryColor }}; border-right: 1.5px solid {{ $primaryColor }}; }
 
         .logo {
-            max-height: 48px;
-            max-width: 160px;
+            max-height: 44px;
+            max-width: 150px;
+            margin-bottom: 12px;
         }
 
         .company-name {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: bold;
-            color: {{ $secondaryColor }};
-            letter-spacing: 0.5px;
-        }
-
-        .separator-wrap {
-            margin-top: 10px;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        .separator-line {
-            display: inline-block;
-            width: 70px;
-            height: 1px;
-            background: {{ $primaryColor }};
-            vertical-align: middle;
-        }
-        .separator-label {
-            display: inline-block;
-            font-size: 9px;
-            color: {{ $secondaryColor }};
-            letter-spacing: 4px;
-            padding: 0 12px;
-            vertical-align: middle;
+            color: {{ $primaryColor }};
+            letter-spacing: 1px;
+            margin-bottom: 12px;
         }
 
         .title {
-            font-size: 52px;
+            font-size: 54px;
             font-weight: bold;
-            color: {{ $secondaryColor }};
-            letter-spacing: 4px;
-            line-height: 1.1;
-            margin-bottom: 2px;
+            color: {{ $primaryColor }};
+            letter-spacing: 3px;
+            line-height: 1;
+            margin-bottom: 4px;
         }
 
         .subtitle {
             font-size: 20px;
-            font-weight: normal;
-            font-style: italic;
-            color: {{ $primaryColor }};
+            font-weight: 300;
+            color: {{ $secondaryColor }};
             letter-spacing: 1.5px;
-            margin-bottom: 16px;
+            margin-bottom: 22px;
+        }
+
+        .divider {
+            width: 60px;
+            height: 3px;
+            background: {{ $primaryColor }};
+            margin-bottom: 18px;
         }
 
         .certifies {
             font-size: 11px;
-            color: #6b7280;
-            letter-spacing: 2px;
+            color: #9ca3af;
+            letter-spacing: 3px;
             text-transform: uppercase;
             margin-bottom: 8px;
         }
 
         .recipient {
-            font-size: 36px;
+            font-size: 34px;
             font-weight: bold;
-            color: {{ $secondaryColor }};
-            margin-bottom: 14px;
-            letter-spacing: 0.5px;
+            color: #1f2937;
+            margin-bottom: 18px;
         }
 
-        .highlight-box {
-            margin: 0 auto;
-            max-width: 200mm;
-            padding: 12px 20px;
-            border-top: 2px solid {{ $primaryColor }};
-            border-bottom: 2px solid {{ $primaryColor }};
-            background-color: #f5f9ff;
+        .training-box {
+            padding: 14px 20px;
+            border-left: 4px solid {{ $primaryColor }};
+            background-color: #f8fafc;
+            text-align: left;
+            max-width: 220mm;
         }
 
-        .completed {
-            font-size: 10px;
-            color: #6b7280;
-            letter-spacing: 1.5px;
+        .completed-label {
+            font-size: 9px;
+            color: #9ca3af;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .training-title {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: bold;
             color: #1f2937;
             line-height: 1.3;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .meta {
@@ -162,182 +182,166 @@
             color: #6b7280;
         }
         .meta strong {
-            color: #1f2937;
-            font-weight: bold;
+            color: #374151;
         }
 
-        /* Footer — fixed to the bottom */
+        /* Footer */
         .footer {
             position: fixed;
-            left: 28mm;
-            right: 28mm;
-            bottom: 16mm;
+            left: 30mm;
+            right: 14mm;
+            bottom: 12mm;
         }
         .footer-table {
             width: 100%;
             border-collapse: collapse;
         }
         .footer-cell {
-            text-align: center;
             vertical-align: bottom;
-            padding: 0 6px;
+            padding: 0 8px;
         }
-        .footer-cell-side {
-            width: 28%;
-        }
-        .footer-cell-center {
-            width: 44%;
-        }
+        .footer-cell-left { width: 25%; text-align: left; }
+        .footer-cell-center { width: 50%; text-align: center; }
+        .footer-cell-right { width: 25%; text-align: right; }
+
         .footer-label {
-            font-size: 8px;
+            font-size: 7px;
             color: #9ca3af;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
         .footer-value {
-            font-size: 12px;
-            color: {{ $secondaryColor }};
+            font-size: 11px;
+            color: #374151;
             font-weight: bold;
         }
         .footer-code {
             font-family: 'Courier New', monospace;
-            font-size: 11px;
-            color: #4b5563;
-            font-weight: bold;
+            font-size: 10px;
+            color: #6b7280;
         }
         .qrcode {
-            width: 60px;
-            height: 60px;
+            width: 54px;
+            height: 54px;
         }
 
-        /* Signer in footer center */
         .signer-signature {
-            max-height: 36px;
-            max-width: 140px;
+            max-height: 32px;
+            max-width: 120px;
         }
         .signer-line {
-            width: 140px;
+            width: 120px;
             height: 1px;
-            background: #9ca3af;
-            margin: 4px auto 4px auto;
+            background: #d1d5db;
+            margin: 3px auto;
         }
         .signer-name {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
-            color: #1f2937;
+            color: #374151;
         }
         .signer-role {
-            font-size: 9px;
+            font-size: 8px;
             color: #6b7280;
         }
         .signer-registry {
-            font-size: 8px;
+            font-size: 7px;
             color: #9ca3af;
-            margin-top: 1px;
         }
 
         .verified-by {
             position: fixed;
-            left: 0;
-            right: 0;
-            bottom: 6mm;
-            text-align: center;
-            font-size: 8px;
-            color: #9ca3af;
-            letter-spacing: 0.5px;
+            right: 14mm;
+            bottom: 4mm;
+            text-align: right;
+            font-size: 7px;
+            color: #d1d5db;
         }
         .verified-by strong { color: {{ $primaryColor }}; }
     </style>
 </head>
 <body>
-    <div class="certificate">
+    <div class="page">
 
-        {{-- Decorative frame --}}
+        {{-- Left accent bar --}}
+        <div class="accent-bar"></div>
+        <div class="accent-bar-inner"></div>
+
+        {{-- Optional frame elements --}}
         @if(($borderStyle ?? 'classic') !== 'none')
-            <div class="border-top"></div>
-            <div class="border-bottom"></div>
-            @if(($borderStyle ?? 'classic') === 'classic')
-                <div class="border-accent-top"></div>
-                <div class="border-accent-bottom"></div>
-                <div class="corner-tl"></div>
-                <div class="corner-tr"></div>
-                <div class="corner-bl"></div>
-                <div class="corner-br"></div>
-            @endif
+            <div class="line-top"></div>
+            <div class="line-bottom"></div>
+        @endif
+        @if(($borderStyle ?? 'classic') === 'classic')
+            <div class="corner-tr"></div>
+            <div class="corner-br"></div>
         @endif
 
-        <table class="certificate-inner">
-            <tr>
-                <td>
-
-                    {{-- Company identity --}}
-                    @if(!empty($companyLogo))
-                        <img src="{{ storage_path('app/public/' . $companyLogo) }}" alt="{{ $companyName }}" class="logo">
-                    @else
-                        <div class="company-name">{{ $companyName }}</div>
-                    @endif
-
-                    {{-- Separator --}}
-                    <div class="separator-wrap">
-                        <span class="separator-line"></span>
-                        <span class="separator-label">APRESENTA</span>
-                        <span class="separator-line"></span>
-                    </div>
-
-                    {{-- Title --}}
-                    <div class="title">{{ $titleText ?? 'CERTIFICADO' }}</div>
-                    <div class="subtitle">{{ $subtitleText ?? 'de Conclusão' }}</div>
-
-                    {{-- Body --}}
-                    <div class="certifies">Certificamos que</div>
-                    <div class="recipient">{{ $userName }}</div>
-
-                    <div class="highlight-box">
-                        <div class="completed">concluiu com sucesso o treinamento</div>
-                        <div class="training-title">{{ $trainingTitle }}</div>
-
-                        @php
-                            $mins = (int) $durationMinutes;
-                            $durLabel = $mins >= 60
-                                ? floor($mins/60).'h'.($mins%60 > 0 ? ' '.($mins%60).'min' : '')
-                                : ($mins > 0 ? $mins.' min' : null);
-                        @endphp
-
-                        @if($durLabel || $companyName)
-                            <div class="meta">
-                                @if($durLabel)
-                                    carga horária de <strong>{{ $durLabel }}</strong>
-                                @endif
-                                @if($durLabel && $companyName)
-                                    &nbsp;·&nbsp;
-                                @endif
-                                @if($companyName)
-                                    emitido por <strong>{{ $companyName }}</strong>
-                                @endif
-                            </div>
+        {{-- Main content --}}
+        <div class="content">
+            <table class="content-inner">
+                <tr>
+                    <td>
+                        {{-- Company identity --}}
+                        @if(!empty($companyLogo))
+                            <img src="{{ storage_path('app/public/' . $companyLogo) }}" alt="{{ $companyName }}" class="logo">
+                        @else
+                            <div class="company-name">{{ $companyName }}</div>
                         @endif
-                    </div>
 
-                </td>
-            </tr>
-        </table>
+                        {{-- Title --}}
+                        <div class="title">{{ $titleText ?? 'CERTIFICADO' }}</div>
+                        <div class="subtitle">{{ $subtitleText ?? 'de Conclusão' }}</div>
 
-        {{-- Footer with signer in center --}}
+                        <div class="divider"></div>
+
+                        {{-- Body --}}
+                        <div class="certifies">Certificamos que</div>
+                        <div class="recipient">{{ $userName }}</div>
+
+                        <div class="training-box">
+                            <div class="completed-label">concluiu com sucesso o treinamento</div>
+                            <div class="training-title">{{ $trainingTitle }}</div>
+
+                            @php
+                                $mins = (int) $durationMinutes;
+                                $durLabel = $mins >= 60
+                                    ? floor($mins/60).'h'.($mins%60 > 0 ? ' '.($mins%60).'min' : '')
+                                    : ($mins > 0 ? $mins.' min' : null);
+                            @endphp
+
+                            @if($durLabel || $companyName)
+                                <div class="meta">
+                                    @if($durLabel)
+                                        Carga horária: <strong>{{ $durLabel }}</strong>
+                                    @endif
+                                    @if($durLabel && $companyName) · @endif
+                                    @if($companyName)
+                                        Emitido por <strong>{{ $companyName }}</strong>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        {{-- Footer --}}
         <div class="footer">
             <table class="footer-table">
                 <tr>
-                    {{-- Left: emission date + code --}}
-                    <td class="footer-cell footer-cell-side">
+                    <td class="footer-cell footer-cell-left">
                         <div class="footer-label">Emitido em</div>
                         <div class="footer-value">{{ $completionDate }}</div>
-                        <div style="margin-top: 6px;">
+                        <div style="margin-top: 4px;">
                             <div class="footer-label">Código</div>
                             <div class="footer-code">{{ $certificateCode }}</div>
                         </div>
                     </td>
 
-                    {{-- Center: signer --}}
                     <td class="footer-cell footer-cell-center">
                         @if(!empty($signerName))
                             @if(!empty($signerSignaturePath))
@@ -354,12 +358,11 @@
                         @endif
                     </td>
 
-                    {{-- Right: QR code --}}
-                    <td class="footer-cell footer-cell-side">
-                        <div class="footer-label">Verificar</div>
+                    <td class="footer-cell footer-cell-right">
                         @if(!empty($qrCodeDataUri))
                             <img src="{{ $qrCodeDataUri }}" class="qrcode" alt="QR Code">
                         @else
+                            <div class="footer-label">Verificar</div>
                             <div class="footer-code" style="font-size: 7px;">{{ $verifyUrl }}</div>
                         @endif
                     </td>
@@ -370,7 +373,6 @@
         <div class="verified-by">
             Verificado por <strong>TreinaEdu</strong>
         </div>
-
     </div>
 </body>
 </html>

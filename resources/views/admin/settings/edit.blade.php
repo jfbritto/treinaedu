@@ -517,60 +517,65 @@
                 const logoDataUri = @js($logoDataUri);
                 const W = 594, H = 420;
 
-                let borders = '';
+                const BAR = 36, CX = BAR + (W - BAR) / 2, LX = BAR + 20;
+                const f = 'font-family="Helvetica,Arial,sans-serif"';
+
+                let frame = '';
                 if (b !== 'none') {
-                    borders += `<line x1="24" y1="21" x2="${W-24}" y2="21" stroke="${p}" stroke-width="1.5"/>`;
-                    borders += `<line x1="24" y1="${H-21}" x2="${W-24}" y2="${H-21}" stroke="${p}" stroke-width="1.5"/>`;
+                    frame += `<line x1="${BAR+6}" y1="16" x2="${W-8}" y2="16" stroke="${p}" stroke-width="0.5" opacity="0.3"/>`;
+                    frame += `<line x1="${BAR+6}" y1="${H-16}" x2="${W-8}" y2="${H-16}" stroke="${p}" stroke-width="0.5" opacity="0.3"/>`;
                 }
                 if (b === 'classic') {
-                    borders += `<line x1="24" y1="27" x2="${W-24}" y2="27" stroke="${p}" stroke-width="0.5"/>`;
-                    borders += `<line x1="24" y1="${H-27}" x2="${W-24}" y2="${H-27}" stroke="${p}" stroke-width="0.5"/>`;
-                    borders += `<rect x="28" y="30" width="20" height="14" fill="none" stroke="${p}" stroke-width="1" rx="0"
-                        style="clip-path:polygon(0 0,100% 0,100% 1px,1px 1px,1px 100%,0 100%)"/>`;
-                    borders += `<rect x="${W-48}" y="30" width="20" height="14" fill="none" stroke="${p}" stroke-width="1"
-                        style="clip-path:polygon(0 0,100% 0,100% 100%,calc(100% - 1px) 100%,calc(100% - 1px) 1px,0 1px)"/>`;
-                    borders += `<rect x="28" y="${H-44}" width="20" height="14" fill="none" stroke="${p}" stroke-width="1"
-                        style="clip-path:polygon(0 0,1px 0,1px calc(100% - 1px),100% calc(100% - 1px),100% 100%,0 100%)"/>`;
-                    borders += `<rect x="${W-48}" y="${H-44}" width="20" height="14" fill="none" stroke="${p}" stroke-width="1"
+                    frame += `<rect x="${W-28}" y="16" width="20" height="20" fill="none" stroke="${p}" stroke-width="1.5"
+                        style="clip-path:polygon(calc(100% - 1px) 0,100% 0,100% 100%,0 100%,0 calc(100% - 1px),calc(100% - 1px) calc(100% - 1px))"/>`;
+                    frame += `<rect x="${W-28}" y="${H-36}" width="20" height="20" fill="none" stroke="${p}" stroke-width="1.5"
                         style="clip-path:polygon(calc(100% - 1px) 0,100% 0,100% 100%,0 100%,0 calc(100% - 1px),calc(100% - 1px) calc(100% - 1px))"/>`;
                 }
 
                 let signerSvg = '';
                 if (signerName) {
-                    signerSvg = `<line x1="${W/2-30}" y1="0" x2="${W/2+30}" y2="0" stroke="#9ca3af" stroke-width="0.5"/>
-                        <text x="${W/2}" y="10" text-anchor="middle" font-size="7" font-weight="bold" fill="#1f2937">${esc(signerName)}</text>
-                        ${signerRole ? `<text x="${W/2}" y="19" text-anchor="middle" font-size="5" fill="#6b7280">${esc(signerRole)}</text>` : ''}`;
+                    signerSvg = `<line x1="${CX-30}" y1="0" x2="${CX+30}" y2="0" stroke="#d1d5db" stroke-width="0.5"/>
+                        <text x="${CX}" y="10" text-anchor="middle" font-size="6" font-weight="bold" fill="#374151" ${f}>${esc(signerName)}</text>
+                        ${signerRole ? `<text x="${CX}" y="18" text-anchor="middle" font-size="5" fill="#6b7280" ${f}>${esc(signerRole)}</text>` : ''}`;
                 }
+
+                const logoSvg = logoDataUri
+                    ? `<image href="${logoDataUri}" x="${LX}" y="38" width="80" height="24" preserveAspectRatio="xMinYMid meet"/>`
+                    : `<text x="${LX}" y="54" ${f} font-size="9" font-weight="bold" fill="${p}" letter-spacing="1">${esc(companyName)}</text>`;
 
                 const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
                     <rect width="${W}" height="${H}" fill="white"/>
-                    ${borders}
-                    ${logoDataUri
-                        ? `<image href="${logoDataUri}" x="${W/2-50}" y="48" width="100" height="28" preserveAspectRatio="xMidYMid meet"/>`
-                        : `<text x="${W/2}" y="68" text-anchor="middle" font-size="8" font-weight="bold" fill="${s}" font-family="Helvetica,Arial,sans-serif">${esc(companyName)}</text>`
-                    }
-                    <line x1="${W/2-50}" y1="80" x2="${W/2-15}" y2="80" stroke="${p}" stroke-width="0.5"/>
-                    <text x="${W/2}" y="83" text-anchor="middle" font-size="5" fill="${s}" letter-spacing="2" font-family="Helvetica,Arial,sans-serif">APRESENTA</text>
-                    <line x1="${W/2+15}" y1="80" x2="${W/2+50}" y2="80" stroke="${p}" stroke-width="0.5"/>
-                    <text x="${W/2}" y="120" text-anchor="middle" font-size="36" font-weight="bold" fill="${s}" letter-spacing="2" font-family="Helvetica,Arial,sans-serif">${t}</text>
-                    <text x="${W/2}" y="140" text-anchor="middle" font-size="13" fill="${p}" font-style="italic" letter-spacing="1" font-family="Helvetica,Arial,sans-serif">${st}</text>
-                    <text x="${W/2}" y="162" text-anchor="middle" font-size="6" fill="#6b7280" letter-spacing="1.5" font-family="Helvetica,Arial,sans-serif">CERTIFICAMOS QUE</text>
-                    <text x="${W/2}" y="188" text-anchor="middle" font-size="22" font-weight="bold" fill="${s}" font-family="Helvetica,Arial,sans-serif">Nome do Colaborador</text>
-                    <rect x="${W/2-140}" y="205" width="280" height="55" fill="#f5f9ff" stroke="${p}" stroke-width="1"/>
-                    <line x1="${W/2-140}" y1="205" x2="${W/2+140}" y2="205" stroke="${p}" stroke-width="1.5"/>
-                    <line x1="${W/2-140}" y1="260" x2="${W/2+140}" y2="260" stroke="${p}" stroke-width="1.5"/>
-                    <text x="${W/2}" y="220" text-anchor="middle" font-size="5" fill="#6b7280" letter-spacing="1" font-family="Helvetica,Arial,sans-serif">CONCLUIU COM SUCESSO O TREINAMENTO</text>
-                    <text x="${W/2}" y="238" text-anchor="middle" font-size="14" font-weight="bold" fill="#1f2937" font-family="Helvetica,Arial,sans-serif">Treinamento Exemplo</text>
-                    <text x="${W/2}" y="253" text-anchor="middle" font-size="6" fill="#6b7280" font-family="Helvetica,Arial,sans-serif">carga horária de 2h · emitido por ${esc(companyName)}</text>
-                    <g transform="translate(0,${H-60})">
-                        <text x="80" y="0" text-anchor="middle" font-size="5" fill="#9ca3af" letter-spacing="1" font-family="Helvetica,Arial,sans-serif">EMITIDO EM</text>
-                        <text x="80" y="12" text-anchor="middle" font-size="8" font-weight="bold" fill="${s}" font-family="Helvetica,Arial,sans-serif">${new Date().toLocaleDateString('pt-BR')}</text>
+                    <!-- Accent bar -->
+                    <rect x="0" y="0" width="${BAR}" height="${H}" fill="${p}"/>
+                    <rect x="16" y="16" width="4" height="${H-32}" fill="${s}" opacity="0.3"/>
+                    ${frame}
+                    <!-- Logo -->
+                    ${logoSvg}
+                    <!-- Title -->
+                    <text x="${LX}" y="96" ${f} font-size="34" font-weight="bold" fill="${p}" letter-spacing="2">${t}</text>
+                    <text x="${LX}" y="114" ${f} font-size="13" fill="${s}" letter-spacing="1">${st}</text>
+                    <!-- Divider -->
+                    <rect x="${LX}" y="122" width="36" height="2" fill="${p}"/>
+                    <!-- Certifies -->
+                    <text x="${LX}" y="142" ${f} font-size="6" fill="#9ca3af" letter-spacing="2">CERTIFICAMOS QUE</text>
+                    <text x="${LX}" y="164" ${f} font-size="20" font-weight="bold" fill="#1f2937">Nome do Colaborador</text>
+                    <!-- Training box -->
+                    <rect x="${LX}" y="178" width="${W-BAR-46}" height="48" fill="#f8fafc"/>
+                    <rect x="${LX}" y="178" width="3" height="48" fill="${p}"/>
+                    <text x="${LX+14}" y="194" ${f} font-size="5" fill="#9ca3af" letter-spacing="1.5">CONCLUIU COM SUCESSO O TREINAMENTO</text>
+                    <text x="${LX+14}" y="210" ${f} font-size="12" font-weight="bold" fill="#1f2937">Treinamento Exemplo</text>
+                    <text x="${LX+14}" y="222" ${f} font-size="6" fill="#6b7280">Carga horária: 2h · Emitido por ${esc(companyName)}</text>
+                    <!-- Footer -->
+                    <g transform="translate(0,${H-52})">
+                        <text x="${LX}" y="0" ${f} font-size="4.5" fill="#9ca3af" letter-spacing="1">EMITIDO EM</text>
+                        <text x="${LX}" y="11" ${f} font-size="7" font-weight="bold" fill="#374151">${new Date().toLocaleDateString('pt-BR')}</text>
+                        <text x="${LX}" y="22" ${f} font-size="4.5" fill="#9ca3af" letter-spacing="1">CÓDIGO</text>
+                        <text x="${LX}" y="32" ${f} font-size="6" fill="#6b7280" font-family="Courier New,monospace">TH-2026-XXXX</text>
                         ${signerSvg}
-                        <text x="${W-80}" y="0" text-anchor="middle" font-size="5" fill="#9ca3af" letter-spacing="1" font-family="Helvetica,Arial,sans-serif">VERIFICAR</text>
-                        <rect x="${W-95}" y="5" width="30" height="30" fill="#e5e7eb" rx="2"/>
-                        <text x="${W-80}" y="24" text-anchor="middle" font-size="5" fill="#9ca3af" font-family="Helvetica,Arial,sans-serif">QR</text>
+                        <rect x="${W-42}" y="-2" width="28" height="28" fill="#e5e7eb" rx="2"/>
+                        <text x="${W-28}" y="16" text-anchor="middle" ${f} font-size="5" fill="#9ca3af">QR</text>
                     </g>
-                    <text x="${W/2}" y="${H-10}" text-anchor="middle" font-size="5" fill="#9ca3af" font-family="Helvetica,Arial,sans-serif">Verificado por TreinaEdu</text>
+                    <text x="${W-14}" y="${H-8}" text-anchor="end" ${f} font-size="4.5" fill="#d1d5db">Verificado por TreinaEdu</text>
                 </svg>`;
                 img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
             }
