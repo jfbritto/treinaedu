@@ -77,6 +77,16 @@ Route::middleware(['auth', 'theme'])->group(function () {
                 ->name('users.resend-invite');
             Route::post('users/{user}/toggle-active', [UserController::class, 'toggleActive'])
                 ->name('users.toggle-active');
+
+            // User import
+            Route::get('users-import', [\App\Http\Controllers\Admin\UserImportController::class, 'show'])
+                ->name('users.import');
+            Route::post('users-import/preview', [\App\Http\Controllers\Admin\UserImportController::class, 'preview'])
+                ->name('users.import.preview');
+            Route::post('users-import/process', [\App\Http\Controllers\Admin\UserImportController::class, 'process'])
+                ->name('users.import.process');
+            Route::get('users-import/template', [\App\Http\Controllers\Admin\UserImportController::class, 'template'])
+                ->name('users.import.template');
             Route::resource('groups', GroupController::class);
             Route::resource('trainings', AdminTrainingController::class);
             Route::resource('paths', PathController::class)->middleware('plan.feature:learning_paths');
