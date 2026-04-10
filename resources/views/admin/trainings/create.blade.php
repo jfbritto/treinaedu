@@ -111,18 +111,20 @@
             if (mod.title && mod.title.trim() !== '') return;
             const titles = mod.lessons.map(l => l.title).filter(t => t && t.trim() !== '');
             if (titles.length === 0) return;
+            mod._aiLoading = true;
             fetch('/api/ai/generate-description', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
-                body: JSON.stringify({ title: titles.join(', '), context: 'Sugira um título curto (máximo 5 palavras) para um módulo de treinamento que contém estas aulas: ' + titles.join(', '), type: 'training' }),
+                body: JSON.stringify({ title: titles.join(', '), context: 'Responda APENAS com um título de no máximo 3 palavras para um módulo que contém estas aulas: ' + titles.join(', ') + '. Sem pontuação, sem aspas, apenas o título curto.', type: 'training' }),
             })
             .then(r => r.json())
             .then(data => {
                 if (data.description && (!mod.title || mod.title.trim() === '')) {
-                    mod.title = data.description.replace(/["'.]/g, '').substring(0, 60);
+                    mod.title = data.description.replace(/["'.!:]/g, '').trim().split(/\s+/).slice(0, 3).join(' ');
                 }
             })
-            .catch(() => {});
+            .catch(() => {})
+            .finally(() => { mod._aiLoading = false; });
         };
 
         window.generateDescription = async function() {
@@ -165,6 +167,7 @@
                 description: '',
                 is_sequential: true,
                 showDescription: false,
+                _aiLoading: false,
                 lessons: [
                     { id: null, title: '', type: 'video', video_url: '', duration_minutes: 0, content: '', hasQuiz: false, questions: [{ text: '', options: [{ text: '' }, { text: '' }], correct: 0 }] }
                 ]
@@ -172,7 +175,7 @@
         ],
         addModule() {
             this.modules.push({
-                id: null, title: '', description: '', is_sequential: true, showDescription: false,
+                id: null, title: '', description: '', is_sequential: true, showDescription: false, _aiLoading: false,
                 lessons: [{ id: null, title: '', type: 'video', video_url: '', duration_minutes: 0, content: '', hasQuiz: false, questions: [{ text: '', options: [{ text: '' }, { text: '' }], correct: 0 }] }]
             });
         },
@@ -392,12 +395,22 @@
                             <div class="flex items-center gap-3">
                                 <span class="w-7 h-7 rounded-lg bg-primary text-white text-xs font-bold flex items-center justify-center flex-shrink-0"
                                       x-text="mi + 1"></span>
-                                <input type="text"
-                                       :name="'modules['+mi+'][title]'"
-                                       x-model="module.title"
-                                       placeholder="Título do módulo"
-                                       required
-                                       class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary">
+                                <div class="relative flex-1">
+                                    <input type="text"
+                                           :name="'modules['+mi+'][title]'"
+                                           x-model="module.title"
+                                           placeholder="Título do módulo"
+                                           required
+                                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary"
+                                           :class="module._aiLoading ? 'pr-10' : ''">
+                                    <div x-show="module._aiLoading" x-transition class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                                        <svg class="w-4 h-4 animate-spin text-primary" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                        </svg>
+                                        <span class="text-xs text-primary font-medium">IA</span>
+                                    </div>
+                                </div>
                                 <div class="flex items-center gap-1">
                                     <button type="button" @click="moveModule(mi, -1)" x-show="mi > 0"
                                             class="tip p-1.5 rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-400 transition" data-tip="Subir módulo na ordem">
