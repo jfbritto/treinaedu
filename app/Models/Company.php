@@ -13,6 +13,7 @@ class Company extends Model
     protected $fillable = [
         'name', 'slug', 'asaas_customer_id',
         'logo_path', 'primary_color', 'secondary_color',
+        'cert_signer_name', 'cert_signer_role', 'cert_signer_registry', 'cert_signer_signature_path',
     ];
 
     public function users()

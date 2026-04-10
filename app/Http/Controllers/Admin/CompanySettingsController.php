@@ -22,6 +22,10 @@ class CompanySettingsController extends Controller
             'logo'            => 'nullable|image|mimes:jpg,jpeg,png,svg|max:2048',
             'primary_color'   => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/',
             'secondary_color' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/',
+            'cert_signer_name'     => 'nullable|string|max:255',
+            'cert_signer_role'     => 'nullable|string|max:255',
+            'cert_signer_registry' => 'nullable|string|max:255',
+            'signature'            => 'nullable|image|mimes:jpg,jpeg,png|max:1024',
         ]);
 
         $company = auth()->user()->company;
@@ -42,6 +46,24 @@ class CompanySettingsController extends Controller
 
         $company->primary_color   = $request->primary_color;
         $company->secondary_color = $request->secondary_color;
+
+        // Certificate signer
+        $company->cert_signer_name     = $request->cert_signer_name;
+        $company->cert_signer_role     = $request->cert_signer_role;
+        $company->cert_signer_registry = $request->cert_signer_registry;
+
+        if ($request->boolean('remove_signature')) {
+            if ($company->cert_signer_signature_path) {
+                Storage::disk('public')->delete($company->cert_signer_signature_path);
+            }
+            $company->cert_signer_signature_path = null;
+        } elseif ($request->hasFile('signature')) {
+            if ($company->cert_signer_signature_path) {
+                Storage::disk('public')->delete($company->cert_signer_signature_path);
+            }
+            $company->cert_signer_signature_path = $request->file('signature')->store("signatures/{$company->id}", 'public');
+        }
+
         $company->save();
 
         Cache::forget("company_theme_{$company->id}");

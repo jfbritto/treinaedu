@@ -206,6 +206,43 @@
             height: 80px;
         }
 
+        .signer-section {
+            margin-top: 20px;
+        }
+        .signer-table {
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+        .signer-cell {
+            text-align: center;
+            padding: 0 30px;
+            vertical-align: bottom;
+        }
+        .signer-signature {
+            max-height: 50px;
+            max-width: 160px;
+        }
+        .signer-line {
+            width: 160px;
+            height: 1px;
+            background: #9ca3af;
+            margin: 6px auto 6px auto;
+        }
+        .signer-name {
+            font-size: 12px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        .signer-role {
+            font-size: 10px;
+            color: #6b7280;
+        }
+        .signer-registry {
+            font-size: 9px;
+            color: #9ca3af;
+            margin-top: 2px;
+        }
+
         .verified-by {
             position: fixed;
             left: 0;
@@ -283,6 +320,28 @@
                             </div>
                         @endif
                     </div>
+
+                    @if(!empty($signerName))
+                        <div class="signer-section">
+                            <table class="signer-table">
+                                <tr>
+                                    <td class="signer-cell">
+                                        @if(!empty($signerSignaturePath))
+                                            <img src="{{ $signerSignaturePath }}" class="signer-signature" alt="Assinatura">
+                                        @endif
+                                        <div class="signer-line"></div>
+                                        <div class="signer-name">{{ $signerName }}</div>
+                                        @if(!empty($signerRole))
+                                            <div class="signer-role">{{ $signerRole }}</div>
+                                        @endif
+                                        @if(!empty($signerRegistry))
+                                            <div class="signer-registry">{{ $signerRegistry }}</div>
+                                        @endif
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    @endif
 
                 </td>
             </tr>

@@ -220,6 +220,70 @@
                     </div>
                 </div>
 
+                {{-- Responsável pelo Certificado --}}
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-9 h-9 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-800">Responsável pelo Certificado</h3>
+                            <p class="text-xs text-gray-400">Dados exibidos no certificado com assinatura</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-1">
+                                <label class="block text-xs font-medium text-gray-600">Nome completo</label>
+                                <input type="text" name="cert_signer_name" value="{{ old('cert_signer_name', $company->cert_signer_name) }}"
+                                       placeholder="Ex: Maria da Silva"
+                                       class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="block text-xs font-medium text-gray-600">Cargo / Função</label>
+                                <input type="text" name="cert_signer_role" value="{{ old('cert_signer_role', $company->cert_signer_role) }}"
+                                       placeholder="Ex: Enfermeira Chefe"
+                                       class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="block text-xs font-medium text-gray-600">Registro profissional <span class="text-gray-400 font-normal">(opcional)</span></label>
+                            <input type="text" name="cert_signer_registry" value="{{ old('cert_signer_registry', $company->cert_signer_registry) }}"
+                                   placeholder="Ex: COREN-ES 123456"
+                                   class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            <p class="text-xs text-gray-400">COREN, CRM, CREA, OAB, ou qualquer registro que valide a certificação.</p>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="block text-xs font-medium text-gray-600">Assinatura <span class="text-gray-400 font-normal">(imagem PNG com fundo transparente)</span></label>
+                            @if($company->cert_signer_signature_path)
+                                <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                    <img src="{{ Storage::url($company->cert_signer_signature_path) }}" alt="Assinatura" class="h-12 object-contain">
+                                    <div class="flex-1">
+                                        <p class="text-xs text-gray-500">Assinatura atual</p>
+                                    </div>
+                                    <label class="flex items-center gap-1.5 text-xs text-red-500 cursor-pointer hover:text-red-700">
+                                        <input type="checkbox" name="remove_signature" value="1" class="rounded border-gray-300 text-red-500 focus:ring-red-500">
+                                        Remover
+                                    </label>
+                                </div>
+                            @endif
+                            <input type="file" name="signature" accept="image/png,image/jpeg,image/jpg"
+                                   class="w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer">
+                        </div>
+
+                        <div class="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                            <p class="text-xs text-amber-700">
+                                <strong>Dica:</strong> Esses dados aparecem no rodapé do certificado PDF. A assinatura funciona melhor como imagem PNG com fundo transparente, escaneada ou digital.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             {{-- Preview ao vivo (1/3) --}}

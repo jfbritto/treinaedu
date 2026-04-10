@@ -69,6 +69,7 @@ class CertificateService
             'secondaryColor' => $secondaryColor,
             'qrCodeDataUri' => $qrCodeDataUri,
             'verifyUrl' => $verifyUrl,
+            ...$this->signerData($company),
         ])->setPaper('a4', 'landscape');
 
         $directory = "certificates/{$company->id}";
@@ -125,6 +126,7 @@ class CertificateService
             'secondaryColor' => $secondaryColor,
             'qrCodeDataUri' => $qrCodeDataUri,
             'verifyUrl' => $verifyUrl,
+            ...$this->signerData($company),
         ])->setPaper('a4', 'landscape');
 
         Storage::disk('app')->put($certificate->pdf_path, $pdf->output());
@@ -137,6 +139,24 @@ class CertificateService
         } while (Certificate::withoutGlobalScopes()->where('certificate_code', $code)->exists());
 
         return $code;
+    }
+
+    private function signerData($company): array
+    {
+        $signaturePath = null;
+        if ($company->cert_signer_signature_path) {
+            $fullPath = storage_path('app/public/' . $company->cert_signer_signature_path);
+            if (file_exists($fullPath)) {
+                $signaturePath = $fullPath;
+            }
+        }
+
+        return [
+            'signerName' => $company->cert_signer_name,
+            'signerRole' => $company->cert_signer_role,
+            'signerRegistry' => $company->cert_signer_registry,
+            'signerSignaturePath' => $signaturePath,
+        ];
     }
 
     private function safeColor(?string $color, string $fallback): string
