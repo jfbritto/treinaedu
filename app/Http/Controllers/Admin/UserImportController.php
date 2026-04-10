@@ -121,8 +121,7 @@ class UserImportController extends Controller
                 }
 
                 if ($sendInvites) {
-                    SendBulkInviteJob::dispatch($user->id, $admin->id, $company->id)
-                        ->delay(now()->addSeconds($imported * 2)); // Stagger: 2s between each
+                    SendBulkInviteJob::dispatch($user->id, $admin->id, $company->id);
                 }
 
                 $imported++;
