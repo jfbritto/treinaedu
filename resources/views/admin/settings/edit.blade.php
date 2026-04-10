@@ -396,81 +396,76 @@
                          @preview-color.window="if($event.detail.primary) cprimary=$event.detail.primary; if($event.detail.secondary) csecondary=$event.detail.secondary">
                         <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Preview do Certificado</p>
 
-                        <div class="rounded-lg border border-gray-200 overflow-hidden" style="height: 200px;">
-                            <div style="width: 800px; height: 566px; transform: scale(0.353); transform-origin: top left; position: relative; background: #fff; font-family: Helvetica, Arial, sans-serif; text-align: center;">
+                        <div class="rounded-lg border border-gray-200 overflow-hidden bg-gray-50 relative" style="padding-bottom: 70.7%;">
+                            <div style="position:absolute;inset:0;overflow:hidden;">
+                                <div style="width: 800px; height: 566px; transform-origin: top left; position: absolute; top: 0; left: 0; background: #fff; font-family: Helvetica, Arial, sans-serif; text-align: center;"
+                                     :style="'transform: scale(' + ($el.parentElement.offsetWidth / 800) + ')'">
 
-                                {{-- Borders --}}
-                                <template x-if="borderStyle !== 'none'">
-                                    <div>
-                                        <div style="position:absolute;top:30px;left:36px;right:36px;height:2px;" :style="'background:'+cprimary"></div>
-                                        <div style="position:absolute;bottom:30px;left:36px;right:36px;height:2px;" :style="'background:'+cprimary"></div>
+                                    {{-- Borders: simple + classic --}}
+                                    <div x-show="borderStyle !== 'none'" style="position:absolute;top:30px;left:36px;right:36px;height:2px;" :style="'background:'+cprimary"></div>
+                                    <div x-show="borderStyle !== 'none'" style="position:absolute;bottom:30px;left:36px;right:36px;height:2px;" :style="'background:'+cprimary"></div>
+                                    <div x-show="borderStyle === 'classic'" style="position:absolute;top:39px;left:36px;right:36px;height:1px;" :style="'background:'+cprimary"></div>
+                                    <div x-show="borderStyle === 'classic'" style="position:absolute;bottom:39px;left:36px;right:36px;height:1px;" :style="'background:'+cprimary"></div>
+                                    <div x-show="borderStyle === 'classic'" style="position:absolute;top:42px;left:42px;width:30px;height:30px;" :style="'border-top:2px solid '+cprimary+';border-left:2px solid '+cprimary"></div>
+                                    <div x-show="borderStyle === 'classic'" style="position:absolute;top:42px;right:42px;width:30px;height:30px;" :style="'border-top:2px solid '+cprimary+';border-right:2px solid '+cprimary"></div>
+                                    <div x-show="borderStyle === 'classic'" style="position:absolute;bottom:42px;left:42px;width:30px;height:30px;" :style="'border-bottom:2px solid '+cprimary+';border-left:2px solid '+cprimary"></div>
+                                    <div x-show="borderStyle === 'classic'" style="position:absolute;bottom:42px;right:42px;width:30px;height:30px;" :style="'border-bottom:2px solid '+cprimary+';border-right:2px solid '+cprimary"></div>
+
+                                    {{-- Content --}}
+                                    <div style="padding: 65px 90px 160px 90px;">
+                                        @if($company->logo_path)
+                                            <img src="{{ Storage::url($company->logo_path) }}" style="max-height:36px;max-width:130px;margin:0 auto 6px;display:block;">
+                                        @else
+                                            <div style="font-size:12px;font-weight:bold;margin-bottom:6px;" :style="'color:'+csecondary">{{ $company->name }}</div>
+                                        @endif
+
+                                        <div style="margin:6px 0;font-size:7px;letter-spacing:3px;" :style="'color:'+csecondary">
+                                            <span style="display:inline-block;width:40px;height:1px;vertical-align:middle;" :style="'background:'+cprimary"></span>
+                                            <span style="padding:0 6px;vertical-align:middle;">APRESENTA</span>
+                                            <span style="display:inline-block;width:40px;height:1px;vertical-align:middle;" :style="'background:'+cprimary"></span>
+                                        </div>
+
+                                        <div style="font-size:38px;font-weight:bold;letter-spacing:3px;line-height:1.1;" :style="'color:'+csecondary" x-text="titleText || 'CERTIFICADO'"></div>
+                                        <div style="font-size:14px;font-style:italic;letter-spacing:1px;margin-bottom:10px;" :style="'color:'+cprimary" x-text="subtitleText || 'de Conclusão'"></div>
+
+                                        <div style="font-size:8px;color:#6b7280;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">Certificamos que</div>
+                                        <div style="font-size:24px;font-weight:bold;margin-bottom:10px;" :style="'color:'+csecondary">Nome do Colaborador</div>
+
+                                        <div style="max-width:500px;margin:0 auto;padding:8px 14px;border-top:2px solid;border-bottom:2px solid;background:#f5f9ff;" :style="'border-color:'+cprimary">
+                                            <div style="font-size:7px;color:#6b7280;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">concluiu com sucesso o treinamento</div>
+                                            <div style="font-size:16px;font-weight:bold;color:#1f2937;">Treinamento Exemplo</div>
+                                            <div style="font-size:8px;color:#6b7280;margin-top:3px;">carga horária de <strong style="color:#1f2937">2h</strong> · emitido por <strong style="color:#1f2937">{{ $company->name }}</strong></div>
+                                        </div>
                                     </div>
-                                </template>
-                                <template x-if="borderStyle === 'classic'">
-                                    <div>
-                                        <div style="position:absolute;top:39px;left:36px;right:36px;height:1px;" :style="'background:'+cprimary"></div>
-                                        <div style="position:absolute;bottom:39px;left:36px;right:36px;height:1px;" :style="'background:'+cprimary"></div>
-                                        <div style="position:absolute;top:42px;left:42px;width:30px;height:30px;" :style="'border-top:2px solid '+cprimary+';border-left:2px solid '+cprimary"></div>
-                                        <div style="position:absolute;top:42px;right:42px;width:30px;height:30px;" :style="'border-top:2px solid '+cprimary+';border-right:2px solid '+cprimary"></div>
-                                        <div style="position:absolute;bottom:42px;left:42px;width:30px;height:30px;" :style="'border-bottom:2px solid '+cprimary+';border-left:2px solid '+cprimary"></div>
-                                        <div style="position:absolute;bottom:42px;right:42px;width:30px;height:30px;" :style="'border-bottom:2px solid '+cprimary+';border-right:2px solid '+cprimary"></div>
-                                    </div>
-                                </template>
 
-                                {{-- Content --}}
-                                <div style="padding: 70px 90px 160px 90px;">
-                                    @if($company->logo_path)
-                                        <img src="{{ Storage::url($company->logo_path) }}" style="max-height:40px;max-width:140px;margin:0 auto 8px;">
-                                    @else
-                                        <div style="font-size:12px;font-weight:bold;margin-bottom:8px;" :style="'color:'+csecondary">{{ $company->name }}</div>
-                                    @endif
-
-                                    <div style="margin:8px 0;font-size:8px;letter-spacing:3px;" :style="'color:'+csecondary">
-                                        <span style="display:inline-block;width:50px;height:1px;vertical-align:middle;" :style="'background:'+cprimary"></span>
-                                        <span style="padding:0 8px;vertical-align:middle;">APRESENTA</span>
-                                        <span style="display:inline-block;width:50px;height:1px;vertical-align:middle;" :style="'background:'+cprimary"></span>
-                                    </div>
-
-                                    <div style="font-size:42px;font-weight:bold;letter-spacing:3px;line-height:1.1;" :style="'color:'+csecondary" x-text="titleText || 'CERTIFICADO'"></div>
-                                    <div style="font-size:16px;font-style:italic;letter-spacing:1px;margin-bottom:14px;" :style="'color:'+cprimary" x-text="subtitleText || 'de Conclusão'"></div>
-
-                                    <div style="font-size:9px;color:#6b7280;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Certificamos que</div>
-                                    <div style="font-size:28px;font-weight:bold;margin-bottom:12px;" :style="'color:'+csecondary">Nome do Colaborador</div>
-
-                                    <div style="max-width:550px;margin:0 auto;padding:10px 16px;border-top:2px solid;border-bottom:2px solid;background:#f5f9ff;" :style="'border-color:'+cprimary">
-                                        <div style="font-size:8px;color:#6b7280;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">concluiu com sucesso o treinamento</div>
-                                        <div style="font-size:18px;font-weight:bold;color:#1f2937;">Treinamento Exemplo</div>
-                                        <div style="font-size:9px;color:#6b7280;margin-top:4px;">carga horária de <strong style="color:#1f2937">2h</strong> · emitido por <strong style="color:#1f2937">{{ $company->name }}</strong></div>
-                                    </div>
-                                </div>
-
-                                {{-- Footer --}}
-                                <div style="position:absolute;left:80px;right:80px;bottom:48px;">
-                                    <table style="width:100%;border-collapse:collapse;">
-                                        <tr>
-                                            <td style="width:28%;text-align:center;vertical-align:bottom;">
-                                                <div style="font-size:7px;color:#9ca3af;letter-spacing:1px;text-transform:uppercase;">Emitido em</div>
-                                                <div style="font-size:10px;font-weight:bold;" :style="'color:'+csecondary">{{ now()->format('d/m/Y') }}</div>
-                                            </td>
-                                            <td style="width:44%;text-align:center;vertical-align:bottom;">
-                                                @if($company->cert_signer_name)
-                                                    <div style="width:100px;height:1px;background:#9ca3af;margin:0 auto 4px;"></div>
-                                                    <div style="font-size:9px;font-weight:bold;color:#1f2937;">{{ $company->cert_signer_name }}</div>
-                                                    @if($company->cert_signer_role)
-                                                        <div style="font-size:7px;color:#6b7280;">{{ $company->cert_signer_role }}</div>
+                                    {{-- Footer --}}
+                                    <div style="position:absolute;left:70px;right:70px;bottom:44px;">
+                                        <table style="width:100%;border-collapse:collapse;">
+                                            <tr>
+                                                <td style="width:28%;text-align:center;vertical-align:bottom;">
+                                                    <div style="font-size:6px;color:#9ca3af;letter-spacing:1px;text-transform:uppercase;">Emitido em</div>
+                                                    <div style="font-size:9px;font-weight:bold;" :style="'color:'+csecondary">{{ now()->format('d/m/Y') }}</div>
+                                                </td>
+                                                <td style="width:44%;text-align:center;vertical-align:bottom;">
+                                                    @if($company->cert_signer_name)
+                                                        <div style="width:80px;height:1px;background:#9ca3af;margin:0 auto 3px;"></div>
+                                                        <div style="font-size:8px;font-weight:bold;color:#1f2937;">{{ $company->cert_signer_name }}</div>
+                                                        @if($company->cert_signer_role)
+                                                            <div style="font-size:6px;color:#6b7280;">{{ $company->cert_signer_role }}</div>
+                                                        @endif
                                                     @endif
-                                                @endif
-                                            </td>
-                                            <td style="width:28%;text-align:center;vertical-align:bottom;">
-                                                <div style="font-size:7px;color:#9ca3af;letter-spacing:1px;text-transform:uppercase;">Verificar</div>
-                                                <div style="width:40px;height:40px;background:#e5e7eb;margin:4px auto 0;border-radius:4px;font-size:6px;color:#9ca3af;line-height:40px;">QR</div>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
+                                                </td>
+                                                <td style="width:28%;text-align:center;vertical-align:bottom;">
+                                                    <div style="font-size:6px;color:#9ca3af;letter-spacing:1px;text-transform:uppercase;">Verificar</div>
+                                                    <div style="width:32px;height:32px;background:#e5e7eb;margin:3px auto 0;border-radius:3px;font-size:5px;color:#9ca3af;line-height:32px;">QR</div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
 
-                                <div style="position:absolute;left:0;right:0;bottom:18px;text-align:center;font-size:7px;color:#9ca3af;">
-                                    Verificado por <strong :style="'color:'+cprimary">TreinaEdu</strong>
+                                    <div style="position:absolute;left:0;right:0;bottom:16px;text-align:center;font-size:6px;color:#9ca3af;">
+                                        Verificado por <strong :style="'color:'+cprimary">TreinaEdu</strong>
+                                    </div>
                                 </div>
                             </div>
                         </div>
