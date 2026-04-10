@@ -72,8 +72,8 @@
                         <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Empresa</th>
                         <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Plano</th>
                         <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Trial Até</th>
-                        <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Início</th>
+                        <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Período</th>
+                        <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Valor</th>
                         <th class="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Ação</th>
                     </tr>
                 </thead>
@@ -110,11 +110,24 @@
                                     } }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-gray-500 text-xs">
-                                {{ $subscription->trial_ends_at?->format('d/m/Y') ?? '—' }}
+                            <td class="px-6 py-4 text-xs text-gray-500">
+                                @if($subscription->status === 'trial' && $subscription->trial_ends_at)
+                                    Trial até {{ $subscription->trial_ends_at->format('d/m/Y') }}
+                                @elseif($subscription->current_period_start)
+                                    {{ $subscription->current_period_start->format('d/m/Y') }}
+                                    @if($subscription->current_period_end)
+                                        — {{ $subscription->current_period_end->format('d/m/Y') }}
+                                    @endif
+                                @else
+                                    Desde {{ $subscription->created_at->format('d/m/Y') }}
+                                @endif
                             </td>
-                            <td class="px-6 py-4 text-gray-500 text-xs">
-                                {{ $subscription->starts_at?->format('d/m/Y') ?? '—' }}
+                            <td class="px-6 py-4 text-gray-600 text-xs font-medium">
+                                @if($subscription->plan?->price)
+                                    R$ {{ number_format($subscription->plan->price, 2, ',', '.') }}/mês
+                                @else
+                                    —
+                                @endif
                             </td>
                             <td class="px-6 py-4 text-right">
                                 @if($subscription->company)
