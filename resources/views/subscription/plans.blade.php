@@ -298,14 +298,27 @@
                 </div>
 
                 {{-- Security trust indicators --}}
-                <div class="mt-5 p-3 bg-green-50 border border-green-200 rounded-lg">
-                    <div class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                        </svg>
-                        <div>
-                            <p class="text-xs font-semibold text-green-800">Pagamento 100% seguro</p>
-                            <p class="text-xs text-green-700 mt-0.5">Seus dados do cartão são enviados diretamente ao gateway de pagamento com criptografia SSL. Nenhum dado do cartão é armazenado nos nossos servidores.</p>
+                <div class="mt-5 space-y-2">
+                    <div class="p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                            <div>
+                                <p class="text-xs font-semibold text-green-800">Pagamento 100% seguro</p>
+                                <p class="text-xs text-green-700 mt-0.5">Seus dados do cartão são enviados diretamente ao gateway de pagamento com criptografia SSL. Nenhum dado do cartão é armazenado nos nossos servidores.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <div>
+                                <p class="text-xs font-semibold text-blue-800">Sobre a cobrança na fatura</p>
+                                <p class="text-xs text-blue-700 mt-0.5">A cobrança aparecerá na fatura do seu cartão como <strong>ASA*HELPFLUX SOLUCOES</strong>. A HelpFlux Soluções é a empresa responsável pela plataforma TreinaEdu.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
