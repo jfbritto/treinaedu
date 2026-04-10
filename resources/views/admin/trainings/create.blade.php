@@ -214,9 +214,28 @@
             const url = lesson.video_url;
             if (!url) return;
             const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
-            if (ytMatch) { this.fetchYouTubeDuration(ytMatch[1], lesson); return; }
+            if (ytMatch) {
+                this.fetchYouTubeDuration(ytMatch[1], lesson);
+                this.fetchVideoTitle(url, lesson);
+                return;
+            }
             const vmMatch = url.match(/vimeo\.com\/(\d+)/);
-            if (vmMatch) { this.fetchVimeoDuration(url, lesson); return; }
+            if (vmMatch) {
+                this.fetchVimeoDuration(url, lesson);
+                this.fetchVideoTitle(url, lesson);
+                return;
+            }
+        },
+        fetchVideoTitle(url, lesson) {
+            if (lesson.title && lesson.title.trim() !== '') return;
+            fetch('https://noembed.com/embed?url=' + encodeURIComponent(url))
+                .then(r => r.json())
+                .then(data => {
+                    if (data.title && (!lesson.title || lesson.title.trim() === '')) {
+                        lesson.title = data.title;
+                    }
+                })
+                .catch(() => {});
         },
         fetchVimeoDuration(url, lesson) {
             fetch('https://vimeo.com/api/oembed.json?url=' + encodeURIComponent(url))
