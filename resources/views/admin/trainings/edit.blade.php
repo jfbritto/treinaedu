@@ -188,6 +188,7 @@
                 'content' => $l->content ?? '',
                 'file_path' => $l->file_path,
                 'hasQuiz' => $l->quiz !== null,
+                '_aiLoading' => false,
                 'questions' => $l->quiz ? $l->quiz->questions->map(fn($q) => [
                     'text' => $q->question,
                     'options' => $q->options->map(fn($o) => ['text' => $o->option_text])->values()->toArray(),
@@ -198,7 +199,7 @@
         addModule() {
             this.modules.push({
                 id: null, title: '', description: '', is_sequential: true, showDescription: false, _aiLoading: false,
-                lessons: [{ id: null, title: '', type: 'video', video_url: '', duration_minutes: 0, content: '', hasQuiz: false, questions: [{ text: '', options: [{ text: '' }, { text: '' }], correct: 0 }] }]
+                lessons: [{ id: null, title: '', type: 'video', video_url: '', duration_minutes: 0, content: '', hasQuiz: false, _aiLoading: false, questions: [{ text: '', options: [{ text: '' }, { text: '' }], correct: 0 }] }]
             });
         },
         removeModule(i) {
@@ -213,7 +214,7 @@
             setTimeout(() => this.flashItem = null, 700);
         },
         addLesson(mi) {
-            this.modules[mi].lessons.push({ id: null, title: '', type: 'video', video_url: '', duration_minutes: 0, content: '', hasQuiz: false, questions: [{ text: '', options: [{ text: '' }, { text: '' }], correct: 0 }] });
+            this.modules[mi].lessons.push({ id: null, title: '', type: 'video', video_url: '', duration_minutes: 0, content: '', hasQuiz: false, _aiLoading: false, questions: [{ text: '', options: [{ text: '' }, { text: '' }], correct: 0 }] });
         },
         removeLesson(mi, li) {
             if (this.modules[mi].lessons.length > 1) this.modules[mi].lessons.splice(li, 1);
