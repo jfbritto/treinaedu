@@ -526,10 +526,8 @@
                     frame += `<line x1="${BAR+6}" y1="${H-16}" x2="${W-8}" y2="${H-16}" stroke="${p}" stroke-width="0.5" opacity="0.3"/>`;
                 }
                 if (b === 'classic') {
-                    frame += `<rect x="${W-28}" y="16" width="20" height="20" fill="none" stroke="${p}" stroke-width="1.5"
-                        style="clip-path:polygon(calc(100% - 1px) 0,100% 0,100% 100%,0 100%,0 calc(100% - 1px),calc(100% - 1px) calc(100% - 1px))"/>`;
-                    frame += `<rect x="${W-28}" y="${H-36}" width="20" height="20" fill="none" stroke="${p}" stroke-width="1.5"
-                        style="clip-path:polygon(calc(100% - 1px) 0,100% 0,100% 100%,0 100%,0 calc(100% - 1px),calc(100% - 1px) calc(100% - 1px))"/>`;
+                    frame += `<path d="M${W-8} 16 L${W-8} 36 M${W-8} 16 L${W-28} 16" fill="none" stroke="${p}" stroke-width="1.5"/>`;
+                    frame += `<path d="M${W-8} ${H-16} L${W-8} ${H-36} M${W-8} ${H-16} L${W-28} ${H-16}" fill="none" stroke="${p}" stroke-width="1.5"/>`;
                 }
 
                 let signerSvg = '';
