@@ -7,9 +7,7 @@
             </svg>
         </div>
         <h1 class="text-2xl font-bold text-gray-900">Verifique seu e-mail</h1>
-        <p class="mt-2 text-sm text-gray-500">
-            Enviamos um código de 6 dígitos para
-        </p>
+        <p class="mt-2 text-sm text-gray-500">Enviamos um código de 6 dígitos para</p>
         <p class="text-sm font-semibold text-gray-800">{{ $email }}</p>
     </div>
 
@@ -31,74 +29,79 @@
 
     <form id="verify-form" method="POST" action="{{ route('verification.code.verify') }}">
         @csrf
+        <input type="hidden" id="code-hidden" name="code" value="">
+    </form>
 
-        <div x-data="{
-            code: '',
-            submitting: false,
-            handleInput(e) {
-                this.code = e.target.value.replace(/\D/g, '').substring(0, 6);
-                e.target.value = this.code;
-                if (this.code.length === 6 && !this.submitting) {
-                    this.submit();
-                }
-            },
-            submit() {
-                this.submitting = true;
-                document.getElementById('code-input').value = this.code;
-                document.getElementById('verify-form').submit();
+    <div x-data="{
+        digits: '',
+        submitting: false,
+        onInput(el) {
+            this.digits = el.value.replace(/\D/g, '').substring(0, 6);
+            el.value = this.digits;
+            if (this.digits.length === 6) {
+                this.doSubmit();
             }
-        }">
-            {{-- Input --}}
-            <div class="mb-5">
-                <label class="block text-sm font-medium text-gray-700 text-center mb-2">Código de verificação</label>
-                <input
-                    type="text"
-                    id="code-input"
-                    name="code"
-                    x-model="code"
-                    @input="handleInput($event)"
-                    @paste="setTimeout(() => handleInput({ target: $el }), 50)"
-                    required
-                    autofocus
-                    autocomplete="one-time-code"
-                    inputmode="numeric"
-                    maxlength="6"
-                    placeholder="000000"
-                    :disabled="submitting"
-                    class="w-full py-4 text-center text-2xl font-bold tracking-[0.5em] rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                >
-            </div>
+        },
+        doSubmit() {
+            if (this.submitting) return;
+            this.submitting = true;
+            document.getElementById('code-hidden').value = this.digits;
+            document.getElementById('verify-form').submit();
+        }
+    }">
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 text-center mb-2">Código de verificação</label>
+            <input
+                type="text"
+                x-ref="input"
+                :value="digits"
+                @input="onInput($event.target)"
+                @paste.prevent="
+                    let text = ($event.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').substring(0, 6);
+                    digits = text;
+                    $refs.input.value = text;
+                    if (text.length === 6) doSubmit();
+                "
+                :disabled="submitting"
+                autofocus
+                autocomplete="one-time-code"
+                inputmode="numeric"
+                maxlength="6"
+                placeholder="000000"
+                class="w-full py-4 text-center text-2xl font-bold tracking-[0.5em] rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition disabled:opacity-50"
+            >
+        </div>
 
-            {{-- Status indicator --}}
-            <div class="text-center mb-5">
-                <div x-show="submitting" class="flex items-center justify-center gap-2 text-indigo-600">
-                    <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                    </svg>
-                    <span class="text-sm font-semibold">Verificando seu código...</span>
-                </div>
-                <div x-show="!submitting && code.length === 0" class="text-sm text-gray-400">
-                    Cole ou digite o código recebido por e-mail
-                </div>
-                <div x-show="!submitting && code.length > 0 && code.length < 6" class="text-sm text-gray-500">
-                    <span x-text="6 - code.length"></span> dígitos restantes
-                </div>
-            </div>
+        {{-- Status --}}
+        <div class="text-center mb-5 h-6">
+            <p x-show="submitting" class="flex items-center justify-center gap-2 text-indigo-600 text-sm font-semibold">
+                <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                Verificando seu código...
+            </p>
+            <p x-show="!submitting && digits.length === 0" class="text-sm text-gray-400">
+                Cole ou digite o código do e-mail
+            </p>
+            <p x-show="!submitting && digits.length > 0 && digits.length < 6" class="text-sm text-gray-500">
+                Faltam <span class="font-semibold" x-text="6 - digits.length"></span> dígito<span x-show="(6 - digits.length) > 1">s</span>
+            </p>
+        </div>
 
-            {{-- Manual submit button (fallback) --}}
+        {{-- Botão fallback --}}
+        <div x-show="!submitting && digits.length === 6" class="mb-4">
             <button
                 type="button"
-                @click="submit()"
-                x-show="!submitting && code.length === 6"
+                @click="doSubmit()"
                 class="w-full py-3 px-4 rounded-lg text-sm font-semibold text-white transition-all shadow-sm hover:shadow-md"
                 style="background: linear-gradient(135deg, #4f46e5, #3730a3)">
                 Verificar e-mail
             </button>
         </div>
-    </form>
+    </div>
 
-    <div class="mt-6 text-center">
+    <div class="mt-4 text-center">
         <p class="text-xs text-gray-400 mb-2">Não recebeu o código?</p>
         <form method="POST" action="{{ route('verification.code.resend') }}" class="inline">
             @csrf
@@ -106,10 +109,7 @@
                 Reenviar código
             </button>
         </form>
+        <p class="mt-2 text-xs text-gray-400">O código expira em 10 minutos.</p>
     </div>
-
-    <p class="mt-4 text-center text-xs text-gray-400">
-        O código expira em 10 minutos.
-    </p>
 
 </x-layout.guest>
