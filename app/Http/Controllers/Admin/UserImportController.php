@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendBulkInviteJob;
 use App\Models\User;
-use App\Notifications\UserInvitedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
 class UserImportController extends Controller
@@ -122,12 +121,8 @@ class UserImportController extends Controller
                 }
 
                 if ($sendInvites) {
-                    try {
-                        $token = Password::broker('invites')->createToken($user);
-                        $user->notify(new UserInvitedNotification($token, $admin, $company));
-                    } catch (\Throwable $e) {
-                        // User created but invite failed - not critical
-                    }
+                    SendBulkInviteJob::dispatch($user->id, $admin->id, $company->id)
+                        ->delay(now()->addSeconds($imported * 2)); // Stagger: 2s between each
                 }
 
                 $imported++;
@@ -141,7 +136,7 @@ class UserImportController extends Controller
 
         $message = "{$imported} usuário(s) importado(s) com sucesso.";
         if ($skipped > 0) $message .= " {$skipped} ignorado(s).";
-        if ($sendInvites && $imported > 0) $message .= " Convites enviados por e-mail.";
+        if ($sendInvites && $imported > 0) $message .= " Os convites estão sendo enviados por e-mail em segundo plano.";
 
         return redirect()->route('users.index')
             ->with('success', $message)
