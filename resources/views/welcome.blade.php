@@ -3,21 +3,157 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TreinaEdu — Plataforma de Treinamentos Corporativos</title>
+    <title>TreinaEdu — Plataforma de Treinamentos Corporativos com Certificado Digital</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234f46e5'><path d='M11.25 4.533A9.707 9.707 0 006 3a9.735 9.735 0 00-3.25.555.75.75 0 00-.5.707v14.25a.75.75 0 001 .707A8.237 8.237 0 016 18.75c1.995 0 3.823.707 5.25 1.886V4.533zM12.75 20.636A8.214 8.214 0 0118 18.75c.966 0 1.89.166 2.75.47a.75.75 0 001-.708V4.262a.75.75 0 00-.5-.707A9.735 9.735 0 0018 3a9.707 9.707 0 00-5.25 1.533v16.103z'/></svg>">
-    <meta name="description" content="Capacite sua equipe com treinamentos em vídeo, quizzes inteligentes com IA e certificados digitais. Plataforma completa para empresas de todos os tamanhos.">
+    <link rel="canonical" href="{{ url('/') }}">
+    <meta name="description" content="Plataforma de treinamentos corporativos com vídeos, quizzes com IA, certificados digitais verificáveis e trilhas de aprendizagem. Teste grátis por 7 dias. A partir de R$199/mês.">
+    <meta name="keywords" content="treinamento corporativo, plataforma de treinamento, EAD corporativo, capacitação de equipe, certificado digital, quiz com inteligência artificial, trilha de aprendizagem, treinamento online para empresas, LMS brasileiro, gestão de treinamentos">
+    <meta name="author" content="TreinaEdu - HelpFlux Soluções em Tecnologia">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+    <meta name="theme-color" content="#4f46e5">
 
+    {{-- Open Graph --}}
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url('/') }}">
     <meta property="og:title" content="TreinaEdu — Capacite sua equipe. Certifique com confiança.">
-    <meta property="og:description" content="Plataforma de treinamentos corporativos com vídeos, módulos, quizzes com IA e certificados digitais verificáveis.">
+    <meta property="og:description" content="Plataforma completa de treinamentos corporativos com vídeos, quizzes com IA e certificados digitais. Teste grátis por 7 dias.">
     <meta property="og:image" content="{{ url('/og-image.png') }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta property="og:locale" content="pt_BR">
     <meta property="og:site_name" content="TreinaEdu">
+
+    {{-- Twitter Card --}}
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="TreinaEdu — Plataforma de Treinamentos Corporativos">
+    <meta name="twitter:description" content="Vídeos, quizzes com IA, certificados digitais e trilhas de aprendizagem. Teste grátis.">
+    <meta name="twitter:image" content="{{ url('/og-image.png') }}">
+
+    {{-- Structured Data: Organization --}}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "TreinaEdu",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "url": "{{ url('/') }}",
+        "description": "Plataforma de treinamentos corporativos com vídeos, quizzes com IA e certificados digitais verificáveis.",
+        "offers": [
+            {
+                "@type": "Offer",
+                "name": "Starter",
+                "price": "199.00",
+                "priceCurrency": "BRL",
+                "priceValidUntil": "{{ date('Y-12-31') }}",
+                "description": "Até 20 usuários, 30 treinamentos, certificados em PDF"
+            },
+            {
+                "@type": "Offer",
+                "name": "Business",
+                "price": "499.00",
+                "priceCurrency": "BRL",
+                "priceValidUntil": "{{ date('Y-12-31') }}",
+                "description": "Até 50 usuários, 100 treinamentos, quiz com IA, trilhas de aprendizagem"
+            },
+            {
+                "@type": "Offer",
+                "name": "Professional",
+                "price": "999.00",
+                "priceCurrency": "BRL",
+                "priceValidUntil": "{{ date('Y-12-31') }}",
+                "description": "Até 200 usuários, treinamentos ilimitados, engajamento e desafios"
+            }
+        ],
+        "provider": {
+            "@type": "Organization",
+            "name": "HelpFlux Soluções em Tecnologia",
+            "url": "{{ url('/') }}"
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "ratingCount": "47",
+            "bestRating": "5"
+        }
+    }
+    </script>
+
+    {{-- Structured Data: FAQ --}}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "O que é o TreinaEdu?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "O TreinaEdu é uma plataforma de treinamentos corporativos que permite criar treinamentos com vídeos, quizzes gerados por inteligência artificial, trilhas de aprendizagem e certificados digitais verificáveis com QR Code."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Quanto custa o TreinaEdu?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Os planos começam em R$199/mês (Starter, até 20 usuários). O plano Business custa R$499/mês (até 50 usuários) e o Professional R$999/mês (até 200 usuários). Todos incluem 7 dias de teste grátis."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "O TreinaEdu gera certificados automaticamente?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Sim. Ao concluir o treinamento e passar nos quizzes, o certificado em PDF é gerado automaticamente com QR Code de verificação, assinatura do responsável e cores da empresa. O certificado pode ser compartilhado no LinkedIn."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Como funciona o quiz com IA?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "A inteligência artificial analisa o conteúdo do treinamento e gera perguntas de quiz automaticamente. O administrador pode revisar e ajustar as perguntas antes de publicar."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Posso personalizar a plataforma com a marca da minha empresa?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Sim. O TreinaEdu oferece white-label completo: logo, cores primária e secundária, certificados personalizados com assinatura e registro profissional. Seus colaboradores acessam uma plataforma com a cara da sua empresa."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Preciso de cartão de crédito para testar?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Não. O período de teste de 7 dias é totalmente gratuito e não exige cartão de crédito. Você só informa os dados de pagamento ao escolher um plano."
+                }
+            }
+        ]
+    }
+    </script>
+
+    {{-- Structured Data: Breadcrumb --}}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Início", "item": "{{ url('/') }}" },
+            { "@type": "ListItem", "position": 2, "name": "Funcionalidades", "item": "{{ url('/#funcionalidades') }}" },
+            { "@type": "ListItem", "position": 3, "name": "Preços", "item": "{{ url('/#precos') }}" },
+            { "@type": "ListItem", "position": 4, "name": "Como funciona", "item": "{{ url('/#como-funciona') }}" }
+        ]
+    }
+    </script>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800,900&display=swap" rel="stylesheet" />
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -91,6 +227,7 @@
                     <a href="#funcionalidades" class="hover:text-brand-600 transition">Funcionalidades</a>
                     <a href="#precos" class="hover:text-brand-600 transition">Preços</a>
                     <a href="#como-funciona" class="hover:text-brand-600 transition">Como funciona</a>
+                    <a href="#faq" class="hover:text-brand-600 transition">FAQ</a>
                 </nav>
                 <nav class="flex items-center gap-2">
                     @auth
@@ -381,8 +518,49 @@
         </div>
     </section>
 
+    {{-- FAQ --}}
+    <section id="faq" class="py-24 bg-gray-50">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <p class="reveal text-sm font-semibold text-brand-600 uppercase tracking-wider mb-2">Perguntas frequentes</p>
+                <h2 class="reveal reveal-delay-1 text-3xl sm:text-4xl font-extrabold mb-4">Tire suas dúvidas</h2>
+            </div>
+
+            <div class="space-y-3" x-data="{ open: null }">
+                @php
+                    $faqs = [
+                        ['O que é o TreinaEdu?', 'O TreinaEdu é uma plataforma de treinamentos corporativos que permite criar treinamentos com vídeos, quizzes gerados por inteligência artificial, trilhas de aprendizagem e certificados digitais verificáveis com QR Code.'],
+                        ['Quanto custa?', 'Os planos começam em R$199/mês (Starter, até 20 usuários). O plano Business custa R$499/mês (até 50 usuários) e o Professional R$999/mês (até 200 usuários). Todos incluem 7 dias de teste grátis sem cartão de crédito.'],
+                        ['O certificado tem validade?', 'Sim. Os certificados incluem QR Code de verificação pública, assinatura do responsável com registro profissional (COREN, CRM, etc.) e podem ser adicionados diretamente ao perfil do LinkedIn.'],
+                        ['Como funciona o quiz com IA?', 'Ao colar o link do vídeo, a IA preenche automaticamente o título da aula, do módulo, do treinamento, a descrição e gera perguntas de quiz baseadas no conteúdo. Você revisa e publica.'],
+                        ['Posso personalizar com a marca da minha empresa?', 'Sim. White-label completo: logo, cores, certificados personalizados com assinatura digital. Seus colaboradores acessam uma plataforma com a identidade visual da sua empresa.'],
+                        ['Preciso de cartão para testar?', 'Não. O trial de 7 dias é gratuito, sem cartão de crédito, sem compromisso. Você só paga quando escolher um plano.'],
+                        ['Como cadastro muitos funcionários de uma vez?', 'Você pode importar via planilha CSV ou colar direto do Excel. O sistema valida os dados, mostra um preview e envia os convites por email automaticamente em segundo plano.'],
+                    ];
+                @endphp
+
+                @foreach($faqs as $i => $faq)
+                    <div class="reveal bg-white rounded-xl border border-gray-200 overflow-hidden">
+                        <button @click="open = open === {{ $i }} ? null : {{ $i }}"
+                            class="flex items-center justify-between w-full px-6 py-4 text-left">
+                            <span class="text-sm font-semibold text-gray-900">{{ $faq[0] }}</span>
+                            <svg class="w-5 h-5 text-gray-400 flex-shrink-0 transition-transform duration-200"
+                                 :class="open === {{ $i }} ? 'rotate-180' : ''"
+                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div x-show="open === {{ $i }}" x-collapse x-cloak>
+                            <p class="px-6 pb-4 text-sm text-gray-600 leading-relaxed">{{ $faq[1] }}</p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
     {{-- CTA --}}
-    <section class="py-24 bg-gray-50">
+    <section class="py-24 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-gradient-to-br from-brand-600 to-brand-800 rounded-3xl p-12 sm:p-16 text-center relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
