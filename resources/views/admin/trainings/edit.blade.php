@@ -27,6 +27,14 @@
             100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
         }
         .flash-move { animation: flash-move 0.6s ease-out; }
+        @keyframes ai-pulse {
+            0%, 100% { border-color: rgba(139, 92, 246, 0.3); }
+            50% { border-color: rgba(139, 92, 246, 0.8); }
+        }
+        .ai-loading-field {
+            animation: ai-pulse 1.5s ease-in-out infinite;
+            background-image: linear-gradient(90deg, transparent 0%, rgba(139, 92, 246, 0.05) 50%, transparent 100%);
+        }
     </style>
 
     <script>
@@ -120,7 +128,10 @@
         };
         window.__suggestModuleTitle = function(ctx, mi) {
             const mod = ctx.modules[mi];
-            if (mod.title && mod.title.trim() !== '') return;
+            if (mod.title && mod.title.trim() !== '') {
+                window.__suggestTrainingInfo(ctx);
+                return;
+            }
             const titles = mod.lessons.map(l => l.title).filter(t => t && t.trim() !== '');
             if (titles.length === 0) return;
             mod._aiLoading = true;
@@ -134,9 +145,71 @@
                 if (data.description && (!mod.title || mod.title.trim() === '')) {
                     mod.title = data.description.replace(/["'.!:]/g, '').trim().split(/\s+/).slice(0, 3).join(' ');
                 }
+                window.__suggestTrainingInfo(ctx);
             })
             .catch(() => {})
             .finally(() => { mod._aiLoading = false; });
+        };
+
+        window.__suggestTrainingInfo = function(ctx) {
+            const titleInput = document.querySelector('input[name="title"]');
+            const descField = document.getElementById('description-field');
+            if (titleInput.value.trim() && descField.value.trim()) return;
+
+            const allTitles = [];
+            ctx.modules.forEach(m => {
+                if (m.title) allTitles.push('Módulo: ' + m.title);
+                m.lessons.forEach(l => { if (l.title) allTitles.push(l.title); });
+            });
+            if (allTitles.length === 0) return;
+
+            if (!titleInput.value.trim()) {
+                titleInput.classList.add('ai-loading-field');
+                fetch('/api/ai/generate-description', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                    body: JSON.stringify({ title: allTitles.join(', '), context: 'Responda APENAS com um título de no máximo 5 palavras para um treinamento corporativo que contém: ' + allTitles.join(', ') + '. Sem pontuação, sem aspas.', type: 'training' }),
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.description && !titleInput.value.trim()) {
+                        titleInput.value = data.description.replace(/["'.!:]/g, '').trim();
+                        if (!descField.value.trim()) window.__suggestTrainingDescription(titleInput.value);
+                    }
+                })
+                .catch(() => {})
+                .finally(() => { titleInput.classList.remove('ai-loading-field'); });
+            } else if (!descField.value.trim()) {
+                window.__suggestTrainingDescription(titleInput.value.trim());
+            }
+        };
+
+        window.__suggestTrainingDescription = function(title) {
+            if (!title) return;
+            const descField = document.getElementById('description-field');
+            if (descField.value.trim()) return;
+            descField.classList.add('ai-loading-field');
+            var btn = document.getElementById('ai-desc-btn');
+            var textEl = document.getElementById('ai-desc-text');
+            if (btn) btn.disabled = true;
+            if (textEl) textEl.textContent = 'Gerando...';
+            fetch('/api/ai/generate-description', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                body: JSON.stringify({ title: title, type: 'training' }),
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.description && !descField.value.trim()) {
+                    descField.value = data.description;
+                }
+            })
+            .catch(() => {})
+            .finally(() => {
+                descField.classList.remove('ai-loading-field');
+                if (btn) btn.disabled = false;
+                if (textEl) textEl.textContent = 'Gerar com IA';
+            });
         };
 
         window.generateDescription = async function() {
