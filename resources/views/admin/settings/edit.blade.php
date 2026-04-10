@@ -504,6 +504,17 @@
                 const companyName = @js($company->name);
                 const signerName = @js($company->cert_signer_name ?? '');
                 const signerRole = @js($company->cert_signer_role ?? '');
+                @php
+                    $logoDataUri = '';
+                    if ($company->logo_path) {
+                        $logoFullPath = storage_path('app/public/' . $company->logo_path);
+                        if (file_exists($logoFullPath)) {
+                            $mime = mime_content_type($logoFullPath);
+                            $logoDataUri = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($logoFullPath));
+                        }
+                    }
+                @endphp
+                const logoDataUri = @js($logoDataUri);
                 const W = 594, H = 420;
 
                 let borders = '';
@@ -534,7 +545,10 @@
                 const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
                     <rect width="${W}" height="${H}" fill="white"/>
                     ${borders}
-                    <text x="${W/2}" y="68" text-anchor="middle" font-size="8" font-weight="bold" fill="${s}" font-family="Helvetica,Arial,sans-serif">${esc(companyName)}</text>
+                    ${logoDataUri
+                        ? `<image href="${logoDataUri}" x="${W/2-50}" y="48" width="100" height="28" preserveAspectRatio="xMidYMid meet"/>`
+                        : `<text x="${W/2}" y="68" text-anchor="middle" font-size="8" font-weight="bold" fill="${s}" font-family="Helvetica,Arial,sans-serif">${esc(companyName)}</text>`
+                    }
                     <line x1="${W/2-50}" y1="80" x2="${W/2-15}" y2="80" stroke="${p}" stroke-width="0.5"/>
                     <text x="${W/2}" y="83" text-anchor="middle" font-size="5" fill="${s}" letter-spacing="2" font-family="Helvetica,Arial,sans-serif">APRESENTA</text>
                     <line x1="${W/2+15}" y1="80" x2="${W/2+50}" y2="80" stroke="${p}" stroke-width="0.5"/>
