@@ -541,41 +541,37 @@
                     ? `<image href="${logoDataUri}" x="${LX}" y="38" width="80" height="24" preserveAspectRatio="xMinYMid meet"/>`
                     : `<text x="${LX}" y="54" ${f} font-size="9" font-weight="bold" fill="${p}" letter-spacing="1">${esc(companyName)}</text>`;
 
-                const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
-                    <rect width="${W}" height="${H}" fill="white"/>
-                    <!-- Accent bar -->
-                    <rect x="0" y="0" width="${BAR}" height="${H}" fill="${p}"/>
-                    <rect x="16" y="16" width="4" height="${H-32}" fill="${s}" opacity="0.3"/>
-                    ${frame}
-                    <!-- Logo -->
-                    ${logoSvg}
-                    <!-- Title -->
-                    <text x="${LX}" y="96" ${f} font-size="34" font-weight="bold" fill="${p}" letter-spacing="2">${t}</text>
-                    <text x="${LX}" y="114" ${f} font-size="13" fill="${s}" letter-spacing="1">${st}</text>
-                    <!-- Divider -->
-                    <rect x="${LX}" y="122" width="36" height="2" fill="${p}"/>
-                    <!-- Certifies -->
-                    <text x="${LX}" y="142" ${f} font-size="6" fill="#9ca3af" letter-spacing="2">CERTIFICAMOS QUE</text>
-                    <text x="${LX}" y="164" ${f} font-size="20" font-weight="bold" fill="#1f2937">Nome do Colaborador</text>
-                    <!-- Training box -->
-                    <rect x="${LX}" y="178" width="${W-BAR-46}" height="48" fill="#f8fafc"/>
-                    <rect x="${LX}" y="178" width="3" height="48" fill="${p}"/>
-                    <text x="${LX+14}" y="194" ${f} font-size="5" fill="#9ca3af" letter-spacing="1.5">CONCLUIU COM SUCESSO O TREINAMENTO</text>
-                    <text x="${LX+14}" y="210" ${f} font-size="12" font-weight="bold" fill="#1f2937">Treinamento Exemplo</text>
-                    <text x="${LX+14}" y="222" ${f} font-size="6" fill="#6b7280">Carga horária: 2h · Emitido por ${esc(companyName)}</text>
-                    <!-- Footer -->
-                    <g transform="translate(0,${H-52})">
-                        <text x="${LX}" y="0" ${f} font-size="4.5" fill="#9ca3af" letter-spacing="1">EMITIDO EM</text>
-                        <text x="${LX}" y="11" ${f} font-size="7" font-weight="bold" fill="#374151">${new Date().toLocaleDateString('pt-BR')}</text>
-                        <text x="${LX}" y="22" ${f} font-size="4.5" fill="#9ca3af" letter-spacing="1">CÓDIGO</text>
-                        <text x="${LX}" y="32" ${f} font-size="6" fill="#6b7280" font-family="Courier New,monospace">TH-2026-XXXX</text>
-                        ${signerSvg}
-                        <rect x="${W-42}" y="-2" width="28" height="28" fill="#e5e7eb" rx="2"/>
-                        <text x="${W-28}" y="16" text-anchor="middle" ${f} font-size="5" fill="#9ca3af">QR</text>
-                    </g>
-                    <text x="${W-14}" y="${H-8}" text-anchor="end" ${f} font-size="4.5" fill="#d1d5db">Verificado por TreinaEdu</text>
-                </svg>`;
-                img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+                const parts = [
+                    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}">`,
+                    `<rect width="${W}" height="${H}" fill="white"/>`,
+                    `<rect x="0" y="0" width="${BAR}" height="${H}" fill="${p}"/>`,
+                    `<rect x="16" y="16" width="4" height="${H-32}" fill="${s}" opacity="0.3"/>`,
+                    frame,
+                    logoSvg,
+                    `<text x="${LX}" y="96" ${f} font-size="34" font-weight="bold" fill="${p}" letter-spacing="2">${t}</text>`,
+                    `<text x="${LX}" y="114" ${f} font-size="13" fill="${s}" letter-spacing="1">${st}</text>`,
+                    `<rect x="${LX}" y="122" width="36" height="2" fill="${p}"/>`,
+                    `<text x="${LX}" y="142" ${f} font-size="6" fill="#9ca3af" letter-spacing="2">CERTIFICAMOS QUE</text>`,
+                    `<text x="${LX}" y="164" ${f} font-size="20" font-weight="bold" fill="#1f2937">Nome do Colaborador</text>`,
+                    `<rect x="${LX}" y="178" width="${W-BAR-46}" height="48" fill="#f8fafc"/>`,
+                    `<rect x="${LX}" y="178" width="3" height="48" fill="${p}"/>`,
+                    `<text x="${LX+14}" y="194" ${f} font-size="5" fill="#9ca3af" letter-spacing="1.5">CONCLUIU COM SUCESSO O TREINAMENTO</text>`,
+                    `<text x="${LX+14}" y="210" ${f} font-size="12" font-weight="bold" fill="#1f2937">Treinamento Exemplo</text>`,
+                    `<text x="${LX+14}" y="222" ${f} font-size="6" fill="#6b7280">Carga horaria: 2h &#183; Emitido por ${esc(companyName)}</text>`,
+                    `<g transform="translate(0,${H-52})">`,
+                    `<text x="${LX}" y="0" ${f} font-size="4.5" fill="#9ca3af" letter-spacing="1">EMITIDO EM</text>`,
+                    `<text x="${LX}" y="11" ${f} font-size="7" font-weight="bold" fill="#374151">${new Date().toLocaleDateString('pt-BR')}</text>`,
+                    `<text x="${LX}" y="22" ${f} font-size="4.5" fill="#9ca3af" letter-spacing="1">CODIGO</text>`,
+                    `<text x="${LX}" y="32" ${f} font-size="6" fill="#6b7280">TH-2026-XXXX</text>`,
+                    signerSvg,
+                    `<rect x="${W-42}" y="-2" width="28" height="28" fill="#e5e7eb" rx="2"/>`,
+                    `<text x="${W-28}" y="16" text-anchor="middle" ${f} font-size="5" fill="#9ca3af">QR</text>`,
+                    `</g>`,
+                    `<text x="${W-14}" y="${H-8}" text-anchor="end" ${f} font-size="4.5" fill="#d1d5db">Verificado por TreinaEdu</text>`,
+                    `</svg>`
+                ];
+                const svg = parts.join('');
+                img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
             }
         };
     }
