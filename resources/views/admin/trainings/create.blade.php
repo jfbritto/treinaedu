@@ -667,7 +667,8 @@
                                     </div>
 
                                     {{-- Conditional fields: Video --}}
-                                    <div x-show="lesson.type === 'video'" x-cloak class="flex gap-3 pl-9">
+                                    <div x-show="lesson.type === 'video'" x-cloak class="pl-9 space-y-2">
+                                        <div class="flex gap-3">
                                         <div class="flex-1 space-y-1">
                                             <label class="block text-xs font-medium text-gray-500">URL do vídeo</label>
                                             <input type="url"
@@ -677,6 +678,7 @@
                                                    @paste.debounce.500ms="$nextTick(() => fetchVideoDuration(lesson, mi))"
                                                    placeholder="https://www.youtube.com/watch?v=..."
                                                    class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white">
+                                            <p class="text-xs text-gray-400">Cole o link do YouTube ou Vimeo. O título, duração e dados do módulo serão preenchidos automaticamente pela IA.</p>
                                         </div>
                                         <div class="w-28 space-y-1">
                                             <label class="block text-xs font-medium text-gray-500">Duração</label>
@@ -688,6 +690,44 @@
                                                        placeholder="—"
                                                        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white">
                                                 <span class="text-xs text-gray-400">min</span>
+                                            </div>
+                                        </div>
+                                        </div>
+
+                                        {{-- Video help guide --}}
+                                        <div x-show="!lesson.video_url" x-cloak x-data="{ showHelp: false }" class="pl-0">
+                                            <button type="button" @click="showHelp = !showHelp" class="inline-flex items-center gap-1.5 text-xs text-primary hover:text-secondary transition">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                <span x-text="showHelp ? 'Fechar ajuda' : 'Como enviar meu vídeo?'"></span>
+                                            </button>
+
+                                            <div x-show="showHelp" x-collapse x-cloak class="mt-2 p-4 bg-blue-50 border border-blue-200 rounded-lg space-y-3">
+                                                <p class="text-xs font-semibold text-blue-800">Como funciona o vídeo no TreinaEdu:</p>
+                                                <div class="space-y-2 text-xs text-blue-700">
+                                                    <div class="flex gap-2">
+                                                        <span class="w-5 h-5 rounded-full bg-blue-200 text-blue-800 flex items-center justify-center flex-shrink-0 text-xs font-bold">1</span>
+                                                        <p><strong>Envie seu vídeo ao YouTube</strong> — acesse <a href="https://studio.youtube.com" target="_blank" class="underline font-semibold">studio.youtube.com</a>, clique em "Criar" → "Enviar vídeo" e faça o upload.</p>
+                                                    </div>
+                                                    <div class="flex gap-2">
+                                                        <span class="w-5 h-5 rounded-full bg-blue-200 text-blue-800 flex items-center justify-center flex-shrink-0 text-xs font-bold">2</span>
+                                                        <p><strong>Defina como "Não listado"</strong> — na tela de visibilidade, selecione "Não listado". Assim, só quem tem o link consegue assistir (não aparece em buscas).</p>
+                                                    </div>
+                                                    <div class="flex gap-2">
+                                                        <span class="w-5 h-5 rounded-full bg-blue-200 text-blue-800 flex items-center justify-center flex-shrink-0 text-xs font-bold">3</span>
+                                                        <p><strong>Copie o link e cole aqui</strong> — após publicar, copie a URL do vídeo e cole no campo acima. O sistema preenche título, duração e dados automaticamente.</p>
+                                                    </div>
+                                                </div>
+                                                <div class="flex gap-4 pt-1">
+                                                    <div class="flex items-center gap-1.5 text-xs text-blue-600">
+                                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0C.488 3.45.029 5.804 0 12c.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0C23.512 20.55 23.971 18.196 24 12c-.029-6.185-.484-8.549-4.385-8.816zM9 16V8l8 4-8 4z"/></svg>
+                                                        YouTube
+                                                    </div>
+                                                    <div class="flex items-center gap-1.5 text-xs text-blue-600">
+                                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm6.066 9.645c.183 4.04-2.83 8.544-8.164 8.544A8.127 8.127 0 015.5 16.898a5.778 5.778 0 004.252-1.189 2.879 2.879 0 01-2.684-1.995 2.881 2.881 0 001.3-.049c-1.381-.278-2.335-1.522-2.304-2.853.388.215.83.344 1.301.359A2.878 2.878 0 016.474 6.33a8.168 8.168 0 005.937 3.01 2.876 2.876 0 014.895-2.623 5.743 5.743 0 001.824-.697 2.888 2.888 0 01-1.264 1.59 5.729 5.729 0 001.65-.453 5.83 5.83 0 01-1.45 1.488z"/></svg>
+                                                        Vimeo
+                                                    </div>
+                                                </div>
+                                                <p class="text-xs text-blue-500 italic">Também funciona com vídeos do Vimeo — basta colar o link.</p>
                                             </div>
                                         </div>
                                     </div>

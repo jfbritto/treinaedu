@@ -701,7 +701,8 @@
                                     </div>
 
                                     {{-- Conditional fields: Video --}}
-                                    <div x-show="lesson.type === 'video'" x-cloak class="flex gap-3 pl-9">
+                                    <div x-show="lesson.type === 'video'" x-cloak class="pl-9 space-y-2">
+                                        <div class="flex gap-3">
                                         <div class="flex-1 space-y-1">
                                             <label class="block text-xs font-medium text-gray-500">URL do vídeo</label>
                                             <input type="url"
@@ -711,6 +712,7 @@
                                                    @paste.debounce.500ms="$nextTick(() => fetchVideoDuration(lesson, mi))"
                                                    placeholder="https://www.youtube.com/watch?v=..."
                                                    class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white">
+                                            <p class="text-xs text-gray-400">Cole o link do YouTube ou Vimeo. O título, duração e dados do módulo serão preenchidos automaticamente pela IA.</p>
                                         </div>
                                         <div class="w-32 space-y-1">
                                             <label class="block text-xs font-medium text-gray-500">Duração</label>
@@ -720,6 +722,34 @@
                                                    min="0"
                                                    placeholder="—"
                                                    class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white">
+                                        </div>
+                                        </div>
+
+                                        {{-- Video help guide --}}
+                                        <div x-show="!lesson.video_url" x-cloak x-data="{ showHelp: false }">
+                                            <button type="button" @click="showHelp = !showHelp" class="inline-flex items-center gap-1.5 text-xs text-primary hover:text-secondary transition">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                <span x-text="showHelp ? 'Fechar ajuda' : 'Como enviar meu vídeo?'"></span>
+                                            </button>
+
+                                            <div x-show="showHelp" x-collapse x-cloak class="mt-2 p-4 bg-blue-50 border border-blue-200 rounded-lg space-y-3">
+                                                <p class="text-xs font-semibold text-blue-800">Como funciona o vídeo no TreinaEdu:</p>
+                                                <div class="space-y-2 text-xs text-blue-700">
+                                                    <div class="flex gap-2">
+                                                        <span class="w-5 h-5 rounded-full bg-blue-200 text-blue-800 flex items-center justify-center flex-shrink-0 text-xs font-bold">1</span>
+                                                        <p><strong>Envie seu vídeo ao YouTube</strong> — acesse <a href="https://studio.youtube.com" target="_blank" class="underline font-semibold">studio.youtube.com</a>, clique em "Criar" → "Enviar vídeo" e faça o upload.</p>
+                                                    </div>
+                                                    <div class="flex gap-2">
+                                                        <span class="w-5 h-5 rounded-full bg-blue-200 text-blue-800 flex items-center justify-center flex-shrink-0 text-xs font-bold">2</span>
+                                                        <p><strong>Defina como "Não listado"</strong> — na tela de visibilidade, selecione "Não listado". Assim, só quem tem o link consegue assistir.</p>
+                                                    </div>
+                                                    <div class="flex gap-2">
+                                                        <span class="w-5 h-5 rounded-full bg-blue-200 text-blue-800 flex items-center justify-center flex-shrink-0 text-xs font-bold">3</span>
+                                                        <p><strong>Copie o link e cole aqui</strong> — após publicar, copie a URL do vídeo e cole no campo acima. O sistema preenche título, duração e dados automaticamente.</p>
+                                                    </div>
+                                                </div>
+                                                <p class="text-xs text-blue-500 italic">Também funciona com vídeos do Vimeo — basta colar o link.</p>
+                                            </div>
                                         </div>
                                     </div>
 
